@@ -1,0 +1,105 @@
+<ion-content class="ion-justify-content-center">
+    <swiper-container #swiper>
+        <swiper-slide class="swiper-slide">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <ion-card>
+                <ion-card-header>
+                    <ion-img src="/assets/imagenes/foncodes.png"></ion-img>
+                    <ion-card-title class="texto-negro">Sistema de Gestión de Proyectos</ion-card-title>
+                    <ion-card-title class="texto-negro">SGP</ion-card-title>
+                </ion-card-header>
+                <form (ngSubmit)="login( fLogin )" #fLogin="ngForm">
+                    <ion-list class="ion-no-margin" class="ion-no-padding">
+                        <ion-item>
+                            <ion-icon color="primary" name="person" slot="start"></ion-icon>
+                            <ion-input placeholder="Usuario o Correo Electrónico" name="idUsuario" type="email" [(ngModel)]="usuarioLogin.idUsuario" required="required"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-icon color="primary" name="key" slot="start"></ion-icon>
+                            <ion-input placeholder="Contraseña" name="clave" type="password" [(ngModel)]="usuarioLogin.clave" required="required"></ion-input>
+                        </ion-item>
+                    </ion-list>
+                    <ion-button type="submit" color="primary" shape="round">Iniciar sesión</ion-button>
+                    <p><a (click)="mostrarSolicitaCodigo('cambiar')">Olvidé mi contraseña</a></p>
+                    <p>
+                        <span>No tengo usuario. </span>
+                        <a (click)="mostrarSolicitaCodigo('registrar')">Registrarme</a>
+                    </p>
+                    <p class="creditos">SGP Móvil Versión {{version}} - © FONCODES </p>
+                </form>
+            </ion-card>
+        </swiper-slide>
+
+        <swiper-slide>
+            <br>
+            <br>
+            <br>
+            <br>
+            <ion-card>
+                <ion-card-header>
+                    <ion-img src="/assets/imagenes/foncodes.png"></ion-img>
+                    <ion-card-title class="texto-negro">Sistema de Gestión de Proyectos</ion-card-title>
+                    <ion-card-title class="texto-negro">SGP</ion-card-title>
+                </ion-card-header>
+                <form (ngSubmit)="solicitarCodigo( fSolCodigo )" #fSolCodigo="ngForm">
+                    <p *ngIf="accion=='cambiar'">Cambiar contraseña</p>
+                    <p *ngIf="accion=='registrar'">Registrarme</p>
+                    <ion-label >Ingrese sus datos, le enviaremos un código de validación a su correo.</ion-label>
+                    <ion-list class="ion-no-margin" class="ion-no-padding">
+                        <ion-item>
+                            <ion-input placeholder="Correo electrónico" name="correo" type="email" [(ngModel)]="usuarioSolCodigo.correo" required="required"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-input placeholder="DNI" name="dni" type="text" [(ngModel)]="usuarioSolCodigo.dni" required="required"></ion-input>
+                        </ion-item>
+                    </ion-list>
+                    <ion-button type="submit" color="primary" shape="round">Solicitar código</ion-button>
+                    <p><a (click)="mostrarRegistro(accion)">Ya tengo el código</a></p>
+                    <p><a (click)="mostrarLogin()">Volver al inicio de sesión</a></p>
+                    <p class="creditos">SGP Móvil Versión {{version}} - © FONCODES </p>
+                </form>
+            </ion-card>
+        </swiper-slide>
+
+        <swiper-slide>
+            <br>
+            <br>
+            <ion-card class="ion-text-center">
+                <ion-card-header>
+                    <ion-img src="/assets/imagenes/foncodes.png"></ion-img>
+                    <ion-card-title class="texto-negro">Sistema de Gestión de Proyectos</ion-card-title>
+                    <ion-card-title class="texto-negro">SGP</ion-card-title>
+                </ion-card-header>
+                <form (ngSubmit)="registro( fRegistro )" #fRegistro="ngForm">
+                    <ion-label *ngIf="accion=='cambiar'">Cambiar contraseña</ion-label>
+                    <ion-label *ngIf="accion=='registrar'">Registrarme</ion-label>
+                    <ion-list class="ion-no-margin" class="ion-no-padding">
+                        <ion-item>
+                            <ion-input placeholder="Correo electrónico" name="correo" type="email" [(ngModel)]="usuarioRegistro.correo" required="required"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-input placeholder="DNI" name="dni" type="text" [(ngModel)]="usuarioRegistro.dni" required="required"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-input placeholder="Código de validación" name="codigoValida" type="text" [(ngModel)]="usuarioRegistro.codigoValida" required="required"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-input placeholder="Contraseña" name="clave" type="password" [(ngModel)]="usuarioRegistro.clave" required="required"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-input placeholder="Repetir contraseña" name="repClave" type="password" [(ngModel)]="usuarioRegistro.repClave" required="required"></ion-input>
+                        </ion-item>
+                    </ion-list>
+                    <ion-button type="submit" color="primary" shape="round">Registrar</ion-button>
+                    <p><a (click)="mostrarSolicitaCodigo(accion)">Volver a solicitar código</a></p>
+                    <p><a (click)="mostrarLogin()">Volver al inicio de sesión</a></p>
+                    <p class="creditos">SGP Móvil Versión {{version}} - © FONCODES </p>
+                </form>
+            </ion-card>
+        </swiper-slide>
+    </swiper-container>
+</ion-content>

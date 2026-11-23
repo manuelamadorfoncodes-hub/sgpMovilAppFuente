@@ -1,0 +1,39 @@
+<app-header titulo="SGP Móvil" [verMenu]="true"></app-header>
+
+<ion-content>
+    <ion-list #lista>
+        <ion-list-header>
+            <ion-label color="primarytext">LISTA DE ACTIVIDADES</ion-label>
+            <ion-chip *ngIf="botonNuevo" outline="true" color="primarytext" (click)="nuevaActividad()">
+                <ion-label class="ion-text-center">Registrar actividad ejecutada no programada</ion-label>
+            </ion-chip>
+        </ion-list-header>
+
+        <ion-searchbar [debounce]="600" (ionInput)="buscar( $event )" placeholder="Buscar" class="ion-no-margin"></ion-searchbar>
+
+        <ion-item-sliding *ngFor="let actividad of actividades | filtro: textoBuscar: 'txt_actividad': 'null': 'null': 'null' ; let i=index">
+            <ion-item mode="ios" (click)="abrirOpciones(actividad)" detail>
+                <ion-label class="ion-text-wrap">
+                    <ion-label color="tertiary" class="ion-text-wrap">{{actividad.id+1}}.- {{actividad.txt_actividad}}</ion-label>
+                    <h3>Inicio: {{actividad.fec_inicio | date:"dd/MM/yyyy HH:mm"}}</h3>
+                    <h3>Término: {{actividad.fec_termino | date:"dd/MM/yyyy HH:mm"}}</h3>
+                    <p>{{actividad.cod_plan}}</p>
+                    <h4>
+                        {{actividad.txt_est_actividad}} {{actividad.sam && !actividad.samCambio ? ' - SAM': ''}}
+                        <ion-text *ngIf="actividad.actividadEjecutadaCambio || actividad.samCambio" color="danger">
+                            {{actividad.flg_no_programada ? 'No Programada ' : ''}}
+                            {{actividad.actividadEjecutadaCambio ? (actividad.noEjecutada ? '-No ejecutada ' : '-Ejecutada ') : ''}}
+                            {{actividad.actividadEjecutada?.incompleto ? 'Incompleto' : ''}}
+                            {{actividad.samCambio ? '-SAM' + (actividad.samIncompleta ? ' (Incompleta)' : '') : ''}}
+                            (Sin enviar)
+                        </ion-text>
+                    </h4>
+                </ion-label>
+            </ion-item>
+
+            <ion-item-options  side="end">
+                <ion-item-option *ngIf="actividad.flg_no_programada || (actividad.est_actividad ==='P' && actividad.actividadEjecutadaCambio) || (actividad.sam && !actividad.sam.nid_sam && actividad.samCambio)" (click)="eliminar(actividad.id)">Eliminar</ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

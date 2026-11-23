@@ -1,0 +1,415 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import '@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+// @import "swiper/element/css/effect-cards";
+
+
+
+.tab-selected {
+    color: var(--ion-color-secondary-tint) !important
+}
+
+.custom-centrado {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.toast {
+    --max-width: 192px;
+    color: var(--ion-color-dark) !important;
+    text-align: center;
+}
+
+.custom-select-alert {
+    .alert-title.sc-ion-alert-md, .alert-title.sc-ion-alert-ios {
+        font-size: 14px !important;
+        color: var(--ion-color-tertiary) !important
+    }   
+    .alert-button.sc-ion-alert-md, .alert-button.sc-ion-alert-ios {
+        font-size: 14px !important;
+        color: var(--ion-color-primarytext) !important;
+    }
+    .alert-radio-label.sc-ion-alert-md, .alert-title.sc-ion-alert-ios {
+        font-size: 13px !important;
+    }   
+}
+
+.acuerdo-alert {
+    --min-width: 94%;
+    .alert-title.sc-ion-alert-md, .alert-title.sc-ion-alert-ios {
+        font-size: 16px !important;
+        text-align: left !important;
+    }   
+    .alert-sub-title.sc-ion-alert-md, .alert-sub-title.sc-ion-alert-ios {
+        font-size: 14px !important;
+        text-align: left !important;
+    }
+    .alert-message.sc-ion-alert-md, .alert-message.sc-ion-alert-ios {
+        font-size: 13px !important;
+        text-align: justify !important;
+    }
+    .alert-checkbox.sc-ion-alert-md, .alert-checkbox.sc-ion-alert-ios {
+        font-size: 14px !important;
+    }
+    // .alert-button.sc-ion-alert-md, .alert-button.sc-ion-alert-ios {
+    //     width: 100px;
+    //     border-radius: 2px;
+    // }
+}
+
+.calificacion-alert {
+    --min-width: 94%;
+    .col-texto {
+        width: 85% !important;
+        text-align: left !important;
+        padding-bottom: 3px;
+        padding-top: 3px;
+    }
+    .col-numero {
+        width: 15% !important;
+        text-align: right !important;
+        padding-bottom: 3px;
+        padding-top: 3px;
+    }
+    .indentacion {
+        padding-left: 15px;
+    }
+    th {
+        color: var(--ion-color-tertiary) !important;
+    }
+    // tr {
+    //     border-bottom: 1px solid #ddd;
+    //     border-top: 1px solid #ddd;
+    // }
+}
+
+.permisos-alert {
+    --min-width: 94%;
+    ion-label {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+    .alert-title.sc-ion-alert-md, .alert-title.sc-ion-alert-ios {
+        font-size: 14px !important;
+        // text-align: left;
+    }
+    .alert-message.sc-ion-alert-md, .alert-message.sc-ion-alert-ios {
+        font-size: 13px !important;
+        // text-align: justify !important;
+    }
+    .alert-checkbox.sc-ion-alert-md, .alert-checkbox.sc-ion-alert-ios {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+    .alert-button.sc-ion-alert-md, .alert-button.sc-ion-alert-ios {
+        font-size: 14px !important;
+        color: var(--ion-color-primarytext) !important;
+    }
+}
+
+.select-alert {
+    --min-width: 90%;
+    ion-label {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+    .alert-sub-title.sc-ion-alert-md, .alert-sub-title.sc-ion-alert-ios {
+        font-size: 16px !important;
+    }   
+    // .alert-checkbox.sc-ion-alert-md, .alert-checkbox.sc-ion-alert-ios {
+    //     font-size: 20px !important;
+    //     white-space: normal !important;
+    // }
+    .alert-button.sc-ion-alert-md, .alert-button.sc-ion-alert-ios {
+        font-size: 14px !important;
+        color: var(--ion-color-primarytext) !important;
+    }
+    .alert-radio-label.sc-ion-alert-md, .alert-radio-label.sc-ion-alert-ios {
+        white-space: normal;
+    }
+}
+
+// ion-modal.stack-modal {
+//     --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+//     --backdrop-opacity: var(--ion-backdrop-opacity, 0.32);
+// }
+
+ion-modal#date-modal {
+    --width: fit-content;
+    --min-width: 250px;
+    --height: fit-content;
+    --border-radius: 6px;
+    --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+ion-modal#example-modal {
+    --width: fit-content;
+    --min-width: 250px;
+    --max-width: 95%;
+    --height: fit-content;
+    --max-height: 80%;
+    --border-radius: 6px;
+    --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+    // --backdrop-opacity: var(--ion-backdrop-opacity, 0.32);
+}
+
+//// ejemplo 2025-10-31
+// ion-modal#example-modal {
+//     --width: fit-content;
+//     --min-width: 250px;
+//     --height: fit-content;
+//     --border-radius: 6px;
+//     --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+// }
+  
+ion-modal#example-modal h1 {
+margin: 20px 20px 10px 20px;
+}
+
+ion-modal#example-modal ion-icon {
+margin-right: 6px;
+
+width: 48px;
+height: 48px;
+
+padding: 4px 0;
+
+color: #aaaaaa;
+}
+
+ion-modal#example-modal .wrapper {
+margin-bottom: 10px;
+}
+/// fin ejemplo
+
+ion-modal#modalAvance {
+    --height: 50%;
+    --width: 95%;
+    --border-radius: 16px;
+    --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --backdrop-opacity: 0.4;
+}
+
+ion-modal#resumenModal {
+    --height: fit-content;
+    --width: 95%;
+    --border-radius: 16px;
+    --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --backdrop-opacity: 0.6;
+}
+
+ion-modal#modalFirma {
+    --height: fit-content;
+    // --min-height: 45%;
+    // --max-height: 75%;
+    // --height: auto;
+    // --width: 95%;
+    --border-radius: 16px;
+    --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --backdrop-opacity: 0.4;
+}
+
+ion-modal#modalMultiple {
+    --max-height: 80%;
+    // --height: fit-content;
+    // --max-height: 80%;
+    --width: 95%;
+    --border-radius: 16px;
+    --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --backdrop-opacity: 0.4;
+}
+
+ion-modal.modal-m {
+    // --width: fit-content;
+    // --min-width: 300px;
+    // --max-width: 95%;
+    --width: 95%;
+    --height: fit-content;
+    // --min_height: 50%
+    --max-height: 90%;
+    --border-radius: 16px;
+    --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+    --backdrop-opacity: 0.4;
+}
+
+ion-popover.modal-s {
+    // --width: fit-content;
+    // --min-width: 300px;
+    // --max-width: 95%;
+    --width: 85%;
+    --height: fit-content;
+    // --min_height: 50%
+    --max-height: 90%;
+    --border-radius: 16px;
+    // --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    // --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+    --border-color: var(--ion-color-medium);
+    --border-style: solid;
+    --border-width: 1px;
+    --backdrop-opacity: 0.4;
+    --box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.5), 0 10px 50px 0 rgba(0, 0, 0, 0.30);
+}
+
+ion-popover.data-registro {
+    --min-width: 85%;
+    --box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.5), 0 10px 50px 0 rgba(0, 0, 0, 0.30);
+    --border-radius: 16px;
+    --backdrop-opacity: 0.4;
+}
+
+.popover-edit {
+    --min-width: 90%;
+}
+
+.custom-modal-select {
+    --min-width: 90%;
+}
+
+.registrar-datos-popover {
+    // --width: fit-content;
+    // --min-width: 250px;
+    --max-width: 95%;
+    // --height: fit-content;
+    --max-height: 90%;
+    --border-radius: 25px;
+    --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+    
+}
+
+.custom-radio-popover {
+    // --min-width: 90%;
+    // --max-width: 95%;
+    --backdrop-opacity: 0.6;
+    --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+    // --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+    ion-item {
+        font-size: 13px !important;
+        // text-wrap: wrap !important;
+        // color: red !important;
+        white-space: normal !important;
+    }
+}
+
+.custom-radio-popover-l {
+    --backdrop-opacity: 0.4;
+    --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+    --max-width: 100%;
+    --min-width: 90%;
+    ion-item {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+}
+
+.custom-radio-popover-m {
+    --backdrop-opacity: 0.4;
+    --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+    --max-width: 70%;
+    --min-width: 70%;
+    ion-item {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+}
+
+.custom-radio-popover-s {
+    --backdrop-opacity: 0.4;
+    --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+    --max-width: 50%;
+    --min-width: 50%;
+    ion-item {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+}
+
+.custom-radio-popover-xs {
+    --backdrop-opacity: 0.4;
+    --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+    --max-width: 30%;
+    --min-width: 30%;
+    ion-item {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+}
+
+.custom-select-popover-s {
+    
+    --min-width: 55%;
+    font-size: 13px;
+    // --color: rgb(12, 62, 170);
+    white-space: normal !important;
+    ion-select-option {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+    ion-item {
+        ion-label {
+            white-space: normal !important;
+        }
+    }
+    
+}
+
+.custom-select-popover {
+    --min-width: 90%;
+    --color: rgb(12, 62, 170);
+    white-space: normal !important;
+    ion-select-option {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+    ion-item {
+        ion-label {
+            white-space: normal !important;
+        }
+    }
+    ion-label {
+        font-size: 14px !important;
+        white-space: normal !important;
+    }
+    content {
+        white-space: normal !important;
+    }
+    .item-radio.item ion-label {
+        color: red; //your color here
+    }
+    .item-radio-checked.item ion-label {
+        color: blue !important; //your color here for selected option
+    }  
+}
+
+.custom-select-popover-l {
+    --min-width: 90%;
+}
+
+
+// ion-action-sheet.accionSheetUsuarios {
+//     --max-height: 75%;
+// }

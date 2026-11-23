@@ -1,0 +1,203 @@
+<app-header [titulo]="titulo" [defaultHref]="defaultHref" [verMenu]="true"></app-header>
+
+
+<ion-content>
+    <h3>Sincronización de Proyectos</h3>
+    <ion-text color="tertiary">
+        <h5>Operaciones</h5>
+    </ion-text>
+    <ion-radio-group [(ngModel)]="operacionProyCheck">
+        <ion-item mode="ios"> 
+            <ion-radio labelPlacement="end" mode="md" value="1">
+                <ion-label class="ion-text-wrap">
+                    <h6>Enviar y Recibir</h6>
+                    <p>Primero se realizará el envío de todos lo datos registrados y luego se recibirán los datos desde la base de datos de Foncodes.</p>
+                </ion-label>
+            </ion-radio>
+        </ion-item>
+        <ion-item mode="ios"> 
+            <ion-radio labelPlacement="end" mode="md" value="2">
+                <ion-label class="ion-text-wrap">
+                    <h6>Sólo recibir</h6>
+                    <p>No se enviarán los datos registrados, se recibirá la información de la base de datos de Foncodes. Cualquier registro sin enviar será eliminado.</p>
+                </ion-label>
+            </ion-radio>
+        </ion-item>
+        <ion-item mode="ios"> 
+            <ion-radio labelPlacement="end" mode="md" value="3">
+                <ion-label class="ion-text-wrap">
+                    <h6>Reiniciar</h6>
+                    <p>Se eliminará y volverá a cargar toda la información de proyectos.</p>
+                </ion-label>
+            </ion-radio>
+        </ion-item>
+        <ion-item mode="ios"> 
+            <ion-radio labelPlacement="end" mode="md"  value="0">
+                <ion-label class="ion-text-wrap">
+                    <h6>No sincronizar proyectos</h6>
+                    <p>No se sincronizará la información de los proyectos.</p>
+                </ion-label>
+            </ion-radio>
+        </ion-item>
+    </ion-radio-group>
+
+    <div *ngIf="operacionProyCheck == '1' || operacionProyCheck == '2'">
+        <ion-text color="tertiary">
+            <h5>Seleccione el proyecto</h5>
+        </ion-text>
+        <div *ngFor="let proyecto of proyectos, let i=index">
+            <ion-item mode="ios" >
+                <ion-label>{{proyecto.codigo_expediente}} - {{proyecto.nombre_ne}} </ion-label>
+                <ion-checkbox color="primary" slot="start" [(ngModel)]="proyecto.seleccionado"></ion-checkbox>
+            </ion-item>
+            <div *ngIf="proyecto.seleccionado">
+                <ion-item class="sub-item" mode="ios">
+                    <ion-label class="ion-text-wrap">
+                        <h6>Datos básicos del proyecto</h6>
+                        <p>Fecha de inicio de la ejecución, agentes, tecnologías presupuestadas.</p>
+                    </ion-label>
+                    <ion-checkbox slot="start" mode="md" [(ngModel)] = "paramProy[i].datosBasicos"></ion-checkbox>
+                </ion-item>
+                <div *ngIf="proyecto.nid_tipo_proyecto != 40">
+                    <ion-item *ngIf="sincronizaTecColectiva" class="sub-item" mode="ios">
+                        <ion-label class="ion-text-wrap">
+                            <h6>Tecnologías colectivas</h6>
+                            <p>Lista de tecnologías colectivas, detalle por tecnología, avances y/o seguimiento.</p>
+                        </ion-label>
+                        <ion-checkbox slot="start" mode="md" [(ngModel)] = "paramProy[i].tecColectiva"></ion-checkbox>
+                    </ion-item>
+                    <ion-item *ngIf="sincronizaActividadEri" class="sub-item" mode="ios">
+                        <ion-label class="ion-text-wrap">
+                            <h6>ERI y Actividades</h6>
+                            <p>Listado de ERI, informes de avance del ERI. Listado de actividades del proyecto, datos de la ejecución de actividades, registro de participantes.</p>
+                        </ion-label>
+                        <ion-checkbox slot="start" mode="md" [(ngModel)] = "paramProy[i].actividadEri"></ion-checkbox>
+                    </ion-item>
+                    <div *ngIf="sincronizaUsuarios">
+                        <ion-item *ngIf="!paramProy[i].flagGrupoUsuarios" class="sub-item" mode="ios">
+                            <ion-label class="ion-no-padding ion-text-wrap">
+                                <h6>Lista de usuarios</h6>
+                                <p>Se eliminará toda la información de usuarios y se cargará sólo la lista de usuarios actualizada.</p>
+                            </ion-label>
+                            <ion-checkbox slot="start" mode="md" [(ngModel)] = "paramProy[i].listaUsuarios" (ionChange)="paramProy[i].flagGrupoUsuarios = false"></ion-checkbox>
+                        </ion-item>
+                        <ion-item *ngIf="!paramProy[i].flagGrupoUsuarios" class="sub-item" mode="ios">
+                            <ion-label class="ion-no-padding ion-text-wrap">
+                                <h6>Datos de todos los usuarios</h6>
+                                <p>Se sincronizará la información de toda la lista de usuarios.</p>
+                            </ion-label>
+                            <ion-checkbox slot="start" mode="md" [(ngModel)] = "paramProy[i].datosUsuarios"></ion-checkbox>
+                        </ion-item>
+                        <ion-item *ngIf="proyecto.cantidadUsuarios && proyecto.cantidadUsuarios > 30 && !paramProy[i].listaUsuarios && !paramProy[i].datosUsuarios" class="sub-item" mode="ios">
+                            <ion-label class="ion-no-padding ion-text-wrap">
+                                <h6>Datos de usuarios por grupos</h6>
+                                <p>Se sincronizará los datos de los usuarios según los grupos seleccionados. El proyecto tiene {{proyecto.cantidadUsuarios}} usuarios y están divididos en grupos de {{paramProy[i].grupoUsuarios.valor}}</p>
+                            </ion-label>
+                            <ion-checkbox slot="start" mode="md" [(ngModel)] = "paramProy[i].flagGrupoUsuarios" (ionChange)="paramProy[i].listaUsuarios = false; paramProy[i].datosUsuarios = false"></ion-checkbox>
+                        </ion-item>
+                        <ion-item *ngIf="paramProy[i].flagGrupoUsuarios" class="sub-item">
+                            <ion-range [value]="paramProy[i].grupoUsuarios.valor" [min]="paramProy[i].grupoUsuarios.incremento" [max]="paramProy[i].grupoUsuarios.maxGrupo" [step]="paramProy[i].grupoUsuarios.incremento" (ionChange)="recalculaGrupos(i, $event)" snaps="true" pin="true" color="primary">
+                                <ion-label slot="start">{{paramProy[i].grupoUsuarios.incremento}}</ion-label>
+                                <ion-label slot="end">{{paramProy[i].grupoUsuarios.maxGrupo}}</ion-label>
+                            </ion-range>
+                        </ion-item>
+                        <ion-radio-group name="auto" [(ngModel)]="paramProy[i].grupoSeleccionado">
+                            <ion-grid *ngIf="paramProy[i].flagGrupoUsuarios" class="ion-no-padding sub-item">
+                                <ion-row *ngFor="let grupo of paramProy[i].grupoUsuarios.grupos">
+                                    <ion-col size="6" *ngIf="grupo.desde1 <= proyecto.cantidadUsuarios">
+                                        <ion-item mode="ios">
+                                            <ion-label class="ion-text-wrap">
+                                                <h6>Del {{grupo.desde1}} al {{grupo.hasta1}}</h6>
+                                            </ion-label>
+                                            <ion-radio slot="start" mode="md" [value]="grupo.valor1"></ion-radio>
+                                        </ion-item>
+                                    </ion-col>
+                                    <ion-col size="6" *ngIf="grupo.desde2 <= proyecto.cantidadUsuarios">
+                                        <ion-item mode="ios">
+                                            <ion-label class="ion-text-wrap">
+                                                <h6>Del {{grupo.desde2}} al {{grupo.hasta2}}</h6>
+                                            </ion-label>
+                                            <ion-radio slot="start" mode="md" [value]="grupo.valor2"></ion-radio>
+                                        </ion-item>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-radio-group>
+                    </div>
+                </div>
+                <ion-item *ngIf="sincronizaVisitas" class="sub-item" mode="ios">
+                    <ion-label class="ion-text-wrap">
+                        <h6>Visitas al proyecto</h6>
+                        <p>Se sincronizará la lista e información de las visitas al proyecto.</p>
+                    </ion-label>
+                    <ion-checkbox slot="start" mode="md" [(ngModel)] = "paramProy[i].datosVisitas"></ion-checkbox>
+                </ion-item>
+            </div>
+        </div>
+    </div>
+    
+    <div *ngIf="sincronizaPlanesActivSup">
+        <h3>Actividades</h3>
+        <ion-item mode="ios">
+            <ion-label class="ion-no-padding ion-text-wrap">
+                <h6>Enviar y Recibir</h6>
+                <p>Envia y recibe las actividades del plan de viajes.</p>
+            </ion-label>
+            <ion-checkbox color="primary" slot="start" [(ngModel)]="planActividadCheck"></ion-checkbox>
+        </ion-item>
+    </div>
+
+    <div *ngIf="sincronizaAcciones">
+        <h3>Acciones</h3>
+        <ion-item mode="ios">
+            <ion-label class="ion-no-padding ion-text-wrap">
+                <h6>Enviar y Recibir</h6>
+                <p>Envia y recibe las acciones y las actividades que implementan las acciones de las SAM.</p>
+            </ion-label>
+            <ion-checkbox color="primary" slot="start" [(ngModel)]="accionesCheck"></ion-checkbox>
+        </ion-item>
+    </div>
+
+    <h3>Configuración de la aplicación</h3>
+    <ion-item mode="ios">
+        <ion-label class="ion-no-padding ion-text-wrap">
+            <h6>Opciones y permisos</h6>
+            <p>Valida los permisos y obtiene las opciones a las que el usuario tiene acceso.</p>
+        </ion-label>
+        <ion-checkbox color="primary" slot="start" [(ngModel)]="opcionesCheck"></ion-checkbox>
+    </ion-item>
+    <ion-item *ngIf="sincronizaUsuarios" mode="ios">
+        <ion-label class="ion-no-padding ion-text-wrap">
+            <h6>Usuarios y tecnologías</h6>
+            <p>Obtiene los parámetros para solicitudes cambio, cambio de tecnologías, avances, actividades productivas, ficha de caracterización, etc.</p>
+        </ion-label>
+        <ion-checkbox color="primary" slot="start" [(ngModel)]="usuariosCheck"></ion-checkbox>
+    </ion-item>
+    <ion-item mode="ios">
+        <ion-label class="ion-no-padding ion-text-wrap">
+            <h6>Fotos y otros parámetros</h6>
+            <p>Obtiene la configuración de fotografías y otros parámetros que requiere la aplicación.</p>
+        </ion-label>
+        <ion-checkbox color="primary" slot="start" [(ngModel)]="parametrosCheck"></ion-checkbox>
+    </ion-item>
+
+
+</ion-content>
+
+<ion-footer class="ion-no-border">
+    <ion-grid>
+        <ion-row>
+            <ion-col size="12" class="ion-text-center">
+                <!-- <ion-button shape="round" color="primary" fill="outline" mode="ios" expand="block" size="small" (click)="sicronizar()">Sincronizar Ahora</ion-button> -->
+                <ion-chip color="primarytext" (click)="sicronizar()">Sincronizar Ahora</ion-chip>
+            </ion-col>
+        </ion-row>
+        <ion-row *ngIf="mensaje">
+            <ion-col size="12" class="ion-text-center">
+                <!-- <ion-label color="primarytext" class="ion-text-center negrita">{{progreso * 100 | number:'1.0-0'}} %</ion-label> -->
+                <!-- <ion-progress-bar [value]="progreso"></ion-progress-bar> -->
+                <ion-label class="letra-small">{{mensaje}}</ion-label>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-footer>

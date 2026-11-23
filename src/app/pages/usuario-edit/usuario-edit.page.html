@@ -1,0 +1,128 @@
+<app-header-modal [titulo]="titulo" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <h4>Datos del Usuario</h4>
+    <!-- cambio -->
+    <ion-item>
+        <ion-label color="tertiary"> Tipo de Documento: </ion-label>
+        <ion-label>{{usuario.tip_documento_identidad === 'D' ? 'DNI' : (usuario.tip_documento_identidad === '2' ? 'Carné de Extranjería' : null)}}</ion-label>
+    </ion-item>
+    <!-- fin cambio  -->
+    <ion-item>
+        <ion-label color="tertiary"> Número de Documento: </ion-label>
+        <ion-label>{{usuario.txt_documento_identidad}}</ion-label>
+    </ion-item>
+    <ion-item>
+        <ion-label color="tertiary">Apellido Paterno: </ion-label>
+        <ion-label>{{usuario.txt_apellido_paterno}}</ion-label>
+    </ion-item>
+    <ion-item>
+        <ion-label color="tertiary">Apellido Materno: </ion-label>
+        <ion-label>{{usuario.txt_apellido_materno}}</ion-label>
+    </ion-item>
+    <ion-item>
+        <ion-label color="tertiary"> Nombres: </ion-label>
+        <ion-label>{{usuario.txt_nombres}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="consulta">
+        <ion-label color="tertiary">Fecha Nacimiento:</ion-label>
+        <ion-label>{{usuario.fec_nacimiento | date:'dd/MM/yyyy'}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="consulta">
+        <ion-label color="tertiary"> Sexo: </ion-label>
+        <ion-label>{{usuario.tip_sexo === 'M'? 'Masculino' : 'Femenino'}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="consulta">
+        <ion-label color="tertiary">Dirección: </ion-label>
+        <ion-label class="ion-text-wrap">{{usuario.txt_domicilio}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="consulta">
+        <ion-label color="tertiary">Ubicación</ion-label>
+        <ion-label class="ion-text-wrap">{{usuario.txt_ubigeo}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="consulta">
+        <ion-label color="tertiary">Comunidad Nativa</ion-label>
+        <ion-label class="ion-text-wrap">{{usuario.txt_comunidad_nativa}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="consulta">
+        <ion-label color="tertiary">Celular: </ion-label>
+        <ion-label>{{usuario.txt_telefono}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="consulta && usuario.flg_ejecucion">
+        <ion-label color="tertiary">Fecha de inicio: </ion-label>
+        <ion-label>{{usuario.fec_inicio | date:'dd/MM/yyyy'}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="consulta && usuario.est_personal === 'R' && usuario.flg_ejecucion">
+        <ion-label color="tertiary">Fecha de término: </ion-label>
+        <ion-label>{{usuario.fec_termino | date:'dd/MM/yyyy'}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="usuario.flg_ejecucion">
+        <ion-label color="tertiary">Yachachiq: </ion-label>
+        <ion-label class="ion-text-wrap">{{usuario.txt_yachachiq}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="usuario.flg_ejecucion">
+        <ion-label color="tertiary" class="ion-text-wrap">Fecha de asignación del yachachiq: </ion-label>
+        <ion-label>{{usuario.fec_inicio_yachachiq | date:'dd/MM/yyyy'}}</ion-label>
+    </ion-item>
+
+    <div *ngIf="!consulta">
+        <h4>Cambiar Asignación del Yachachiq</h4>
+        <ion-item *ngIf="usuario.nid_personal_yachachiq">
+            <ion-label color="tertiary" class="ion-text-wrap">
+                <ion-text color="danger">* </ion-text>
+                Fec. Término Yachachiq:
+            </ion-label>
+            <ion-button id="open-modal-fin" fill="clear" color="dark">{{usuario.fecFinYachachiq ? (usuario.fecFinYachachiq | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" trigger="open-modal-fin" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime [(ngModel)]="usuario.fecFinYachachiq" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary" position="floating">
+                <ion-text color="danger">* </ion-text>
+                Yachachiq</ion-label>
+            <ion-select [(ngModel)]="usuario.nidYachachiq" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                <ion-select-option *ngFor="let yachachiq of yachachiqs" [value]="yachachiq.nidPersonal">{{yachachiq.nombre}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary" class="ion-text-wrap">
+                <ion-text color="danger">* </ion-text>
+                Fec. Asignación Yachachiq:
+            </ion-label>
+            <ion-button id="open-modal-ini" fill="clear" color="dark">{{usuario.fecYachachiq ? (usuario.fecYachachiq | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" trigger="open-modal-ini" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime [(ngModel)]="usuario.fecYachachiq" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+        </ion-item>
+        <br>
+    
+    </div>
+
+    <ion-item *ngIf="consulta && existeArchivoDj">
+        <ion-label color="tertiary" class="ion-text-wrap">El usuario es menor de edad:</ion-label>
+    </ion-item>
+    <app-fotos *ngIf="consulta && existeArchivoDj" [fotos]="usuario.archivoHogarEmancipado" [consulta]="true"></app-fotos>
+
+    <h4 *ngIf="consulta && usuario.fotos">Fotografías y georreferencia</h4>
+    <app-fotos *ngIf="consulta && usuario.fotos" [fotos]="usuario.fotos" [consulta]="true"></app-fotos>
+
+</ion-content>
+
+<ion-footer *ngIf="!consulta" mode="ios" translucent="true">
+    <ion-toolbar mode="ios">
+        <ion-row class="ion-align-items-center">
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <ion-button shape="round" expand="block" color="primary" (click)="guardar()">
+                    Guardar
+                </ion-button>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

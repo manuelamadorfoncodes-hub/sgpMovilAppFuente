@@ -1,0 +1,22 @@
+<ion-header no-border translucent>
+    <ion-toolbar color="primary">
+
+        <ion-buttons slot="start">
+            <ion-back-button text="" [defaultHref]="defaultHref" *ngIf="defaultHref"></ion-back-button>
+            <!-- <ion-menu-button menu="principal"></ion-menu-button> -->
+            <ion-button *ngIf="verMenu" (click)="abrirMenu()">
+                <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+
+
+        <ion-buttons slot="primary">
+            <ion-thumbnail (click)="abrirUser()">
+                <img [src]="user.urlFotoHttp ? user.urlFotoHttp : '../../../assets/imagenes/avatar1.png'">
+            </ion-thumbnail>
+        </ion-buttons>
+
+        <ion-title> {{ titulo }} </ion-title>
+
+    </ion-toolbar>
+</ion-header>

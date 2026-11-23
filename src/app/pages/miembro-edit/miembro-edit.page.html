@@ -1,0 +1,256 @@
+<app-header-modal titulo="Editar Integrante" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <form [formGroup]="miembroForm">
+        <ion-list-header>
+            <ion-label color="primarytext">Fecha de Recojo de la Información:</ion-label>
+            <ion-label>{{fecha | date:'dd/MM/yyyy'}}</ion-label>
+        </ion-list-header>
+        <ion-list-header *ngIf="!consulta && (usuario.flg_ejecucion || actualizaFecha)" mode="md">
+            <ion-label></ion-label>
+            <ion-chip outline="true" color="primarytext" (click)="actualizarFecha()">
+                <ion-label>Actualizar fecha</ion-label>
+            </ion-chip>
+        </ion-list-header>
+
+        <ion-list-header *ngIf="cotejo">
+            
+            <ion-label [color]="(!miembro.flg_cotejo || miembro.tip_observacion_cotejo === '03') ? 'resaltado' : ''">
+                <ion-text color="resaltado">{{observacion}}</ion-text>
+                <h3>{{miembro.flg_cotejo ? 'Cotejado' : 'No cotejado'}} <ion-text *ngIf="miembro.flg_cotejo && sinCotejar" color="resaltado"> - Requiere cotejo</ion-text></h3>
+                <ion-text [color]="(miembro.tip_observacion_cotejo === '03') ? 'resaltado' : ''">{{miembro.txt_observacion_cotejo}}</ion-text>
+            </ion-label>
+        </ion-list-header>
+        
+        <ion-item mode="ios">
+            <ion-label>1. Nacionalidad:</ion-label>
+            <ion-select formControlName="tip_nacionalidad" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <ion-select-option value="01">Peruana</ion-select-option>
+                <ion-select-option value="02">Otra</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="flagNacionalidad" mode="ios">
+            <ion-input class="margen" formControlName="txt_nacionalidad" type="text" autocapitalize="characters" placeholder="Especifique"></ion-input>
+        </ion-item>
+
+        <ion-item mode="ios">
+            <ion-label class="francesa">2. <ion-text color="danger">* </ion-text>Tipo de Documento de Identidad:</ion-label>
+            <ion-select *ngIf="editCotejo && !miembro.flg_titular" formControlName="tip_documento_identidad" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <ion-select-option value="01">DNI</ion-select-option>
+                <ion-select-option value="02">Carné de extranjería</ion-select-option>
+                <ion-select-option value="00">No tiene</ion-select-option>
+            </ion-select>
+            <ion-label *ngIf="!editCotejo || miembro.flg_titular">{{miembro.tip_documento_identidad === '01' ? 'DNI' : (miembro.tip_documento_identidad === '02' ? 'Carné de extranjería' : (miembro.tip_documento_identidad === '00' ? 'Carné de extranjería' : 'No tiene'))}}</ion-label>
+        </ion-item>
+        <ion-item mode="ios">
+            <ion-label class="margen">Número de Documento:</ion-label>
+            <ion-input *ngIf="editCotejo && !miembro.flg_titular" formControlName="txt_documento_identidad" placeholder="00000000" maxlength="11"></ion-input>
+            <ion-label *ngIf="!editCotejo || miembro.flg_titular">{{miembro.txt_documento_identidad}}</ion-label>
+        </ion-item>
+
+        <ion-item mode="ios">
+            <ion-label>3. Apellido Paterno:</ion-label>
+            <ion-input *ngIf="editCotejo && !miembro.flg_titular" formControlName="txt_apellido_paterno" type="text" autocapitalize="characters" placeholder="NINGUNO"></ion-input>
+            <ion-label *ngIf="!editCotejo || miembro.flg_titular">{{miembro.txt_apellido_paterno}}</ion-label>
+        </ion-item>
+        <ion-item mode="ios">
+            <ion-label>4. Apellido Materno:</ion-label>
+            <ion-input *ngIf="editCotejo && !miembro.flg_titular" formControlName="txt_apellido_materno" type="text" autocapitalize="characters" placeholder="NINGUNO"></ion-input>
+            <ion-label *ngIf="!editCotejo || miembro.flg_titular">{{miembro.txt_apellido_materno}}</ion-label>
+        </ion-item>
+        <ion-item mode="ios">
+            <ion-label>5. <ion-text color="danger">* </ion-text>Nombres:</ion-label>
+            <ion-input *ngIf="editCotejo && !miembro.flg_titular" formControlName="txt_nombres" type="text" autocapitalize="characters" placeholder="NINGUNO"></ion-input>
+            <ion-label *ngIf="!editCotejo || miembro.flg_titular">{{miembro.txt_nombres}}</ion-label>
+        </ion-item>
+
+        <ion-item mode="ios" *ngIf="!editCotejo || miembro.flg_titular">
+            <ion-label>6. <ion-text color="danger">* </ion-text>Fecha Nacimiento:</ion-label>
+            <ion-label>{{miembro.fec_nacimiento | date:'dd/MM/yyyy'}}</ion-label>
+        </ion-item>
+        <ion-item mode="ios" *ngIf="editCotejo && !miembro.flg_titular">
+            <ion-label>6. <ion-text color="danger">* </ion-text>Fecha Nacimiento:</ion-label>
+            <ion-button id="open-modal" fill="clear" color="dark">{{fechaNacimiento ? (fechaNacimiento | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" trigger="open-modal" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime formControlName="fec_nacimiento" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" prefer-wheel="true" mode="ios"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+        </ion-item>
+
+        <ion-item mode="ios">
+            <ion-label>7.    <ion-text color="danger">* </ion-text>Sexo:</ion-label>
+            <ion-select *ngIf="editCotejo && !miembro.flg_titular" formControlName="tip_sexo" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <ion-select-option value="01">Masculino</ion-select-option>
+                <ion-select-option value="02">Femenino</ion-select-option>
+            </ion-select>
+            <ion-label *ngIf="!editCotejo || miembro.flg_titular">{{miembro.tip_sexo === '01' ? 'Masculino' : 'Femenino'}}</ion-label>
+        </ion-item>
+
+        <ion-item mode="ios">
+            <ion-label>8.    Parentesco: </ion-label>
+            <ion-select formControlName="tip_parentesco" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <ion-select-option *ngFor="let item of parentesco" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="flagParentesco" mode="ios">
+            <ion-input class="margen" formControlName="txt_parentesco" type="text" placeholder="Especifique"></ion-input>
+        </ion-item>
+
+        <ion-item mode="ios">
+            <ion-label class="francesa">9.    ¿Se ausenta del hogar en algún mes o meses del año?:</ion-label>
+            <ion-select formControlName="tip_ausente_hogar" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <ion-select-option value="01">Sí</ion-select-option>
+                <ion-select-option value="02">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item  *ngIf="flagAusenta" mode="ios">
+            <ion-label class="francesa">10. Generalmente, ¿Entre qué meses del año se encuentra ausente del hogar?</ion-label>
+        </ion-item>
+        <ion-item *ngIf="flagAusenta" mode="ios">
+            <ion-label class="margen">Del mes: </ion-label>
+            <ion-select formControlName="txt_mes_inicio" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <ion-select-option *ngFor="let item of meses" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="flagAusenta" mode="ios">
+            <ion-label class="margen">Al mes: </ion-label>
+            <ion-select formControlName="txt_mes_fin" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <ion-select-option *ngFor="let item of meses" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+
+        <ion-item mode="ios">
+            <ion-label class="francesa" position="stacked">{{discapacidad.pregunta}}</ion-label>
+        </ion-item>
+        <ion-item mode="ios" (click)="abrirMultipleSelect(discapacidad)">
+            <ion-label class="margen ion-text-wrap" color="dark" >
+                <p *ngIf="!discapacidad.respuestas || discapacidad.respuestas.length == 0">Seleccione</p>
+                <ion-text *ngFor="let item of discapacidad.lista">
+                    <h6>{{item.dato1}}</h6>
+                </ion-text>
+            </ion-label>
+        </ion-item>
+
+        <ion-item mode="ios">
+            <ion-label class="francesa" position="stacked">{{programaSocial.pregunta}}</ion-label>
+        </ion-item>
+        <ion-item mode="ios" (click)="abrirMultipleSelect(programaSocial)">
+            <ion-label class="margen ion-text-wrap" color="dark" >
+                <p *ngIf="!programaSocial.respuestas">Seleccione</p>
+                <ion-text *ngFor="let item of programaSocial.lista">
+                    <h6>{{item.dato1}}</h6>
+                </ion-text>
+            </ion-label>
+        </ion-item>
+
+        <div *ngIf="edad >= 3" >
+            <ion-item>
+                <ion-label class="francesa">13. ¿Cuál es el idioma o lengua materna con la que aprendió a hablar en su niñez?</ion-label>
+            </ion-item>
+            <ion-item mode="ios">
+                <ion-select class="margen" formControlName="tip_idioma_materna" label-placement="stacked" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-l'}">
+                    <!-- <div slot="label" class="custom-label-input">13. ¿Cuál es el idioma o lengua materna con la que aprendió a hablar en su niñez?</div> -->
+                    <ion-select-option *ngFor="let item of lengua" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="flagOtraLengua" mode="ios">
+                <ion-select class="margen" formControlName="tip_otra_lengua" label-placement="stacked" placeholder="Seleccione otra lengua" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-l'}">
+                    <ion-select-option *ngFor="let item of parametros.otraLengua" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="flagIdioma" mode="ios">
+                <ion-input class="margen" formControlName="txt_idioma" type="text" placeholder="Especifique"></ion-input>
+            </ion-item>
+    
+            <ion-item mode="ios">
+                <ion-label class="francesa" position="stacked">14. ¿Cuál es su grado de instrucción alcanzado?</ion-label>
+                <ion-select class="margen" formControlName="tip_grado_instruccion" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                    <ion-select-option *ngFor="let item of gradoInstruccion" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="flagEducacion" mode="ios">
+                <ion-label class="margen">Grado / Año:</ion-label>
+                <ion-select formControlName="tip_grado_estudio" placeholder="Seleccione" interface="popover" [interfaceOptions]="{ cssClass:'custom-radio-popover-s'}">
+                    <ion-select-option *ngFor="let item of grados" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </div>
+
+        <div *ngIf="edad >= 12">
+            <ion-item mode="ios">
+                <ion-label>15. Estado Civil</ion-label>
+                <ion-select formControlName="tip_estado_civil" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                    <ion-select-option *ngFor="let item of estadoCivil" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+    
+            <ion-item mode="ios">
+                <ion-label class="francesa" position="stacked">16. Por sus costumbres y antepasados, ¿usted se siente o considera?</ion-label>
+                <ion-select class="margen" formControlName="tip_etnia_identidad" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                    <ion-select-option *ngFor="let item of etnia" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="flagEtniaAmazonica" mode="ios">
+                <ion-select class="margen" formControlName="tip_otra_etnia" label-placement="stacked" placeholder="Seleccione pueblo originario" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-l'}">
+                    <ion-select-option *ngFor="let item of parametros.etniaAmazonica" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="flagEtniaAndina" mode="ios">
+                <ion-select class="margen" formControlName="tip_otra_etnia" label-placement="stacked" placeholder="Seleccione pueblo originario" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-l'}">
+                    <ion-select-option *ngFor="let item of parametros.etniaAndina" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="flagEtnia" mode="ios">
+                <ion-input class="margen" formControlName="txt_etnia_identidad" type="text" placeholder="Especifique"></ion-input>
+            </ion-item>
+        </div>
+
+        <div *ngIf="edad >=14">
+            <ion-item mode="ios">
+                <ion-label>17. Ocupación principal</ion-label>
+                <ion-select formControlName="tip_ocupacion" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                    <ion-select-option *ngFor="let item of ocupacion" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="flagOcupacion" mode="ios">
+                <ion-input class="margen" formControlName="txt_ocupacion" type="text" placeholder="Especifique"></ion-input>
+            </ion-item>
+    
+            <ion-item mode="ios">
+                <ion-label class="francesa" position="stacked">{{ingresos.pregunta}}</ion-label>
+            </ion-item>
+            <ion-item mode="ios" (click)="abrirMultipleSelect(ingresos)">
+                <ion-label class="margen ion-text-wrap" color="dark" >
+                    <p *ngIf="!ingresos.respuestas">Seleccione</p>
+                    <ion-grid *ngIf="ingresos.respuestas" class="ion-no-padding">
+                        <ion-row color="tertiary">
+                            <ion-col size="9"><ion-text color="tertiary">Concepto</ion-text></ion-col>
+                            <ion-col size="3" class="ion-text-right"><ion-text color="tertiary">Importe S/.</ion-text></ion-col>
+                        </ion-row>
+                        <ion-row *ngFor="let item of ingresos.lista">
+                            <ion-col size="9">{{item.dato1}}</ion-col>
+                            <ion-col size="3" class="ion-text-right">{{item.dato2}}</ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="9"><ion-text color="tertiary">Ingreso Total</ion-text></ion-col>
+                            <ion-col size="3" class="ion-text-right">{{ingresos.total}}</ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-label>
+            </ion-item>
+        </div>
+    </form>
+</ion-content>
+
+<ion-footer *ngIf="!consulta" mode="ios" translucent="true">
+    <ion-toolbar mode="ios">
+        <ion-row class="ion-align-items-center">
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <ion-button shape="round" expand="block" color="primary" (click)="guardar()">Guardar</ion-button>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,606 @@
+<app-header-modal [titulo]="titulo" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <form [formGroup]="actividadForm" (ngSubmit)="guardar()">
+        <div *ngIf="nuevo">
+            <h5>Registre los datos de la actividad </h5>
+            <div *ngIf="!actividad.id && actividad.id !== 0">
+                <ion-item mode="ios" >
+                    <ion-select formControlName="nid_plan" label-placement="stacked" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                        <div class="margenSelect" slot="label" ><ion-text color="tertiary" class="letra16">Plan de viaje:</ion-text></div>
+                        <ion-select-option *ngFor="let plan of planes" [value]="plan.nid_plan">{{plan.cod_plan}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item mode="ios" >
+                    <ion-select formControlName="tip_actividad" label-placement="stacked" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                        <div class="margenSelect" slot="label" ><ion-text color="tertiary" class="letra16">Tipo de Actividad:</ion-text></div>
+                        <ion-select-option *ngFor="let tipo of tipoActividad" [value]="tipo.tip_actividad">{{tipo.txt_tipo_actividad}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+            </div>
+            <div *ngIf="actividad.id || actividad.id == 0">
+                <ion-item mode="ios" >
+                    <ion-label>
+                        <h6 class="letra13"><ion-text color="tertiary">Plan de Viaje: </ion-text></h6>
+                        <h6 class="letra13">{{actividad.cod_plan}}</h6>
+                    </ion-label>
+                </ion-item>
+                <ion-item mode="ios" >
+                    <ion-label>
+                        <h6 class="letra13"><ion-text color="tertiary">Tipo de Actividad: </ion-text></h6>
+                        <h6 class="letra13">{{actividad.txt_tip_actividad}}</h6>
+                    </ion-label>
+                </ion-item>
+            </div>
+            
+            <ion-item mode="ios">
+                <ion-label class="letra13" position="stacked" color="tertiary">Nombre de la actividad:</ion-label>
+                <ion-textarea formControlName="txt_actividad" aria-label="x" [autoGrow]="true" placeholder="Nombre de la actividad"></ion-textarea>
+            </ion-item>
+
+            <div *ngIf="valida('53')">
+                <ion-item mode="ios" >
+                    <ion-select formControlName="txt_unidad_medida" placeholder="Seleccione" interface="popover">
+                        <div slot="label" class="letra13"><ion-text color="tertiary">Unidad de medida meta:</ion-text></div>
+                        <ion-select-option *ngFor="let tipo of unidadMedida" [value]="tipo.cod_tipo">{{tipo.txt_tipo}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item mode="ios">
+                    <ion-input formControlName="num_meta" labelPlacement="fixed" placeholder="0" class="ion-text-right">
+                        <div slot="label" class="letra13"><ion-text color="tertiary">Cantidad meta:</ion-text></div>
+                    </ion-input>
+                </ion-item>
+            </div>
+
+            <div *ngIf="valida('54')">
+                <ion-item mode="md" >
+                    <ion-select formControlName="tip_normativa" label-placement="stacked" placeholder="Seleccione" [multiple]="true" okText="Aceptar" cancelText="Cancelar" (ionChange)="handleChangeNormativa($event)">
+                        <div class="margenSelect" slot="label"><ion-text color="tertiary" class="letra16">Tipo de normativa</ion-text></div>
+                        <ion-select-option *ngFor="let tipo of tipoNormativa" [value]="tipo.cod_tipo">{{tipo.txt_tipo}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item>
+                    <ion-label>
+                        <p *ngFor="let tipo of tipoNormativaSelect">- {{tipo.txt_tipo}}</p>
+                    </ion-label>
+                </ion-item>
+            </div>
+
+            <!-- <ion-item mode="ios" >
+                <ion-select formControlName="nid_portafolio" label-placement="stacked" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                    <div class="margenSelect" slot="label" ><ion-text color="tertiary" class="letra16">Portafolio:</ion-text></div>
+                    <ion-select-option *ngFor="let portafolio of portafolios" [value]="portafolio.nid_portafolio">{{portafolio.txt_prefijo}}</ion-select-option>
+                </ion-select>
+            </ion-item> -->
+            <div *ngIf="valida('56')">
+                <ion-item mode="ios" >
+                    <ion-select formControlName="nid_portafolio" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-m'}">
+                        <div slot="label" class="letra13"><ion-text color="tertiary">Portafolio:</ion-text></div>
+                        <ion-select-option *ngFor="let portafolio of portafolios" [value]="portafolio.nid_portafolio">{{portafolio.txt_prefijo}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+            </div>
+
+            <div *ngIf="valida('51')">
+                <ion-item mode="md" >
+                    <ion-select formControlName="txt_proyectos" label-placement="stacked" placeholder="Seleccione" [multiple]="true" okText="Aceptar" cancelText="Cancelar" (ionChange)="handleChangeProyecto($event)">
+                        <div class="margenSelect" slot="label"><ion-text color="tertiary" class="letra16">Selecione los proyectos:</ion-text></div>
+                        <ion-select-option *ngFor="let proyecto of proyectos" [value]="proyecto.codigo_expediente">{{proyecto.codigo_expediente}} {{proyecto.nombre_ne}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item>
+                    <ion-label>
+                        <p *ngFor="let proyecto of proyectosSelect">- {{proyecto.codigo_expediente}} {{proyecto.nombre_ne}}</p>
+                    </ion-label>
+                </ion-item>
+            </div>
+
+            <div *ngIf="valida('52')">
+                <ion-item mode="md" >
+                    <ion-select formControlName="txt_participante" label-placement="stacked" placeholder="Seleccione" [multiple]="true" okText="Aceptar" cancelText="Cancelar" (ionChange)="handleChangeParticipante($event)">
+                        <div class="margenSelect" slot="label"><ion-text color="tertiary" class="letra16">Selecione los tipos de participantes:</ion-text></div>
+                        <ion-select-option *ngFor="let tipo of tipoParticipante" [value]="tipo.tip_participante">{{tipo.txt_participante}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item>
+                    <ion-label>
+                        <p *ngFor="let tipo of tipoParticipanteSelect">- {{tipo.txt_participante}}</p>
+                    </ion-label>
+                </ion-item>
+            </div>
+
+            <div *ngIf="valida('55')">
+                <ion-item mode="ios">
+                    <ion-label class="letra13" position="stacked" color="tertiary">Origen:</ion-label>
+                    <ion-textarea formControlName="origen" aria-label="x" [autoGrow]="true" placeholder="Registrar el origen del desplazamiento" maxlength="80"></ion-textarea>
+                </ion-item>
+                <ion-item mode="ios">
+                    <ion-label class="letra13" position="stacked" color="tertiary">Destino:</ion-label>
+                    <ion-textarea formControlName="destino" aria-label="x" [autoGrow]="true" placeholder="Registrar el destino del desplazamiento" maxlength="80"></ion-textarea>
+                </ion-item>
+            </div>
+
+            <ion-item mode="ios">
+                <ion-label class="letra13" position="stacked" color="tertiary">Observación:</ion-label>
+                <ion-textarea formControlName="txt_observacion_actividad" aria-label="x" [autoGrow]="true"></ion-textarea>
+            </ion-item>
+
+        </div>
+        
+        <div *ngIf="!nuevo">
+            <h5>Datos de la actividad</h5>
+            <ion-item>
+                <ion-label>
+                    <h3><ion-text color="tertiary">Plan de Viaje: </ion-text>{{actividad.cod_plan}}</h3>
+                    <h3><ion-text color="tertiary">Tipo de Actividad: </ion-text>{{actividad.txt_tip_actividad}}</h3>
+                    <h3><ion-text color="tertiary">Nombre: </ion-text>{{actividad.txt_actividad}}</h3>
+                    <h3><ion-text color="tertiary">Meta: </ion-text>{{actividad.num_meta}} - {{actividad.txt_unidad_medida}}</h3>
+                    <h3><ion-text color="tertiary">Fecha de inicio programada: </ion-text>{{actividad.fec_inicio | date:'dd/MM/yyyy HH:mm'}}</h3>
+                    <h3><ion-text color="tertiary">Fecha de termino programada: </ion-text>{{actividad.fec_termino | date:'dd/MM/yyyy HH:mm'}}</h3>
+                    <h3 *ngIf="actividad.origen"><ion-text color="tertiary" >Origen: </ion-text>{{actividad.origen}}</h3>
+                    <h3 *ngIf="actividad.destino"><ion-text color="tertiary" >Destino: </ion-text>{{actividad.destino}}</h3>
+                    <div *ngIf="tipoNormativaSelect.length > 0">
+                        <h3><ion-text color="tertiary">Tipo de Normativa: </ion-text></h3>
+                        <h3 *ngFor="let tipo of tipoNormativaSelect">- {{tipo.txt_tipo}}</h3>
+                    </div>
+                    <div *ngIf="actividad.txt_portafolio || proyectosSelect.length > 0">
+                        <div *ngIf="proyectosSelect.length == 0 && actividad.txt_portafolio">
+                            <h3><ion-text color="tertiary">Ambito - Portafolio: </ion-text></h3>
+                            <h3>- {{actividad.txt_portafolio}}</h3>
+                        </div>
+                        <div *ngIf="proyectosSelect.length > 0">
+                            <h3><ion-text color="tertiary">Ambito - Proyectos: </ion-text></h3>
+                            <h3 *ngFor="let proyecto of proyectosSelect">- {{proyecto.codigo_expediente}} {{proyecto.nombre_ne}}</h3>
+                        </div>
+                    </div>
+                    <div *ngIf="tipoParticipanteSelect.length > 0">
+                        <h3><ion-text color="tertiary">Tipo de Participantes: </ion-text></h3>
+                        <h3 *ngFor="let tipo of tipoParticipanteSelect">- {{tipo.txt_participante}}</h3>
+                    </div>
+                </ion-label>
+            </ion-item>
+        </div>
+
+        <div *ngIf="!nuevo && (actividad.est_actividad === 'P' || actividad.est_actividad === 'N')">
+            <h5>Actividad Ejecutada</h5>
+            <ion-item mode="ios">
+                <ion-toggle formControlName="flg_ejecutada" justify="space-between">
+                    <ion-label class="letra13" color="tertiary">¿Se ha ejecutado la actividad?</ion-label>
+                </ion-toggle>
+            </ion-item>
+        </div>
+
+        <div *ngIf="ejecutada">
+            <h5 *ngIf="valida('01')">Datos de la ejecución de la actividad</h5>
+            <div *ngIf="editaFechas">
+                <ion-item *ngIf="valida('01') && valida('02')">
+                    <ion-label color="tertiary">Fecha de inicio</ion-label>
+                    <ion-button class="letra13" id="open-modal-fec-ini" fill="clear" color="dark">{{fechaInicio ? (fechaInicio | date:'dd/MM/yyyy HH:mm') : '00/00/0000 00:00'}}</ion-button>
+                    <!-- <ion-modal id="date-modal" trigger="open-modal-fec-ini" [keepContentsMounted]="true"> -->
+                    <ion-modal id="date-modal" trigger="open-modal-fec-ini">
+                        <ng-template>
+                            <ion-datetime formControlName="fec_inicio" presentation="date-time" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios" [min]="fechaInicioPlan" [max]="fechaFinPlan">
+                                <span slot="time-label">Hora</span>
+                            </ion-datetime>
+                        </ng-template>
+                    </ion-modal>
+                </ion-item>
+                <ion-item *ngIf="valida('01') && !valida('02')">
+                    <ion-label color="tertiary">Fecha de inicio:</ion-label>
+                    <ion-button class="letra13" id="open-modal-sin-hora-ini" fill="clear" color="dark">{{fechaInicio ? (fechaInicio | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+                    <!-- <ion-modal id="date-modal" trigger="open-modal-sin-hora-ini" [keepContentsMounted]="true"> -->
+                    <ion-modal id="date-modal" trigger="open-modal-sin-hora-ini">
+                        <ng-template>
+                            <ion-datetime formControlName="fec_inicio" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios" [min]="fechaInicioPlan" [max]="fechaFinPlan"></ion-datetime>
+                        </ng-template>
+                    </ion-modal>
+                </ion-item>
+                <ion-item *ngIf="valida('03') && valida('04')">
+                    <ion-label color="tertiary">Fecha de término:</ion-label>
+                    <ion-button class="letra13" id="open-modal-fec-fin" fill="clear" color="dark">{{fechaTermino ? (fechaTermino | date:'dd/MM/yyyy HH:mm') : '00/00/0000 00:00'}}</ion-button>
+                    <!-- <ion-modal id="date-modal" trigger="open-modal-fec-fin" [keepContentsMounted]="true"> -->
+                    <ion-modal id="date-modal" trigger="open-modal-fec-fin">
+                        <ng-template>
+                            <ion-datetime formControlName="fec_termino" presentation="date-time" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios" [min]="fechaInicioPlan" [max]="fechaFinPlan">
+                                <span slot="time-label">Hora</span>
+                            </ion-datetime>
+                        </ng-template>
+                    </ion-modal>
+                </ion-item>
+                <ion-item *ngIf="valida('03') && !valida('04')">
+                    <ion-label color="tertiary">Fecha de término</ion-label>
+                    <ion-button class="letra13" id="open-modal-sin-hora-fin" fill="clear" color="dark">{{fechaTermino ? (fechaTermino | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+                    <!-- <ion-modal id="date-modal" trigger="open-modal-sin-hora-fin" [keepContentsMounted]="true"> -->
+                    <ion-modal id="date-modal" trigger="open-modal-sin-hora-fin">
+                        <ng-template>
+                            <ion-datetime formControlName="fec_termino" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios" [min]="fechaInicioPlan" [max]="fechaFinPlan"></ion-datetime>
+                        </ng-template>
+                    </ion-modal>
+                </ion-item>
+            </div>
+
+            <div *ngIf="!editaFechas">
+                <ion-item *ngIf="valida('01') && valida('02')">
+                    <ion-label color="tertiary">Fecha de inicio:</ion-label>
+                    <ion-label>{{fechaInicio ? (fechaInicio | date:'dd/MM/yyyy HH:mm') : '00/00/0000 00:00'}}</ion-label>
+                </ion-item>
+                <ion-item *ngIf="valida('01') && !valida('02')">
+                    <ion-label color="tertiary">Fecha de inicio:</ion-label>
+                    <ion-label>{{fechaInicio ? (fechaInicio | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-label>
+                </ion-item>               
+                <ion-item *ngIf="valida('03') && valida('04')">
+                    <ion-label color="tertiary">Fecha de término:</ion-label>
+                    <ion-label>{{fechaTermino ? (fechaTermino | date:'dd/MM/yyyy HH:mm') : '00/00/0000 00:00'}}</ion-label>
+                </ion-item>
+                <ion-item *ngIf="valida('03') && !valida('04')">
+                    <ion-label color="tertiary">Fecha de término:</ion-label>
+                    <ion-label>{{fechaTermino ? (fechaTermino | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-label>
+                </ion-item>
+            </div>
+    
+            <ion-item mode="ios" *ngIf="valida('05')">
+                <ion-label class="letra13" position="stacked" color="tertiary">Nombre del Taller / Feria / Proceso / Tema</ion-label>
+                <ion-textarea formControlName="txt_nombre_taller" aria-label="x" [autoGrow]="true" placeholder="Especifique"></ion-textarea>
+            </ion-item>
+    
+            <ion-item mode="ios" *ngIf="valida('06')">
+                <ion-label class="letra13" position="stacked" color="tertiary">Detalle de la actividad</ion-label>
+                <ion-textarea formControlName="txt_detalle_actividad" aria-label="x" [autoGrow]="true"></ion-textarea>
+            </ion-item>
+    
+            <ion-item mode="ios" *ngIf="valida('07')">
+                <ion-label class="letra13" position="stacked" color="tertiary">Resultados</ion-label>
+                <ion-textarea formControlName="txt_resultado" aria-label="x" [autoGrow]="true"></ion-textarea>
+            </ion-item>
+    
+            <ion-item mode="ios" *ngIf="valida('08')">
+                <ion-label class="letra13" position="stacked" color="tertiary">Observaciones y/o recomendaciones</ion-label>
+                <ion-textarea formControlName="txt_observacion" aria-label="x" [autoGrow]="true"></ion-textarea>
+            </ion-item>
+    
+            <ion-item mode="ios" *ngIf="valida('09')">
+                <ion-label class="letra13" position="stacked" color="tertiary">Descripción del estado situacional</ion-label>
+                <ion-textarea formControlName="txt_estado_situacional" aria-label="x" [autoGrow]="true"></ion-textarea>
+            </ion-item>
+    
+            <div *ngIf="valida('10')">
+                <ion-item mode="ios" >
+                    <ion-select formControlName="tip_concurso" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                        <div slot="label" class="letra13"><ion-text color="tertiary">Tipo de Concurso:</ion-text></div>
+                        <ion-select-option value="01">Intra NE</ion-select-option>
+                        <ion-select-option value="02">ERI</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item>
+                    <ion-input formControlName="txt_codigo_concurso" type="number" placeholder="000" class="ion-text-right">
+                        <div slot="label" class="letra13"><ion-text color="tertiary">Número de concurso:</ion-text></div>
+                    </ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-grid class="ion-no-padding ion-no-margin">
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="8" >
+                                <ion-text color="tertiary">Número de participantes presentados:</ion-text>
+                            </ion-col>
+                            <ion-col size="4" class="ion-justify-content-end">
+                                <ion-input formControlName="num_particip_presen_concurso" type="number" placeholder="0" class="ion-text-right"></ion-input>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item>
+                <ion-item>
+                    <ion-grid class="ion-no-padding ion-no-margin">
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="8" >
+                                <ion-text color="tertiary">Número de participantes seleccionados:</ion-text>
+                            </ion-col>
+                            <ion-col size="4" class="ion-justify-content-end">
+                                <ion-input formControlName="num_particip_selec_concurso" type="number" placeholder="0" class="ion-text-right"></ion-input>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item>
+            </div>
+        </div>
+
+        <div *ngIf="valida('11')"> 
+            <ion-item mode="ios" >
+                <ion-label color="tertiary">Tipo de Feria:</ion-label>
+                <ion-select formControlName="tip_feria" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                    <ion-select-option value="01">Local</ion-select-option>
+                    <ion-select-option value="02">Regional</ion-select-option>
+                    <ion-select-option value="03">Nacional</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </div>
+    </form>
+
+    <div *ngIf="ejecutada">
+        <div *ngIf="valida('11')"> 
+            <div>
+                <ion-text color="tertiary">
+                    <h6>Participantes</h6>
+                </ion-text>
+                <ion-item>
+                    <ion-label color="tertiary">ERI / Usuario</ion-label>
+                    <ion-label color="tertiary" class="ion-text-right">Monto de Venta</ion-label>
+                </ion-item>
+                <div *ngFor="let participacion of participacionFeria; let i=index">
+                    <ion-item-sliding>
+                        <!-- <ion-item [formGroup]="participacionForm"> -->
+                        <ion-item>
+                            <ion-grid  class="paddingRight paddingLeft">
+                                <ion-row>
+                                    <ion-col size="9" class="paddingLeft">
+                                        <ion-label>{{participacion.tip_participante_feria === 'E' ? participacion.txt_eri : participacion.txt_apellido_paterno + ' ' + participacion.txt_apellido_materno + ', ' + participacion.txt_nombres}}</ion-label>
+                                    </ion-col>
+                                    <ion-col size="3" class="paddingRight">
+                                        <ion-input [(ngModel)]="participacion.imp_venta" type="number" placeholder="S/." class="ion-text-right"></ion-input>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
+                        <ion-item-options *ngIf="!participacion.nid_act_ejecutada_det" side="end">  
+                            <ion-item-option color="primary" (click)="eliminarParticipacion(i)">Eliminar</ion-item-option>
+                        </ion-item-options>
+                    </ion-item-sliding>
+                </div>
+                <ion-item>
+                    <ion-label color="tertiary">Monto Total de Venta</ion-label>
+                    <ion-label color="tertiary" class="ion-text-right">{{calcularVentaFeria()}}</ion-label>
+                </ion-item>
+            </div>
+
+            <ion-chip color="primarytext" mode="ios" outline="true" (click)="agregarEri()">
+                <ion-label>Agregar ERI</ion-label>
+            </ion-chip>
+            <ion-chip color="primarytext" mode="ios" outline="true" (click)="agregarUsuario()">
+                <ion-label>Agregar Usuario</ion-label>
+            </ion-chip>
+        </div>
+
+        <div *ngIf="valida('12')">
+            <h5>Agentes evaluados</h5>
+            <div *ngFor="let evaluacion of agenteEvaluadoList; let i=index" >
+                <ion-item-sliding>
+                    <ion-item>
+                        <ion-grid  class="paddingRight paddingLeft">
+                            <ion-row>
+                                <ion-col size="9" class="paddingLeft">
+                                    <p>{{evaluacion.txt_apellido_paterno + ' ' + evaluacion.txt_apellido_materno + ', ' + evaluacion.txt_nombres}}</p>
+                                    <p>{{evaluacion.codigo_expediente}}</p>
+                                    <p>{{evaluacion.txt_funcion}}</p>
+                                </ion-col>
+                                <ion-col size="3" class="paddingRight">
+                                    <ion-input [(ngModel)]="evaluacion.num_puntaje" type="number" placeholder="0" class="ion-text-right" (ionChange)="calcularResultado(i)"></ion-input>
+                                    <p class="ion-text-right">{{evaluacion.txt_resultado}}</p>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
+                    <ion-item-options *ngIf="!evaluacion.nid_act_ejecutada_det" side="end">
+                        <ion-item-option color="primary" (click)="eliminarEvaluacion(i)">Eliminar</ion-item-option>
+                    </ion-item-options>
+                </ion-item-sliding>
+
+
+            </div>
+            <ion-chip color="primarytext" mode="ios" outline="true" (click)="agregarEvaluacion()">
+                <ion-label>Agregar Agente</ion-label>
+            </ion-chip>
+        </div>
+        
+        <div *ngIf="valida('13')">
+            <ion-item>
+                <ion-label color="tertiary">Visitas registradas:</ion-label>
+                <ion-label color="tertiary">{{contarVisitasAvTec()}}</ion-label>
+            </ion-item>
+            <h5>Seguimiento a Emprendimiientos</h5>
+            <div *ngFor="let eri of eriDetalleList; let i=index">
+                <!-- <div [formGroup]="eriForm"> -->
+                <ion-item-sliding>
+                    <ion-item>
+                        <ion-label class="francesa">{{i+1}}.- {{eri.txt_eri}}</ion-label>
+                    </ion-item>
+                    <ion-item-options *ngIf="!eri.nid_act_ejecutada_det">
+                        <ion-item-option color="primary" (click)="(i)">Eliminar</ion-item-option>
+                    </ion-item-options>
+                </ion-item-sliding>
+                
+                <ion-item>
+                    <ion-label color="tertiary">Fecha de visita:</ion-label>
+                    <ion-label>{{eri.fec_detalle ? (eri.fec_detalle | date:'dd/MM/yyyy HH:mm') : '00/00/0000 00:00'}}</ion-label>
+                </ion-item>
+                <ion-item mode="ios">
+                    <ion-select [(ngModel)]="eri.est_eri" class="ion-text-wrap" placeholder="Seleccione" mode="md" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                        <div slot="label" class="custom-label" >Estado del ERI:</div>
+                        <ion-select-option *ngFor="let item of estadosEri" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item mode="ios" *ngIf="validarEriCampos(i, 'causal')">
+                    <ion-select [(ngModel)]="eri.tip_causal_eri" class="ion-text-wrap" placeholder="Seleccione" mode="md" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                        <div slot="label" class="custom-label" >Causal del estado del ERI:</div>
+                        <ion-select-option *ngFor="let item of causalesEstadoEri" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item mode="ios">
+                    <ion-label class="letra13" position="stacked" color="tertiary">Observaciones y/o recomendaciones</ion-label>
+                    <ion-textarea [(ngModel)]="eri.txt_observacion" aria-label="x" [autoGrow]="true" maxlength="1000"></ion-textarea>
+                </ion-item>
+                <ion-item mode="ios">
+                    <ion-label class="letra13" position="stacked" color="tertiary">Descripción del estado situacional</ion-label>
+                    <ion-textarea [(ngModel)]="eri.txt_estado_situacional" aria-label="x" [autoGrow]="true" maxlength="1000"></ion-textarea>
+                </ion-item>
+                <ion-item *ngIf="validarEriCampos(i, 'otro')">
+                    <!-- <ion-label color="tertiary">Número de miembros activos:</ion-label> -->
+                    <ion-input [(ngModel)]="eri.num_miembros_activos_eri" type="number" placeholder="0" class="ion-text-right">
+                        <div slot="label" class="custom-label ion-text-left" >Número de miembros activos:</div>
+                    </ion-input>
+                </ion-item>
+                <!-- <ion-item mode="ios" *ngIf="valida('09')">
+                    <ion-label class="letra13" position="stacked" color="tertiary">Descripción del estado situacional</ion-label>
+                    <ion-textarea formControlName="txt_estado_situacional" aria-label="x" [autoGrow]="true"></ion-textarea>
+                </ion-item> -->
+                <ion-item mode="ios" *ngIf="validarEriCampos(i, 'otro')">
+                    <ion-label class="letra13" position="stacked" color="tertiary">¿Cuál es producto más importante?</ion-label>
+                    <ion-textarea [(ngModel)]="eri.txt_producto_eri" aria-label="x" [autoGrow]="true"></ion-textarea>
+                </ion-item>
+
+                <ion-item *ngIf="validarEriCampos(i, 'otro')">
+                    <!-- <ion-label color="tertiary">Producción valorizada en soles del producto más importante:</ion-label> -->
+                    <ion-input [(ngModel)]="eri.imp_producto_eri" type="number" placeholder="S/." class="ion-text-right">
+                        <div slot="label" class="custom-label ion-text-left" >Producción valorizada en soles del producto más importante:</div>
+                    </ion-input>
+                </ion-item>
+
+                <ion-item *ngIf="validarEriCampos(i, 'otro')">
+                    <!-- <ion-label color="tertiary">Total de ingresos por ventas:</ion-label> -->
+                    <ion-input [(ngModel)]="eri.imp_total_ventas_eri" type="number" placeholder="S/." class="ion-text-right">
+                        <div slot="label" class="custom-label ion-text-left" >Total de ingresos por ventas:</div>
+                    </ion-input>
+                </ion-item>
+
+                <ion-item *ngIf="validarEriCampos(i, 'otro')">
+                    <!-- <ion-label color="tertiary">Total de ingresos del producto más importante:</ion-label> -->
+                    <ion-input [(ngModel)]="eri.imp_total_producto_eri" type="number" placeholder="S/." class="ion-text-right">
+                        <div slot="label" class="custom-label ion-text-left" >Total de ingresos del producto más importante:</div>
+                    </ion-input>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label color="tertiary">Fotografías y georreferencia</ion-label>
+                </ion-item>
+                <app-fotos [fotos]="eri.fotosDetalle"></app-fotos>
+            </div>
+
+            <ion-chip color="primarytext" mode="ios" outline="true" (click)="agregarEriDetalle()">
+                <ion-label>Agregar ERI</ion-label>
+            </ion-chip>
+        </div>
+
+        <div *ngIf="valida('14')">
+            <ion-text color="tertiary">
+                <h6>Registro de Participantes</h6>
+            </ion-text>
+            <ion-chip color="primarytext" mode="ios" outline="true" (click)="seleccionarParticipantes()">
+                <ion-label>Seleccionar Participantes</ion-label>
+            </ion-chip>
+            <ion-item mode="ios">
+                <ion-label><ion-text color="tertiary">Participantes seleccionados:</ion-text> {{cantidad}}</ion-label>
+            </ion-item>
+        </div>
+
+        <div *ngIf="valida('15')">
+            <ion-item>
+                <ion-label color="tertiary">
+                    <h5>Seguimiento de avance de la tecnología:</h5>
+                    <h5>Número de registros: {{contarRegistrosAvTec()}}</h5>
+                    <h5>Número de visitas: {{contarVisitasAvTec()}}</h5>
+                </ion-label>
+            </ion-item>
+            
+            <ion-list #listaAvanceTec>
+                <!-- <div > -->
+                    <ion-item-sliding *ngFor="let avance of avanceTecnologia; let i=index">
+                        <ion-item (click)="registrarAvance(i)" detail>
+                            <ion-label>
+                                <h6><ion-text color="tertiary">DNI: </ion-text>{{avance.txt_documento_identidad}} -<ion-text color="tertiary">Fec. Visita: </ion-text> {{avance.fec_detalle | date:'dd/MM/yyyy HH:mm'}}</h6>
+                                <h6>{{avance.txt_apellido_paterno}} {{avance.txt_apellido_materno}}, {{avance.txt_nombres}}</h6>
+                                <h6>{{avance.txt_tecnologia}} - {{avance.txt_partida}}</h6>
+                                <ion-text color="primarytext" *ngIf="!avance.nid_avance"><h5>{{avance.est_detalle==='S' ? 'No registrado' : (avance.est_detalle==='R' ? 'Registrado Sin Enviar' : '')}} {{avance.avanceIncompleto ? ' - Incompleto' : ''}}</h5></ion-text>
+                                <ion-text color="tertiary" *ngIf="avance.nid_avance"><h5>Enviado</h5></ion-text>
+                            </ion-label>
+                        </ion-item>
+                        <ion-item-options *ngIf="!avance.nid_avance" side="end">
+                            <ion-item-option (click)="eliminarAvanceTec(i)">Eliminar</ion-item-option>
+                        </ion-item-options>
+                    </ion-item-sliding>
+                <!-- </div> -->
+            </ion-list>
+
+            <ion-item *ngIf="!actividad.id && actividad.id !== 0">
+                <ion-label color="primarytext">Guarde los datos de la actividad para poder agregar la información de las visitas realizadas.</ion-label>
+            </ion-item>
+
+            <div *ngIf="actividad.id || actividad.id === 0">
+
+                <ion-button  id="open-modal-data" mode="ios" fill="outline" (click)="agregarAvanceTec()" shape="round" size="small">Agregar</ion-button>
+              
+                <ion-modal id="modalAvance" #modalAvance trigger="open-modal-data" [isOpen]="avanceTecAgregar.seleccionado">
+                    <ng-template>
+                        <ion-content>
+                            <ion-toolbar class="ion-justify-content-center">
+                                <ion-label>Seleccione los datos</ion-label>
+                            </ion-toolbar>
+                            <ion-list>
+                                <ion-item mode="ios" >
+                                    <ion-select [(ngModel)]="avanceTecAgregar.codigo_expediente" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-select-popover-s'}">
+                                        <div class="margenSelect" slot="label"><ion-text color="tertiary">1. Proyecto:</ion-text></div>
+                                        <ion-select-option *ngFor="let proyecto of proyectoCodigoList" [value]="proyecto">{{proyecto}}</ion-select-option>
+                                    </ion-select>
+                                </ion-item>
+                                <ion-item detail="true" detail-icon="chevron-expand-outline">
+                                    <ion-label color="tertiary">2. Usuario:</ion-label>
+                                    <ion-button (click)="seleccionarUsuarioAvTec()" fill="clear" shape="round" color="tertiary" mode="ios">Seleccione</ion-button>
+                                    <!-- <ion-chip color="primarytext" mode="ios" outline="true" (click)="seleccionarUsuarioAvTec()">
+                                        <ion-label>Usuario</ion-label>
+                                    </ion-chip> -->
+                                </ion-item>
+                                <ion-item>
+                                    <ion-item>
+                                        <ion-label>{{avanceTecAgregar.txt_apellido_paterno}} {{avanceTecAgregar.txt_apellido_materno}}, {{avanceTecAgregar.txt_nombres}}</ion-label>
+                                    </ion-item>
+                                </ion-item>
+                                
+                                <ion-item detail="true" detail-icon="chevron-expand-outline">
+                                    <ion-label color="tertiary">3. Tecnología: </ion-label>
+                                    <ion-button (click)="seleccionarTecnologiaAvTec()" fill="clear" shape="round" color="tertiary" mode="ios">Seleccione</ion-button>
+                                </ion-item>
+                                <ion-item>
+                                    <ion-item>
+                                        <ion-label>{{avanceTecAgregar.txt_tecnologia}} - {{avanceTecAgregar.txt_partida}}</ion-label>
+                                    </ion-item>
+                                </ion-item>
+
+                                <ion-footer>
+                                    <ion-toolbar class="ion-justify-content-center">
+                                        <ion-grid fixed>
+                                            <ion-row class="ion-justify-content-center">
+                                                <ion-col size="6">
+                                                    <ion-button (click)="cancelarAvanceTec()" shape="round" size="small" mode="ios" color="primary">Cancelar</ion-button>
+
+                                                </ion-col>
+                                                <ion-col size="6">
+                                                    <ion-button [disabled]="botonAceptarModal" (click)="confirmarAvanceTec()" shape="round" size="small" mode="ios" color="primary">Aceptar</ion-button>
+
+                                                </ion-col>
+                                            </ion-row>
+                                        </ion-grid>
+                                        <!-- <ion-buttons slot="start"> -->
+                                        <!-- </ion-buttons> -->
+                                    </ion-toolbar>
+                                </ion-footer>
+                            </ion-list>
+                        </ion-content>
+                    </ng-template>
+                </ion-modal>
+            </div>
+            <!-- </ion-content> -->
+        </div>
+        
+        <div *ngIf="!valida('13')">
+            <h5 *ngIf="valida('31') || valida('32') || valida('33')">Fotografías y georreferencia</h5>
+            <app-fotos [fotos]="fotos"></app-fotos>
+        </div>
+    </div>
+
+</ion-content>
+<ion-footer mode="ios" translucent="true">
+    <ion-toolbar mode="ios">
+        <ion-row >
+            <ion-col class="ion-text-center">
+                <ion-button shape="round" color="primary" (click)="guardar()">Guardar</ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

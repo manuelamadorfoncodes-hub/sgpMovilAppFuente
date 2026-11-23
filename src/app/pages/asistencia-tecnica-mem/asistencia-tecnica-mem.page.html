@@ -1,0 +1,35 @@
+<app-header-modal titulo="Asistencia Técnica MEM" (cerrar)="salir()"></app-header-modal>
+
+<ion-content [fullscreen]="true">
+    <ion-card *ngFor="let ficha of fichaList; let i=index">
+        <ion-card-header>
+            <ion-card-title>{{ficha.tituloFicha}}</ion-card-title>
+            <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
+        </ion-card-header>
+
+        <ion-card-content>
+
+            <ion-item lines="full" mode="ios">
+                <ion-label class="ion-text-wrap">
+                    <h5><ion-text color="tertiary">Ultima ficha presentada</ion-text></h5>
+                    <h5>{{ficha.ultimaFicha ? 'Fecha: ' + (ficha.ultimaFicha.fec_visita | date:'dd/MM/yyyy') : 'No tiene'}}</h5>
+                </ion-label>
+                <ion-button *ngIf="ficha.ultimaFicha" (click)="registrar(i, true)" color="primarytext" fill="outline" shape="round" slot="end">Consultar</ion-button>
+            </ion-item>
+            <ion-item-sliding #slidingItem mode="ios">
+                <ion-item lines="full">
+                    <ion-label class="ion-text-wrap">
+                        <h5><ion-text color="tertiary">Ficha registrada</ion-text></h5>
+                        <h5>{{ficha.nuevaFicha ? 'Fecha: ' + (ficha.nuevaFicha.fec_visita | date:'dd/MM/yyyy') : 'No tiene'}}</h5>
+                        <h5><ion-text color="danger">{{ficha.cambioFicha ? 'Cambio sin enviar' + (ficha.nuevaFicha.flg_completa ? '' : '(Incompleta)') : ''}}</ion-text></h5>
+                    </ion-label>
+
+                    <ion-button (click)="registrar(i)" color="primarytext" fill="outline" shape="round" slot="end">{{ficha.nuevaFicha ? 'Editar' : 'Registrar'}}</ion-button>
+                </ion-item>
+                <ion-item-options *ngIf="ficha.cambioFicha && ficha.nuevaFicha && !ficha.nuevaFicha.nid_ficha">
+                    <ion-item-option (click)="eliminar(i, slidingItem)" color="danger">Eliminar</ion-item-option>
+                </ion-item-options>
+          </ion-item-sliding>
+        </ion-card-content>
+    </ion-card>
+</ion-content>

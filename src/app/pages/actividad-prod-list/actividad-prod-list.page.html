@@ -1,0 +1,61 @@
+<app-header-modal titulo="Actividades Productivas" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <ion-text *ngIf="linea === 1" color="primarytext" >
+        <h6 class="padding-left">Línea de salida</h6>
+    </ion-text>
+
+    <ion-list-header *ngIf="!consulta" mode="md">
+        <ion-label></ion-label>
+        <ion-chip outline="true" color="primarytext" (click)="agregarActividad()">
+            <ion-label>Agregar Actividad Productiva</ion-label>
+        </ion-chip>
+    </ion-list-header>
+
+    <ion-list #listaActividadProd>
+        <div *ngFor="let actividadProd of actividadesProductivas; let i=index">
+            <ion-item-divider (click)="abrirOpciones(actividadProd, i)" detail>
+                <ion-label color="tertiary" class="ion-text-wrap">
+                    <h3>{{actividadProd.txt_actividad}}</h3>
+                    <ion-text color="danger">
+                        <h3>{{actividadProd.cambioFoto ? 'Cambio Foto' : ''}} {{actividadProd.incompleto ? '(Incompleto)' : ''}} </h3>
+                    </ion-text>
+                </ion-label>
+            </ion-item-divider>
+            <ion-item-sliding *ngFor="let actividad of actividadProd.actividadDetalle; let idx=index">
+                <ion-item (click)="abrirOpciones(actividadProd, i, actividad, idx, true)" mode="ios" detail>
+                    <ion-label class="ion-text-wrap">
+                        <!-- <ion-text color="tertiary"> -->
+                        <h3>{{actividad.txt_producto}}</h3>
+                        <h3>{{actividad.txt_producto_otro}}</h3>
+                        <h3>{{actividad.txt_actividad_otra}}</h3>
+                        <!-- </ion-text> -->
+                        <p>{{actividad.txt_actividad}}</p>
+                        <ion-text color="danger">
+                            <h5>{{actividad.cambio ? '- Cambio' : ''}} {{actividad.incompleto ? '(Incompleto)' : ''}}</h5>
+                        </ion-text>
+                    </ion-label>
+                    <!-- <ion-icon slot="end" name="add"></ion-icon> -->
+                    <!-- <ion-icon slot="end" name="add"></ion-icon> -->
+                </ion-item>
+                <ion-item-options side="end" mode="ios">
+                    <!-- <ion-item-option (click)="eliminarCambio(tecnologia, i)" *ngIf="tecnologia.solicitudTecnologia && !usuario.nid_solicitud"> -->
+                    <ion-item-option (click)="eliminarActividad(i, idx)" *ngIf="!actividad.nid_proyecto_act_prod">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                <ion-col>Eliminar</ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <ion-col>Actividad</ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <ion-col>Productiva</ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item-option>
+                </ion-item-options>
+            </ion-item-sliding>
+        </div>
+    </ion-list>
+
+</ion-content>

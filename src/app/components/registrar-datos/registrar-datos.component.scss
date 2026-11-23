@@ -1,0 +1,62 @@
+.modal {
+    background: rgba(192, 192, 192, 0.1);
+    // --color: var(--ion-color-tertiary);
+    // --keyboard-offset: 0px;
+    // --offset-bottom: 0px;
+    // --offset-top: 0px;
+    // padding-bottom: 10px;
+    // padding-right: 10px;
+    // padding-left: 10px;
+    // padding-top: 10px;
+    border-radius: 25px;
+}
+
+.contenido {
+    // background: rgba(192, 192, 192, 0.1);
+    // --color: var(--ion-color-tertiary);
+    // --keyboard-offset: 0px;
+    // --offset-bottom: 0px;
+    // --offset-top: 0px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 10px;
+    // border-radius: 16px;
+}
+
+ion-title {
+    // --color: #3880ff;
+    font-size: 16px;
+}
+
+ion-input {
+    --background: var(--ion-color-light);
+    // --color: #ffffff;
+    --padding-bottom: -5px;
+    --padding-end: -5px;
+    --padding-start: -5px;
+    --padding-top: -5px;
+    font-size: 14px;
+    // height: 20px !important;
+    // margin-top: 0px !important;
+    // padding-top: 0px !important;
+    // padding-bottom: 0px !important;
+    // margin-bottom: 0px !important;
+    // --placeholder-color: #3880ff;
+    // --placeholder-font-style: initial;
+    // --placeholder-font-weight initial;
+    // --placeholder-opacity 0.5;
+}
+
+// .item-ios.item-block .item-inner {
+//     padding-right: 8px; /*ignoren el padding, lo importante es el border-bottom*/
+//     padding-right: 8px;
+//     border-bottom: none;
+// }
+//     // Para Android y en general
+    
+// .item-md.item-block .item-inner {
+//     padding-right: 8px;
+//     padding-right: 8px;
+//     border-bottom: none; 
+// }

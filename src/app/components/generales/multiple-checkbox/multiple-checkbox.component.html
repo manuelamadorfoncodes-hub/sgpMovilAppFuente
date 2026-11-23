@@ -1,0 +1,45 @@
+<ion-item>
+    <ion-grid *ngIf="!dobleColumna">
+        <ion-row>
+            <ion-col size="12">
+                <ion-text color="tertiary" class="ion-text-wrap letra14">{{etiqueta}}</ion-text>
+            </ion-col>
+        </ion-row>
+        <ion-row *ngFor="let item of items">
+            <ion-col size="10">
+                <ion-text class="ion-text-wrap letra14">{{item[valorTexto]}}</ion-text>
+            </ion-col>
+            <ion-col size="2" class="ion-text-right">
+                <div>
+                    <ion-checkbox slot="start" color="primary" [(ngModel)]="item.seleccionado" (ionChange)="actualizaValor()"></ion-checkbox>
+                </div>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <ion-grid *ngIf="dobleColumna">
+        <ion-row>
+            <ion-col size="12">
+                <ion-text color="tertiary" class="ion-text-wrap letra14">{{etiqueta}}</ion-text>
+            </ion-col>
+        </ion-row>
+        <ion-row *ngFor="let itemDoble of lista">
+            <ion-col size="1" class="ion-text-left">
+                <div>
+                    <ion-checkbox slot="start" color="primary" [(ngModel)]="itemDoble.izquierda.seleccionado" (ionChange)="actualizaValor()"></ion-checkbox>
+                </div>
+            </ion-col>
+            <ion-col size="5">
+                <ion-text class="ion-text-wrap letra14">{{itemDoble.izquierda[valorTexto]}}</ion-text>
+            </ion-col>
+            <ion-col size="1" class="ion-text-left" *ngIf="itemDoble.derecha">
+                <div>
+                    <ion-checkbox slot="start" color="primary" [(ngModel)]="itemDoble.derecha.seleccionado" (ionChange)="actualizaValor()"></ion-checkbox>
+                </div>
+            </ion-col>
+            <ion-col size="5" *ngIf="itemDoble.derecha">
+                <ion-text class="ion-text-wrap letra14">{{itemDoble.derecha[valorTexto]}}</ion-text>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-item>

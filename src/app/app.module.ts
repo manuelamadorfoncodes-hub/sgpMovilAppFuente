@@ -1,0 +1,32 @@
+import { NgModule } from '@angular/core'
+import { BrowserModule } from '@angular/platform-browser'
+import { RouteReuseStrategy } from '@angular/router'
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
+
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular'
+import { IonicStorageModule } from '@ionic/storage-angular'
+
+import { AppRoutingModule } from './app-routing.module'
+import { AppComponent } from './app.component'
+import { JwtInterceptor } from './helpers/jwt.interceptor'
+import { ErrorInterceptor } from './helpers/error.interceptor'
+import { MenuModule } from './components/menu/menu.module'
+
+@NgModule({
+    declarations: [AppComponent],
+    imports: [
+        BrowserModule,
+        IonicModule.forRoot(),
+        AppRoutingModule,
+        IonicStorageModule.forRoot(),
+        HttpClientModule,
+        MenuModule,
+    ],
+    providers: [
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule {}

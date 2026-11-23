@@ -1,0 +1,736 @@
+<app-header-modal titulo="Asistencia Técnica MEM" (cerrar)="salir()"></app-header-modal>
+
+<ion-content [fullscreen]="true">
+
+    <ion-item-divider md="ios">
+        <ion-label class="ion-text-wrap" color="primarytext">{{titulo}}</ion-label>
+    </ion-item-divider>
+   
+    <ion-item-divider md="ios">
+        <ion-label class="ion-text-wrap" color="primarytext">1.	Datos generales</ion-label>
+    </ion-item-divider>
+
+    <ion-item  mode="ios">
+        <ion-label class="ion-text-wrap">
+            <h6><ion-text color="tertiary">{{usuario.txt_apellido_paterno}} {{usuario.txt_apellido_materno}}, {{usuario.txt_nombres}}</ion-text></h6>
+            <h6><ion-text color="tertiary">DNI: {{usuario.txt_documento_identidad}}</ion-text></h6>
+            <h6><ion-text color="tertiary">Celular: {{usuario.txt_telefono}}</ion-text></h6>
+            <h6><ion-text color="tertiary">Linea de negocio: {{ficha.txt_linea_negocio}}</ion-text></h6>
+        </ion-label>
+    </ion-item>
+    <ion-item  mode="ios">
+        <ion-label class="ion-text-wrap">
+            <h3><ion-text color="tertiary">Fecha de visita: </ion-text>{{ficha.fec_visita | date:'dd/MM/yyyy'}}</h3>
+        </ion-label>
+    </ion-item>
+    <!-- <app-custom-select-tipo idSelect="selectLineaNegocio" etiqueta="Línea de negocio: " [items]="lineaNegocio" [(valor)]="ficha.cod_linea_negocio"></app-custom-select-tipo> -->
+
+    <!----------------------------------->
+    <div *ngIf="ficha.cod_ficha === '01'">
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">2. Seguimiento a mejoras implementadas</ion-label>
+        </ion-item-divider>
+        
+        <div *ngFor="let mejora of mejoras, let i=index">
+            <ion-item-divider>
+                <ion-label color="primarytext">MEJORA {{i + 1}} - {{mejora.nid_mejora ? ('ID: ' + mejora.nid_mejora) : '' }}</ion-label>
+            </ion-item-divider>
+            <ion-item mode="ios">
+                <!-- <ion-label class="letra14"><ion-text color="tertiary">Contenido temático: </ion-text>{{mejora.txt_tipo_mejora}}</ion-label> -->
+                <ion-label class="letra14">Contenido temático: {{mejora.txt_tipo_mejora}}</ion-label>
+            </ion-item>
+            <ion-item mode="ios">
+                <!-- <ion-label class="letra14"><ion-text color="tertiary">Mejora sugerida: </ion-text>{{mejora.txt_mejora}}</ion-label> -->
+                <ion-label class="letra14">Mejora sugerida: {{mejora.txt_mejora}}</ion-label>
+            </ion-item>
+            <ion-item mode="md">
+                <ion-select class="select-padding" [(ngModel)]="mejora.est_mejora" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                    <div slot="label" class="custom-label-input">Estado de Implementación</div>
+                    <ion-select-option *ngFor="let item of estados" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item mode="ios">
+                <ion-textarea [(ngModel)]="mejora.txt_observacion" placeholder="Especifique" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                    <div slot="label" class="custom-label-stacked">Observaciones</div>
+                </ion-textarea>
+            </ion-item>
+        </div>
+        <ion-chip *ngIf="!consulta" color="primary" mode="ios" outline="true" (click)="agregarMejora()">
+            <ion-label>Agregar mejora</ion-label>
+        </ion-chip>
+
+        <!-- MODAL AGREGAR MEJORA -->
+        <ion-popover class="modal-s" [isOpen]="isAgregaMejora" (willDismiss)="cerrarAgregarMejora()" show-backdrop="true" mode="ios"> 
+            <ng-template>
+                <ion-header>
+                    <!-- <ion-label color="primarytext" class="ion-text-center">Agregar nueva foto al reporte</ion-label> -->
+                    <ion-toolbar class="ion-text-center">
+                        <ion-label color="primarytext">Agregar nueva mejora</ion-label>
+                    </ion-toolbar>
+                </ion-header>
+                <div class="modal-agregar">
+                    <br>
+                    <ion-select [(ngModel)]="datoTipoMejora" label="Contenido temático" label-placement="floating" fill="outline" interface="popover" mode="md">
+                        <ion-select-option *ngFor="let resp of tipoMejoraList" [value]="resp.cod_tipo" class="ion-text-wrap">{{resp.txt_tipo}}</ion-select-option>
+                    </ion-select>
+                    <br>
+                    <ion-textarea [(ngModel)]="datoMejora" label="¿Qué mejora fue sugerida?" labelPlacement="floating" fill="outline" color="primary" [autoGrow]="true" mode="md" maxlength="100"></ion-textarea>
+                    <br>
+                </div>
+                <ion-footer mode="ios">
+                    <ion-toolbar>
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                <ion-col size="6" class="ion-text-center">
+                                    <ion-button class="letra-mediana" (click)="cerrarAgregarMejora()" [strong]="true" expand="block" fill="clear" size="small">Cancelar</ion-button>
+                                </ion-col>
+                                <ion-col size="6" class="ion-text-center">
+                                    <ion-button class="letra-mediana" (click)="aceptarMejora()" [strong]="true" expand="block" fill="clear" size="small">Aceptar</ion-button>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-toolbar>
+                </ion-footer>
+            </ng-template>
+        </ion-popover>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">3. Recomendaciones</ion-label>
+        </ion-item-divider>
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_recomendacion" labelPlacement="stacked" placeholder="Recomendaciones" [autoGrow]="true" maxlength="300">
+            </ion-textarea>
+        </ion-item>
+    </div>
+
+    <!----------------------------------->
+    <div *ngIf="ficha.cod_ficha === '02'">
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">2.	Gestión administrativa y operativa</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_gestion_ingresos" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">a.	¿Registra ingresos y egresos del negocio?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_gestion_formato" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">b.	¿Cuenta con un formato o cuaderno para dicho registro?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item> 
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_gestion_tareas" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">c.	¿Organiza sus tareas del negocio?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.flg_gestion_tareas == '1'" mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_gestion_frecuencia" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <div slot="label" class="custom-label-input">c.1. ¿Con qué frecuencia lo hace?</div>
+                <ion-select-option *ngFor="let item of frecuencia" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_gestion_observacion" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones y recomendaciones</div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">3.	Educación financiera y acceso a servicios</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_edu_fin_dinero" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">a.	¿Diferencia entre el dinero del negocio y el dinero personal?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_edu_fin_institucion" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">b.	¿Conoce instituciones que otorgan créditos para negocios?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item> 
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_edu_fin_documentos" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">c.	¿Cuenta con documentos básicos para solicitar un préstamo?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_edu_fin_observacion" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones y recomendaciones</div>
+            </ion-textarea>
+        </ion-item>
+        
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">4.	Marketing digital y comercialización</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_marketing_redes" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">a.	¿Utiliza redes sociales para promocionar su negocio?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <div *ngIf="ficha.flg_marketing_redes == '1'">
+            <!-- <app-multiple-checkbox etiqueta="a.1. ¿Qué redes utiliza?" [items]="redes" [(valor)]="ficha.txt_tip_marketing_redes" [dobleColumna]="true"></app-multiple-checkbox> -->
+            <ion-item moode="ios">
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="custom-padding">
+                        <ion-col size="12">
+                            <ion-text color="tertiary" class="ion-text-wrap letra14">a.1. ¿Qué redes utiliza?</ion-text>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row class="custom-padding">
+                        <ion-col size="1">
+                            <div>
+                                <ion-checkbox [(ngModel)]="ficha.flg_facebook" slot="start" color="primary"  ></ion-checkbox>
+                            </div>
+                        </ion-col>
+                        <ion-col size="11">
+                            <ion-text class="ion-text-wrap letra14">Facebook</ion-text>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="ficha.flg_facebook" class="custom-padding">
+                        <ion-col size="12">
+                            <input [(ngModel)]="ficha.txt_link_facebook" class="custom-input" type="text" placeholder="Ingrese el link">
+                        </ion-col>
+                    </ion-row>
+                    <ion-row class="custom-padding">
+                        <ion-col size="1">
+                            <div>
+                                <ion-checkbox [(ngModel)]="ficha.flg_whatsapp" slot="start" color="primary"  ></ion-checkbox>
+                            </div>
+                        </ion-col>
+                        <ion-col size="11">
+                            <ion-text class="ion-text-wrap letra14">WhatsApp</ion-text>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="ficha.flg_whatsapp" class="custom-padding">
+                        <ion-col size="12">
+                            <input [(ngModel)]="ficha.txt_link_whatsapp" class="custom-input" type="text" placeholder="Ingrese el link">
+                        </ion-col>
+                    </ion-row>
+                    <ion-row class="custom-padding">
+                        <ion-col size="1">
+                            <div>
+                                <ion-checkbox [(ngModel)]="ficha.flg_instagram" slot="start" color="primary"  ></ion-checkbox>
+                            </div>
+                        </ion-col>
+                        <ion-col size="11">
+                            <ion-text class="ion-text-wrap letra14">Instagram</ion-text>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="ficha.flg_instagram" class="custom-padding">
+                        <ion-col size="12">
+                            <input [(ngModel)]="ficha.txt_link_instagram" class="custom-input" type="text" placeholder="Ingrese el link">
+                        </ion-col>
+                    </ion-row>
+                    <ion-row class="custom-padding">
+                        <ion-col size="1">
+                            <div>
+                                <ion-checkbox [(ngModel)]="ficha.flg_tiktok" slot="start" color="primary"  ></ion-checkbox>
+                            </div>
+                        </ion-col>
+                        <ion-col size="11">
+                            <ion-text class="ion-text-wrap letra14">TikTok</ion-text>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="ficha.flg_tiktok" class="custom-padding">
+                        <ion-col size="12">
+                            <input [(ngModel)]="ficha.txt_link_tiktok" class="custom-input" type="text" placeholder="Ingrese el link">
+                        </ion-col>
+                    </ion-row>
+                    <ion-row class="custom-padding">
+                        <ion-col size="1">
+                            <div>
+                                <ion-checkbox [(ngModel)]="ficha.flg_otra_red_social" slot="start" color="primary"  ></ion-checkbox>
+                            </div>
+                        </ion-col>
+                        <ion-col size="11">
+                            <ion-text class="ion-text-wrap letra14">Otra</ion-text>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="ficha.flg_otra_red_social" class="custom-padding">
+                        <ion-col size="12">
+                            <input [(ngModel)]="ficha.txt_otra_red_social" class="custom-input" type="text" placeholder="Especifique">
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+        </div>
+        <!-- <ion-item *ngIf="ficha.flg_marketing_redes == '1' && ficha.txt_tip_marketing_redes?.includes('99')">
+            <ion-input [(ngModel)]="ficha.txt_otra_red_social" type="text" placeholder="Especifique"></ion-input>
+        </ion-item> -->
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_marketing_tecnicas" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">b.	¿Aplica técnicas de promoción o ventas?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_marketing_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones y recomendaciones</div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">5.	Formalización del emprendimiento</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_formal_ruc" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">a.	¿Su emprendimiento cuenta con RUC?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.flg_formal_ruc === '1'">
+            <ion-input [(ngModel)]="ficha.txt_ruc" placeholder="00000000000" class="ion-text-right" maxlength="11" (ionInput)="onInput($event)" #ionInputEl>
+                <div slot="label" class="custom-label-input">Número de RUC: </div>
+            </ion-input>
+        </ion-item>
+        <ion-item *ngIf="ficha.flg_formal_ruc == '1'" mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_formal_regimen" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <div slot="label" class="custom-label-input">a.1. ¿Es RUS, Régimen General, MYPE Tributario u otro?</div>
+                <ion-select-option *ngFor="let item of regimen" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.flg_formal_ruc == '1' && ficha.tip_formal_regimen?.includes('99')">
+            <ion-input [(ngModel)]="ficha.txt_otro_regimen" type="text" placeholder="Especifique"></ion-input>
+        </ion-item>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_formal_tramite" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">b.	¿Ha iniciado o completado algún trámite de formalización?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item> 
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_formal_observacion" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones y recomendaciones</div>
+            </ion-textarea>
+        </ion-item>
+    </div>
+
+    <!----------------------------------->
+    <div *ngIf="ficha.cod_ficha === '03'">
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">2.	Organización y participación en ferias comerciales</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_conoce_preparativos" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">a.	¿Conoce los preparativos necesarios para participar en una feria comercial?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_sabe_organizar" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">b.	¿Sabe organizar la presentación de su producto o stand?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item> 
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_demuestra_habilidades" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">c.	¿Demuestra habilidades para la atención al cliente y técnicas de venta?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_ferias_observacion" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones y recomendaciones</div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">3.	Cadenas productivas</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_identifica_eslabon" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">a.	¿Sabe identificar el eslabón de la cadena productiva en el que se encuentra su emprendimiento?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.flg_identifica_eslabon =='1'" mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_eslabon" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <div slot="label" class="custom-label-input">a.1. ¿A cuál pertenece?</div>
+                <ion-select-option *ngFor="let item of eslabon" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.flg_identifica_eslabon =='1' && ficha.tip_eslabon === '99'">
+            <ion-input [(ngModel)]="ficha.txt_otro_eslabon" type="text" placeholder="Especifique"></ion-input>
+        </ion-item>
+        <div *ngIf="ficha.flg_identifica_eslabon == '1'">
+            <app-multiple-checkbox etiqueta="a.2. Evidencias de acuerdo al eslabón al cual pertenece" [items]="evidencia" [(valor)]="ficha.txt_tip_evidencia_eslabon" [dobleColumna]="true"></app-multiple-checkbox>
+        </div>
+        <ion-item *ngIf="ficha.flg_identifica_eslabon =='1' && ficha.txt_tip_evidencia_eslabon?.includes('99')">
+            <ion-input [(ngModel)]="ficha.txt_otra_evidencia" type="text" placeholder="Especifique"></ion-input>
+        </ion-item>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_ventajas_integrar" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">b.	¿Conoce las ventajas de integrarse a organizaciones o alianzas con otros emprendedores?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item> 
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_cadena_observacion" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones y recomendaciones</div>
+            </ion-textarea>
+        </ion-item>
+        
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">4.	Entidades y/o asociaciones que están relacionadas con el desarrollo de emprendimientos</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_identifica_entidad" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">a.	¿Identifica alguna entidad o asociación que apoye el desarrollo de emprendimientos?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <div *ngIf="ficha.flg_identifica_entidad === '1'">
+
+            <ion-item>
+                <ion-grid>
+                    <ion-row>
+                        <ion-text color="tertiary">b. Seleccionar y especificar el nombre de las entidades o asociaciones que apoyan al emprendimiento.</ion-text>
+                    </ion-row>
+                    <ion-row>
+                        <ion-checkbox labelPlacement="end" justify="start" [(ngModel)]="ficha.flg_camara_comercio">Cámara de comercio</ion-checkbox>
+                    </ion-row>
+                    <ion-row>
+                        <ion-checkbox labelPlacement="end" justify="start" [(ngModel)]="ficha.flg_ong">ONG</ion-checkbox>
+                        <ion-input *ngIf="ficha.flg_ong" type="text" [(ngModel)]="ficha.txt_ong" placeholder="Especifique nombre ONG" ></ion-input>
+                    </ion-row>
+                    <ion-row>
+                        <ion-checkbox labelPlacement="end" justify="start" [(ngModel)]="ficha.flg_municipalidad">Municipalidad</ion-checkbox>
+                        <ion-input *ngIf="ficha.flg_municipalidad" type="text" [(ngModel)]="ficha.txt_municipalidad" placeholder="Especifique nombre municipalidad"></ion-input>
+                    </ion-row>
+                    <ion-row>
+                        <ion-checkbox labelPlacement="end" justify="start" [(ngModel)]="ficha.flg_otra_entidad">Otro</ion-checkbox>
+                        <ion-input *ngIf="ficha.flg_otra_entidad" type="text" [(ngModel)]="ficha.txt_otra_entidad" placeholder="Especifique el nombre"></ion-input>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+            <ion-item>
+                <ion-label color="tertiary" class="letra14 ion-text-wrap">c.	¿De qué manera se encuentra vinculada con la(s) entidad(es) o asociación(es) que identificó?</ion-label>
+            </ion-item>
+            <ion-item mode="md">
+                <ion-select class="select-padding" [(ngModel)]="ficha.tip_miembro_activo" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                    <div slot="label" class="custom-label-input">c.1. ¿Participa como miembro activo?</div>
+                    <ion-select-option *ngFor="let item of miembro" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <app-multiple-checkbox etiqueta="c.2. ¿Cuáles son los beneficios o programas a los que accede?" [items]="beneficio" [(valor)]="ficha.txt_tip_beneficio" [dobleColumna]="true"></app-multiple-checkbox>
+            <ion-item *ngIf="ficha.txt_tip_beneficio?.includes('99')">
+                <ion-input [(ngModel)]="ficha.txt_otro_beneficio" type="text" placeholder="Especifique"></ion-input>
+            </ion-item>
+            <app-multiple-checkbox etiqueta="d.	¿Cuáles son las herramientas prácticas para contactarse con dicha(s) entidad(es)?" [items]="herramienta" [(valor)]="ficha.txt_tip_contacto" [dobleColumna]="true"></app-multiple-checkbox>
+            <ion-item *ngIf="ficha.txt_tip_contacto?.includes('99')">
+                <ion-input [(ngModel)]="ficha.txt_otro_contacto" type="text" placeholder="Especifique"></ion-input>
+            </ion-item>
+        </div>
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_entidad_observacion" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones y recomendaciones</div>
+            </ion-textarea>
+        </ion-item>
+    </div>
+
+    <!----------------------------------->
+    <div *ngIf="ficha.cod_ficha === '04'">
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">2.	Verificación de adecuaciones realizadas con materiales del proyecto.</ion-label>
+        </ion-item-divider>
+        
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="dark">Instalación eléctrica segura y funcional</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_electricidad_instalado" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">A. ¿Está instalado y en uso?</div>
+                <ion-select-option *ngFor="let item of respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.tip_electricidad_instalado === '01'" mode="md">
+            <ion-select [(ngModel)]="ficha.flg_electricidad_correcto" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">B. ¿Correctamente instalado?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>        
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_electricidad_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones</div>
+            </ion-textarea>
+        </ion-item>
+        
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="dark">Elementos de mejora superficial (pintura, estanterías, etc.)</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_mejora_instalado" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">A. ¿Está instalado y en uso?</div>
+                <ion-select-option *ngFor="let item of respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.tip_mejora_instalado === '01'" mode="md">
+            <ion-select [(ngModel)]="ficha.flg_mejora_correcto" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">B. ¿Correctamente instalado?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>        
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_mejora_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones</div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="dark">Mobiliario instalado adecuadamente (mesas, sillas, repisas)</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_mobiliario_instalado" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">A. ¿Está instalado y en uso?</div>
+                <ion-select-option *ngFor="let item of respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.tip_mobiliario_instalado === '01'" mode="md">
+            <ion-select [(ngModel)]="ficha.flg_mobiliario_correcto" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">B. ¿Correctamente instalado?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>        
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_mobiliario_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones</div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="dark">División funcional del espacio (producción, atención, almacenamiento, etc.)</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_division_instalado" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">A. ¿Está instalado y en uso?</div>
+                <ion-select-option *ngFor="let item of respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.tip_division_instalado === '01'" mode="md">
+            <ion-select [(ngModel)]="ficha.flg_division_correcto" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">B. ¿Correctamente instalado?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>        
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_division_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones</div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="dark">Orden y limpieza del espacio</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_orden_instalado" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">A. ¿Está instalado y en uso?</div>
+                <ion-select-option *ngFor="let item of respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.tip_orden_instalado === '01'" mode="md">
+            <ion-select [(ngModel)]="ficha.flg_orden_correcto" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">B. ¿Correctamente instalado?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>        
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_orden_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones</div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="dark">Materiales del proyecto en uso y con el fin previsto</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_materiales_instalado" placeholder="Seleccione" interface="popover" (ionChange)="actualizaConclusion()" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">A. ¿Está instalado y en uso?</div>
+                <ion-select-option *ngFor="let item of respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.tip_materiales_instalado === '01'" mode="md">
+            <ion-select [(ngModel)]="ficha.flg_materiales_correcto" placeholder="Seleccione" interface="popover" (ionChange)="actualizaConclusion()" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">B. ¿Correctamente instalado?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>        
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_materiales_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones</div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="dark">Adecuaciones permiten uso de activos próximos a entregarse</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.tip_adecuacion_instalado" placeholder="Seleccione" interface="popover" (ionChange)="actualizaConclusion()" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">A. ¿Está instalado y en uso?</div>
+                <ion-select-option *ngFor="let item of respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="ficha.tip_adecuacion_instalado === '01'" mode="md">
+            <ion-select [(ngModel)]="ficha.flg_adecuacion_correcto" placeholder="Seleccione" interface="popover" (ionChange)="actualizaConclusion()" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">B. ¿Correctamente instalado?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>        
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_adecuacion_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones</div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="dark">Otro (especificar): </ion-label>
+        </ion-item-divider>
+        <ion-item mode="ios">
+            <ion-input [(ngModel)]="ficha.txt_otra_adecuac_nombre" labelPlacement="stacked" placeholder="Especifique"></ion-input>
+        </ion-item>
+        <div *ngIf="ficha.txt_otra_adecuac_nombre">
+            <ion-item mode="md">
+                <ion-select class="select-padding" [(ngModel)]="ficha.tip_otra_adecuac_instalado" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                    <div slot="label" class="custom-label-input">A. ¿Está instalado y en uso?</div>
+                    <ion-select-option *ngFor="let item of respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="ficha.tip_otra_adecuac_instalado === '01'" mode="md">
+                <ion-select [(ngModel)]="ficha.flg_otra_adecuac_correcto" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                    <div slot="label" class="custom-label-input">B. ¿Correctamente instalado?</div>
+                    <ion-select-option value="1">Sí</ion-select-option>
+                    <ion-select-option value="0">No</ion-select-option>
+                </ion-select>
+            </ion-item>        
+            <ion-item>
+                <ion-textarea [(ngModel)]="ficha.txt_otra_adecuac_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                    <div slot="label" class="custom-label-stacked">Observaciones</div>
+                </ion-textarea>
+            </ion-item>
+        </div>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">3.	Conclusión técnica.</ion-label>
+        </ion-item-divider>
+        <div *ngIf="ficha.tip_materiales_instalado || ficha.tip_otra_adecuac_instalado">
+            <ion-item>
+                <ion-label class="ion-text-wrap letra14">El espacio {{ficha.flg_cumple === '1' ? 'CUMPLE' : 'NO CUMPLE'}} con las condiciones mínimas requeridas para operar como centro de producción, transformación y/o comercialización</ion-label>
+            </ion-item>
+            <ion-item>
+                <ion-label class="letra14"><ion-text color="tertiary">Se recomienda: </ion-text>{{ficha.txt_recomienda}}</ion-label>
+            </ion-item>
+        </div>
+    </div>
+    
+    <!----------------------------------->
+    <div *ngIf="ficha.cod_ficha === '05'">
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">2.	Estado de los activos productivos.</ion-label>
+        </ion-item-divider>
+        <div *ngFor="let activo of activos; let i=index">
+            <ion-item-divider md="ios">
+                <ion-label class="ion-text-wrap negrita" color="dark">{{activo.num_cantidad}} {{activo.txt_unidad_insumo}} {{activo.txt_insumo}}</ion-label>
+            </ion-item-divider>
+            <!-- <ion-item mode="ios">
+                <ion-input [(ngModel)]="activo.txt_especificacion" labelPlacement="stacked">
+                    <div slot="label" class="custom-label-stacked">Especificación Técnica</div>
+                </ion-input>
+            </ion-item> -->
+            <ion-item mode="md">
+                <ion-select [(ngModel)]="activo.flg_uso_emprendimiento" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                    <div slot="label" class="custom-label-input">Uso en el emprendimiento</div>
+                    <ion-select-option value="1">Sí</ion-select-option>
+                    <ion-select-option value="0">No</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item mode="md">
+                <ion-select class="select-padding" [(ngModel)]="activo.est_activo" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-m'}">
+                    <div slot="label" class="custom-label-input">Estado del activo</div>
+                    <ion-select-option *ngFor="let item of estadoActivo" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </div>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="dark">Observaciones y/o recomendaciones:</ion-label>
+        </ion-item-divider>
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_activo_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked"> </div>
+            </ion-textarea>
+        </ion-item>
+
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">3.	Condiciones de uso y mantenimiento.</ion-label>
+        </ion-item-divider>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_activo_utilizado" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">¿Todos los activos entregados están siendo utilizados para el emprendimiento?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>  
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_activo_seguro" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">¿Los activos se encuentran en un lugar seguro y que no estén expuestos a deterioros por exposición o robos?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>  
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_activo_mantenimiento" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">¿Se está realizando mantenimiento básico o limpieza de equipos?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-textarea [(ngModel)]="ficha.txt_condicion_observ" labelPlacement="stacked" [autoGrow]="true" maxlength="300">
+                <div slot="label" class="custom-label-stacked">Observaciones y recomendaciones:</div>
+            </ion-textarea>
+        </ion-item>
+    </div>
+
+    <div *ngIf="ficha.cod_ficha === '04' || ficha.cod_ficha === '05'">
+        <ion-item-divider md="ios">
+            <ion-label class="ion-text-wrap" color="tertiary">Evidencias fotográficas</ion-label>
+        </ion-item-divider>
+        <app-fotos [fotos]="fotos" [consulta]="consulta"></app-fotos>
+    </div>
+</ion-content>
+
+<ion-footer *ngIf="!consulta && (ficha.cod_ficha !== '05' || (ficha.cod_ficha === '05' && existeInsumos))" mode="ios">
+    <ion-toolbar class="ion-text-center">
+        <ion-button class="padding-button" color="primary" shape="round" (click)="guardar()">  Guardar  </ion-button>
+    </ion-toolbar>
+</ion-footer>
+

@@ -1,0 +1,25 @@
+.centrado {
+    text-align: center;
+}
+
+a {
+    color: var( --ion-color-tertiary);
+    font-size: 14px;
+    text-decoration: underline;
+    padding-left: 12px;
+}
+
+cdk-virtual-scroll-viewport {
+    height: 100%;
+    width: 100%;
+}
+
+ion-modal::part(content) {
+    // max-height: 70%;
+    height: fit-content;
+
+}
+
+.letra14 {
+    font-size: 15px !important;
+}

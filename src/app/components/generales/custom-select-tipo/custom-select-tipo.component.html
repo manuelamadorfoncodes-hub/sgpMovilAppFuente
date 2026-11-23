@@ -1,0 +1,61 @@
+
+<div *ngIf="!multiple">
+    <ion-item [id]="idSelect" (click)="presentPopover($event)" button detail="true" detail-icon="caret-down-outline">
+        <ion-label >
+            <ion-text color="tertiary" class="ion-text-wrap letra14">{{etiqueta}}</ion-text>
+            <p class="letra14" *ngIf="!valor">{{customPlaceholder}}</p>
+            <ion-label *ngIf="valor" class="ion-text-wrap letra14">{{textoSeleccionado()}}</ion-label>
+        </ion-label>
+    </ion-item>
+    
+    <ion-popover #popover [isOpen]="isOpenPopover" (didDismiss)="isOpenPopover = false" [trigger]="idSelect" alignment="end" [dismissOnSelect]="true" >
+        <ng-template>
+            <!-- <ion-content> -->
+                <ion-radio-group [(ngModel)]="valor" (ionChange)="actualizaValorUnico()" mode="ios">
+                    <ion-item *ngFor="let item of items" [button]="true" detail="false">
+                        <ion-radio [value]="item[valorId]" labelPlacement="start">
+                            <ion-label class="letra14 ion-text-wrap">{{ item[valorTexto] }}</ion-label>
+                        </ion-radio>
+                    </ion-item>
+                </ion-radio-group>
+            <!-- </ion-content> -->
+        </ng-template>
+    </ion-popover>
+
+</div>
+
+<div *ngIf="multiple">
+    <ion-item [id]="idSelect" (click)="presentModal()" button detail="true" detail-icon="caret-down-outline">
+        <ion-label >
+            <ion-text color="tertiary" class="ion-text-wrap letra14">{{etiqueta}}</ion-text>
+            <p class="letra14" *ngIf="!valor">{{customPlaceholder}}</p>
+            <div *ngFor="let item of valorList">
+                <ion-text class="ion-text-wrap letra14">- {{item}}</ion-text>
+            </div>
+        </ion-label>
+    </ion-item>
+    <ion-modal id="modalMultiple" [isOpen]="isModalOpen" (willDismiss)="onWillDismiss($event)">
+        <ng-template>
+            <ion-header>
+                <ion-toolbar>
+                    <ion-title color="primarytext">Selección múltiple</ion-title>
+                </ion-toolbar>
+            </ion-header>
+            <ion-content>
+                <div>
+                    <ion-item *ngFor="let item of items" [button]="true" detail="false">
+                        <ion-checkbox mode="md" labelPlacement="end" justify="start" [(ngModel)]="item.seleccionado" (ionChange)="actualizaValorMultiple()">
+                            <ion-label class="ion-text-wrap letra14">{{ item[valorTexto] }}</ion-label>
+                        </ion-checkbox>
+                    </ion-item>
+                </div>
+            </ion-content>
+            <ion-footer mode="ios">
+                <ion-toolbar>
+                    <ion-button class="letra14" (click)="cancelar()" [strong]="true" expand="block" fill="clear" size="small" color="primarytext">Cerrar</ion-button>
+                </ion-toolbar>
+            </ion-footer>
+        </ng-template>
+    </ion-modal>
+
+</div>

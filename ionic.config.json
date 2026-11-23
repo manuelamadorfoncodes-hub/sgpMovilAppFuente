@@ -1,0 +1,7 @@
+{
+    "name": "sgp-movil",
+    "integrations": {
+        "capacitor": {}
+    },
+    "type": "angular"
+}

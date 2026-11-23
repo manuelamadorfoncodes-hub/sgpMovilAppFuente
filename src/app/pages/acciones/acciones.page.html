@@ -1,0 +1,37 @@
+<app-header titulo="SGP Móvil" [verMenu]="true"></app-header>
+
+<ion-content>
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="primarytext">LISTA DE ACCIONES</ion-label>
+        </ion-list-header>
+
+        <ion-item *ngFor="let accion of acciones; let i=index" (click)="abrirOpciones(accion, i)" mode="ios" detail>
+            <ion-label>
+                <ion-label color="tertiary" class="ion-text-wrap">{{i+1}} - {{accion.txt_accion}}</ion-label>
+                <h3>Fecha de implementación: {{accion.fec_implementacion | date:"dd/MM/yyyy"}}</h3>
+                
+                <!-- <p>{{accion.txt_plan}}</p> -->
+                <h4>{{accion.txt_est_accion}}
+                    <ion-text *ngIf="accion.actividadCambio" color="danger">
+                        {{accion.actividadCambio ? '(Actividad - Sin Enviar)' : ''}}
+                        {{(accion.actividad?.incompleto ? 'Incompleto' : '')}}
+                    </ion-text>
+                </h4>
+                <!-- <ion-label class="ion-text-wrap" [color]="(accion.est_accion === 'E')?'primary':'danger'">{{(accion.est_accion === 'E')?'Enviada':'Registrada'}}</ion-label> -->
+            </ion-label>
+        </ion-item>
+    </ion-list>
+
+    <!-- <ion-virtual-scroll [items]="actividades | filtro: textoBuscar: 'txt_actividad': 'txt_actividad': 'txt_actividad': null">
+        <ion-item *virtualItem="let actividad, let i=index" (click)="abrirOpciones(actividad, i)" mode="ios" detail>
+            <ion-label class="ion-text-wrap">
+                <ion-label color="tertiary" class="ion-text-wrap">{{actividad.nombreActividad}}</ion-label>
+                <ion-label>Inicio: {{actividad.fec_inicio | date:'dd/MM/yyyy'}} - Término: {{actividad.fec_fin | date:"dd/MM/yyyy"}}</ion-label>
+                <ion-label class="ion-text-wrap">{{actividad.txt_actividad}}</ion-label>
+                <ion-label [color]="(actividad.est_actividad === 'E')?'primary':'danger'">{{(actividad.est_actividad === 'E')?'Enviada':'Registrada'}}</ion-label>
+            </ion-label>
+        </ion-item>
+    </ion-virtual-scroll> -->
+
+</ion-content>

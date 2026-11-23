@@ -1,0 +1,33 @@
+<ion-tabs color="primary">
+
+    <ion-tab-bar slot="bottom" color="primary">
+
+        <ion-tab-button tab="notificaciones">
+            <ion-icon name="notifications"></ion-icon>
+            <ion-label>Notifica</ion-label>
+            <ion-badge *ngIf="cantidadNotificacion">{{cantidadNotificacion}}</ion-badge>
+        </ion-tab-button>
+
+        <ion-tab-button tab="planActividades" *ngIf="actividadVisible">
+            <ion-icon name="star"></ion-icon>
+            <ion-label>Actividad</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="acciones" *ngIf="accionVisible">
+            <ion-icon name="navigate"></ion-icon>
+            <ion-label>Acción</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="proyectos">
+            <ion-icon name="flower"></ion-icon>
+            <ion-label>Proyecto</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="sincroniza">
+            <ion-icon name="refresh-circle"></ion-icon>
+            <ion-label>Sincroniza</ion-label>
+        </ion-tab-button>
+
+    </ion-tab-bar>
+
+</ion-tabs>

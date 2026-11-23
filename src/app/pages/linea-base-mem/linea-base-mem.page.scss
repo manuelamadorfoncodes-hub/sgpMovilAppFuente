@@ -1,0 +1,47 @@
+ion-select::part(placeholder),
+ion-select::part(text) {
+    font-size: 14px !important;
+    white-space: normal !important;
+    // padding-top: 18px !important;
+    // padding-bottom: 5px !important;
+    // text-align: end !important;
+}
+
+.custom-label-input {
+    color: var(--ion-color-tertiary);
+    font-size: 14px;
+    white-space: normal !important;
+    text-align: start !important;
+    // margin-top: 3px;
+    // margin-bottom: 3px;
+    padding-top: 3px;
+    padding-bottom: 5px;
+    // display: inline-block !important;
+}
+
+.custom-label-input2 {
+    font-size: 14px;
+    white-space: normal !important;
+    text-align: start !important;
+    // margin-top: 3px;
+    // margin-bottom: 3px;
+    padding-top: 3px;
+    padding-bottom: 5px;
+    // display: inline-block !important;
+}
+
+.custom-label-stacked {
+    color: var(--ion-color-tertiary);
+    font-size: 20px;
+    white-space: normal !important;
+    padding-bottom: 4px;
+}
+
+.custom-aria-label {
+    font-size:  14px;
+    padding-top: 4px;
+}
+
+.letra14 {
+    font-size:  14px;
+}

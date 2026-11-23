@@ -1,0 +1,104 @@
+<app-header-modal titulo="Selección de Usuarios" (cerrar)="salir()"></app-header-modal>
+
+<ion-content [fullscreen]="true">
+    <ion-item-divider>
+        <ion-label class="ion-text-wrap" color="primarytext">CRITERIOS DE SELECCIÓN DE USUARIOS PARA CONCURSOS DE EMPRENDIMIENTOS</ion-label>
+    </ion-item-divider>
+   
+    <ion-item-divider mode="ios">
+        <ion-label class="ion-text-wrap" color="primarytext">1.	Datos generales</ion-label>
+    </ion-item-divider>
+
+    <ion-item mode="ios">
+        <ion-label class="ion-text-wrap">
+            <h6><ion-text color="tertiary">{{usuario.txt_apellido_paterno}} {{usuario.txt_apellido_materno}}, {{usuario.txt_nombres}}</ion-text></h6>
+            <h6><ion-text color="tertiary">DNI: {{usuario.txt_documento_identidad}}</ion-text></h6>
+            <h6><ion-text color="tertiary">Celular: {{usuario.txt_telefono}}</ion-text></h6>
+            <h6><ion-text color="tertiary">Linea de negocio: {{ficha.txt_linea_negocio}}</ion-text></h6>
+        </ion-label>
+    </ion-item>
+    
+    <!-- <app-custom-select-tipo idSelect="selectLineaNegocio" etiqueta="Línea de negocio: " [items]="lineaNegocio" [(valor)]="ficha.cod_linea_negocio"></app-custom-select-tipo> -->
+
+    <ion-item-divider mode="ios">
+        <ion-label class="ion-text-wrap" color="primarytext">2.	Participación activa en actividades del proyecto</ion-label>
+    </ion-item-divider>
+
+    <div *ngFor="let detalle of fichaDetalle; let i=index">
+        <ion-item-divider *ngIf="detalle.subSeccion">
+            <ion-label class="ion-text-wrap negrita" color="tertiary">{{detalle.subSeccion}}</ion-label>
+        </ion-item-divider>
+
+        <ion-item *ngIf="detalle.codigoSeccion === '01'" mode="ios">
+            <ion-select class="select-padding" [(ngModel)]="detalle.cod_respuesta" (ionChange)="calificar($event, i)" placeholder="Seleccione" interface="popover" toggleIcon="chevron-down-outline" expandedIcon="chevron-up-outline" [interfaceOptions]="{cssClass:'custom-radio-popover-l'}">
+                <div slot="label" class="custom-label-input">{{detalle.pregunta}}</div>
+                <ion-select-option *ngFor="let item of detalle.respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+    </div>
+    
+    <div *ngIf="ficha.num_puntaje_seccion_1 >= 12">
+        <ion-item-divider mode="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">3.	Desempeño del emprendimiento</ion-label>
+        </ion-item-divider>
+        
+        <div *ngFor="let detalle of fichaDetalle; let i=index">
+            <ion-item *ngIf="detalle.codigoSeccion === '02'" mode="ios">
+                <ion-select class="select-padding" [(ngModel)]="detalle.cod_respuesta" (ionChange)="calificar($event, i)" placeholder="Seleccione" interface="popover" toggleIcon="chevron-down-outline" expandedIcon="chevron-up-outline" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                    <div slot="label" class="custom-label-input">{{detalle.pregunta}}</div>
+                    <ion-select-option *ngFor="let item of detalle.respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </div>
+    </div>
+    
+    <div *ngIf="ficha.num_puntaje_seccion_2 >= 16">
+        <ion-item-divider mode="ios">
+            <ion-label class="ion-text-wrap" color="primarytext">4.	Evaluación para el concurso de emprendimientos</ion-label>
+        </ion-item-divider>
+        
+        <div *ngFor="let detalle of fichaDetalle; let i=index">
+            <ion-item *ngIf="detalle.codigoSeccion === '03'" mode="ios">
+                <ion-select class="select-padding" [(ngModel)]="detalle.cod_respuesta" (ionChange)="calificar($event, i)" placeholder="Seleccione" interface="popover" toggleIcon="chevron-down-outline" expandedIcon="chevron-up-outline" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                    <div slot="label" class="custom-label-input">{{detalle.pregunta}}</div>
+                    <ion-select-option *ngFor="let item of detalle.respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </div>
+    </div>
+        
+    <ion-item-divider mode="ios">
+        <ion-label class="ion-text-wrap" color="primarytext">Resultado</ion-label>
+    </ion-item-divider>
+    
+    <ion-item>
+        <ion-grid>
+            <ion-row *ngIf="ficha.nid_ficha || ficha.fichaGuardada">
+                <ion-col size="12" class="negrita">LA USUARIA ESTA: {{resultado}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="9"><ion-text color="tertiary">Sección</ion-text></ion-col>
+                <ion-col size="3"><ion-text color="tertiary">Puntaje</ion-text></ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="9">Participación activa en actividades del proyecto</ion-col>
+                <ion-col size="3">{{ficha.num_puntaje_seccion_1}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="9">Desempeño del emprendimiento</ion-col>
+                <ion-col size="3">{{ficha.num_puntaje_seccion_2}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="9">Evaluación para el concurso de emprendimientos</ion-col>
+                <ion-col size="3">{{ficha.num_puntaje_seccion_3}}</ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-item>
+
+</ion-content>
+
+<ion-footer *ngIf="!consulta" mode="ios">
+    <ion-toolbar class="ion-text-center">
+        <ion-button class="padding-button" color="primary" shape="round" (click)="guardar()">  Guardar  </ion-button>
+    </ion-toolbar>
+</ion-footer>

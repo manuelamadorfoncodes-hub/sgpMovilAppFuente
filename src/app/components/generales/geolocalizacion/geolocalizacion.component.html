@@ -1,0 +1,23 @@
+<ion-list>
+    <ion-list-header>
+        <ion-label color="tertiary">{{nombreFoto}}</ion-label>
+    </ion-list-header>
+    
+    <ion-item>
+        <ion-label>Latitud</ion-label>
+        <ion-input [(ngModel)]="latitud" slot="end" placeholder="0"></ion-input>
+        <!-- <ion-icon *ngIf="latitud" slot="end" name="copy-outline" color="primary" (click)="copiar(latitud)"></ion-icon> -->
+        <!-- <ion-icon *ngIf="!latitud" slot="end" name="create-outline" color="primary" (click)="pegarLatitud()"></ion-icon> -->
+    </ion-item>
+
+    <ion-item>
+        <ion-label>Longitud</ion-label>
+        <ion-input [(ngModel)]="longitud" slot="end" placeholder="0"></ion-input>
+        <!-- <ion-icon *ngIf="longitud" slot="end" name="copy-outline" color="primary" (click)="copiar(longitud)"></ion-icon> -->
+        <!-- <ion-icon *ngIf="!longitud" slot="end" name="create-outline" color="primary" (click)="pegarLongitud()"></ion-icon> -->
+    </ion-item>
+
+    <ion-item button (click)="aceptar()">
+        <ion-label color="primary" class="ion-text-center">Aceptar</ion-label>
+    </ion-item>
+</ion-list>

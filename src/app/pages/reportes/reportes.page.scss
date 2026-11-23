@@ -1,0 +1,116 @@
+ion-content {
+    --padding-bottom: 5px;
+    --padding-end: 10px;
+    --padding-start: 10px;
+    --padding-top: 5px;
+    h5 {
+        --color: var(--ion-color-primarytext);
+    }
+}
+
+
+.letra13 {
+    font-size: 13px;
+}
+
+
+ion-modal {
+    ion-grid {
+        border: 0.5px solid var(--ion-color-primary);
+    }
+
+}
+
+ion-select {
+    --min-width: 90%;
+}
+
+.custom-no-padding {
+    padding-bottom: 0px;
+}
+
+.grafico {
+    position: relative; /* IE is dumb */
+    width: 100%;
+    border: 1px solid #32d6d6;
+    padding: 2px;
+}
+.grafico .barra {
+    display: block;
+    position: relative;
+    background: #326bd6;
+    text-align: center;
+    color: #333;
+    height: 2em;
+    line-height: 2em;
+}
+.grafico .barra2 {
+    display: block;
+    position: relative;
+    background: #d6a232;
+    text-align: center;
+    color: #333;
+    height: 2em;
+    line-height: 2em;
+}
+
+.grafico .barra span {
+    position: absolute; left: 1em;
+}
+
+.grafico2 {
+    position: relative; /* IE is dumb */
+    width: 100%;
+    border: 1px solid #32d6d6;
+    // padding: 2px;
+}
+.grafico2 .barra {
+    display: block;
+    position: relative;
+    background: #2c6add;
+    text-align: center;
+    color: var(--ion-color-dark);
+    height: 2em;
+    line-height: 2em;
+}
+.grafico2 .barra2 {
+    display: block;
+    position: relative;
+    background: #d86800;
+    text-align: center;
+    color: var(--ion-color-dark);
+    height: 2em;
+    line-height: 2em;
+}
+
+.grafico2 .barra span {
+    position: absolute; left: 1em;
+}
+
+.grafico3 {
+    position: inline; /* IE is dumb */
+    width: 100%;
+    border: 1px solid #32d6d6;
+    padding: 2px;
+}
+.grafico3 .barra {
+    display: block;
+    position: relative;
+    background: #2c6add;
+    text-align: center;
+    color: #333;
+    height: 2em;
+    line-height: 2em;
+}
+.grafico3 .barra2 {
+    display: block;
+    position: relative;
+    background: #d6a232;
+    text-align: center;
+    color: #333;
+    height: 2em;
+    line-height: 2em;
+}
+.grafico3 .barra span {
+    position: absolute; left: 1em;
+}

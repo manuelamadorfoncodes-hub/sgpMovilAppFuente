@@ -1,0 +1,15 @@
+ion-popover {
+    --width: 90%;
+    --backdrop-opacity: 0.6;
+    --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.6);
+}
+
+.letra14 {
+    font-size: 14px;
+    // padding-top: 5px;
+}
+
+ion-item::part(detail-icon) {
+    opacity: 0.6;
+    font-size: 14px;
+}

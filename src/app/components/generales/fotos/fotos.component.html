@@ -1,0 +1,51 @@
+<ion-list #lista>
+    <ion-item-sliding *ngFor="let foto of fotos; let i=index" [disabled]="!(foto.nueva || (multiple && !foto.nueva && !foto.nid_archivo))">
+        <ion-item mode='ios' lines="full">
+            <ion-label>
+                <ion-label class="ion-text-wrap">{{foto.txt_archivo}}
+                    <ion-text *ngIf="foto.enviada" color="success"> (Enviada) </ion-text>
+                </ion-label>
+                <h3>Fecha: {{ foto.fec_archivo | date:'dd/MM/yyyy'}}</h3>
+                <h3>Hora: {{ foto.fec_archivo | date:'HH:mm'}}</h3>
+                <h3 *ngIf="foto.flg_georeferencia">Latitud: {{ foto.num_latitud }}</h3>
+                <h3 *ngIf="foto.flg_georeferencia">Longitud: {{ foto.num_longitud }}</h3>
+                <a *ngIf="!consulta && foto.flg_georeferencia && foto.nueva && foto.txt_valor!=='GNE'" (click)="registrarGeolocalizacion(i)">Registrar coordenadas</a>
+                <a *ngIf="verMapa && foto.num_latitud && foto.num_longitud" (click)="abrirMapa(i)">Ver en Google Maps (en linea)</a>
+            </ion-label>
+            <ion-thumbnail slot="start">
+                <img [src]="foto.urlArchivoHttp ? foto.urlArchivoHttp : (foto.nid_archivo ? siFoto : noFoto)" (click)="verFoto(i, $event)"/>
+            </ion-thumbnail>
+            <ion-spinner name="bubbles" *ngIf="foto.flagCargando"></ion-spinner>
+            <ion-button *ngIf="!consulta" (click)="tomarFoto(i)">
+                <ion-icon slot="icon-only" name="camera"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="!consulta && foto.tip_carga==='02'" (click)="cargarFoto(i)">
+                <ion-icon slot="icon-only" name="image"></ion-icon>
+            </ion-button>
+        </ion-item>
+        <ion-item-options>
+            <ion-item-option color="primary" (click)="multiple ? eliminaRegistro(i) : eliminarFoto(i)">Eliminar</ion-item-option>
+        </ion-item-options>
+    </ion-item-sliding>
+</ion-list>
+
+<ion-modal #modalFoto (willDismiss)="onWillDismiss($event)">
+    <ng-template>
+        <ion-content class="ion-padding">
+            <div class="centrar-imagen">
+                <swiper-container #swiper [options]="sliderOptions" zoom>
+                    <swiper-slide>
+                        <div class="swiper-zoom-container">
+                            <img [src]="urlFoto">
+                        </div>
+                    </swiper-slide>
+                </swiper-container>
+            </div>
+        </ion-content>
+        <ion-footer>
+            <ion-toolbar class="ion-align-items-center">
+                <ion-button (click)="cancel()" expand="block" fill="clear" shape="round" color="dark">Cerrar</ion-button>
+            </ion-toolbar>
+        </ion-footer>
+    </ng-template>
+</ion-modal>

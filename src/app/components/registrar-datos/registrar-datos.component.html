@@ -1,0 +1,41 @@
+<div class="modal">
+
+    <ion-header>
+        <ion-toolbar>
+            <ion-title color="primarytext" class="ion-text-center">{{titulo}}</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <div class="contenido">
+        <br>
+        <ion-input [(ngModel)]="datos.dni" label="Número de DNI" label-placement="floating" fill="outline" minlength="8" maxlength="8" pattern="[0-9]{8}" inputmode="numeric" required="true" error-text="El número de DNI debe tener 8 caracteres numéricos." ></ion-input>
+        <br>
+        <ion-input [(ngModel)]="datos.apePat" label="Apellido paterno" label-placement="floating" fill="outline" maxlength="40" ></ion-input>
+        <br>
+        <ion-input [(ngModel)]="datos.apeMat" label="Apellido materno" label-placement="floating" fill="outline" maxlength="40" ></ion-input>
+        <br>
+        <ion-input [(ngModel)]="datos.nombres" label="Nombres" label-placement="floating" fill="outline" maxlength="80" required="true"></ion-input>
+        <br>
+        <div *ngIf="idPopover === 2">
+            <ion-input [(ngModel)]="datos.cargo" label="Cargo" label-placement="floating" fill="outline" maxlength="100" ></ion-input>
+            <br>
+            <ion-textarea [(ngModel)]="datos.institucion" label="Institución" labelPlacement="floating" fill="outline" maxlength="150" [autoGrow]="true"></ion-textarea>
+            <br>
+        </div>
+    </div>
+
+    <ion-footer>
+        <ion-toolbar>
+            <ion-grid fixed>
+                <ion-row>
+                    <ion-col size="6">
+                        <ion-button (click)="cancelar()" expand="block" fill="clear" color="primarytext">Cancelar</ion-button>    
+                    </ion-col>
+                    <ion-col size="6">
+                        <ion-button [disabled]="!validaData()" (click)="aceptar()" expand="block" fill="clear" color="primarytext">Aceptar</ion-button>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-toolbar>
+    </ion-footer>
+</div>

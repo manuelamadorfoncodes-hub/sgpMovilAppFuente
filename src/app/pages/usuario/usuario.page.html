@@ -1,0 +1,196 @@
+<app-header titulo="Proyecto {{codigoProyecto}}" [defaultHref]="defaultHref"></app-header>
+
+<ion-content [fullscreen]="true">
+    <ion-list-header>
+        <ion-label color="primarytext">LISTA DE USUARIOS</ion-label>
+        <ion-chip *ngIf="botonNuevo" outline="true" color="primarytext" (click)="nuevoUsuario()">
+            <ion-label>Nuevo Usuario</ion-label>
+        </ion-chip>
+    </ion-list-header>
+
+    <ion-label class="ion-no-margin" class="ion-no-padding">
+        <a (click)="verResumen()">Ver resumen</a>
+    </ion-label>
+
+    <ion-searchbar [debounce]="600" (ionInput)="buscar( $event )" placeholder="Buscar" class="ion-no-margin"></ion-searchbar>
+
+    <ion-grid *ngIf="flagCargando">
+        <ion-row>
+            <ion-col class="centrado">
+                <ion-spinner color="primarytext" name="lines"></ion-spinner>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <!-- <cdk-virtual-scroll-viewport itemSize="56" minBufferPx="900" maxBufferPx="1350">
+        <ion-list>
+            <ion-item-sliding *cdkVirtualFor="let item of items; let i = index">
+                <ion-item>
+                    <ion-label> {{item + i}}</ion-label>
+                </ion-item>
+                <ion-item-options side="start">
+                    <ion-item-option (click)="favorite(item)">Favorite</ion-item-option>
+                    <ion-item-option color="primary" (click)="share(item)">Share</ion-item-option>
+                </ion-item-options>
+
+                <ion-item-options side="start">
+                    <ion-item-option (click)="unread(item)">Unread</ion-item-option>
+                </ion-item-options>
+            </ion-item-sliding>
+        </ion-list>
+    </cdk-virtual-scroll-viewport> -->
+
+    <cdk-virtual-scroll-viewport itemSize="56" minBufferPx="900" maxBufferPx="1350">
+        <ion-list #listaUsuarios>
+            <!-- <ion-virtual-scroll [items]="usuarios | filtro: textoBuscar: 'txt_apellido_paterno': 'txt_apellido_materno': 'txt_nombres': 'txt_documento_identidad'" approxItemHeight="600px"> -->
+                <!-- <ion-item-sliding *virtualItem="let usuario, let i = index"> -->
+                <!-- <ion-item-sliding *cdkVirtualFor="let usuario of usuarios | filtro: textoBuscar: 'txt_apellido_paterno': 'txt_apellido_materno': 'txt_nombres': 'txt_documento_identidad'; let i = index"> -->
+                <ion-item-sliding *cdkVirtualFor="let usuario of usuarios | filtro: textoBuscar: 'txt_apellido_paterno': 'txt_apellido_materno': 'txt_nombres': 'txt_documento_identidad'; let i = index">
+                    <ion-item (click)="abrirOpciones2(usuario, i)" id="open-modal-sheet" mode="ios" detail>
+                        <ion-label class="ion-text-wrap">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-no-padding">
+                                    <ion-col size="6" class="ion-no-padding">
+                                        <!-- cambio linea -->
+                                        <ion-label>{{usuario.orden + 1}}.- {{usuario.tip_documento_identidad === '2' ? 'C.Ext.' : 'DNI'}}: {{usuario.txt_documento_identidad}}
+                                            <ion-text color="primarytext" *ngIf="!usuario.flgDatos">(❗)</ion-text>
+                                        </ion-label>
+                                    </ion-col>
+                                    <ion-col size="6" class="ion-no-padding">
+                                        <ion-label [color]="(usuario.est_personal === 'A')?'':'danger'" class="ion-text-right">
+                                            {{ usuario.txt_estado }}
+                                        </ion-label>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
+                            <ion-label color="tertiary">{{ usuario.txt_apellido_paterno }} {{ usuario.txt_apellido_materno }}, {{ usuario.txt_nombres }}</ion-label>
+                            <p *ngIf="usuario.txt_yachachiq">Yachachiq: {{ usuario.txt_yachachiq }}</p>
+                            <ion-text color="danger">
+                                <p> {{ usuario.est_personal === 'R' ? (usuario.nid_personal_reemplazo ? '' : '-Falta Reemplazo.') : ''}} 
+                                    {{ usuario.txt_tipo_cambio ? '-' + usuario.txt_tipo_cambio + (usuario.solicitudCambioIncompleto ? ' (Incompleto)' : '') : '' }} 
+                                    {{ usuario.txt_estado_solicitud ? '-' + usuario.txt_estado_solicitud : '' }} 
+                                    {{ usuario.observacionGeolocalizacion }}
+                                    {{ usuario.cambioFicha ? '-Ficha Viv. Emp.' + (usuario.fichaIncompleto ? ' (Incompleto)' : '') : ''}} 
+                                    {{ usuario.cambioActividadProd ? '-Act. Prod.' + (usuario.actividadProdIncompleto ? ' (Incompleto)' : '') : ''}} 
+                                    {{ usuario.cambioMiembros ? '-Integrantes' + (usuario.miembrosIncompleto ? ' (Incompleto)' : '') : ''}}
+                                    {{ usuario.cambioTecnologia ? '-Tecnología' + (usuario.cambioTecnologiaIncompleto ? ' (Incompleto)' : '') : ''}} 
+                                    {{ usuario.flg_cambio_yachachiq ? '-Cambio Yachachiq' : '' }}
+                                    {{ usuario.registroAvanceTec ? ('-' + usuario.tipoAvance + (usuario.registroAvanceIncompleto ? ' (Incompleto)' : '')) : '' }}
+                                    {{ usuario.estadoCaracterizacion === 'R' ? '-Ficha Caracterización' + (usuario.cambioCaracterizacion ? ' -Por enviar.' + (usuario.fichaCaracterizIncompleto ? ' (Incompleto)' : '') : '') : ''}} 
+                                    {{ usuario.cambioEntregaInsumos ? ('-Entrega de activos' + (usuario.entregaInsumosIncompleto ? ' (Incompleto)' : '')) : '' }}
+                                    {{ usuario.cambioFichaMujer ? '-Ficha Carac. MEM.' + (usuario.fichaMujerIncompleto ? ' (Incompleto)' : '') : ''}} 
+                                    {{ datosLinea(usuario, 1) }}
+                                    {{ usuario.cambioAsistTecMem ? '-Asist. Tec. MEM.' + (usuario.asistTecMemIncompleta ? ' (Incompleta)' : '') : '' }}
+                                    {{ usuario.cambioSeleccionMem ? '-Ficha de Selección MEM' + (usuario.seleccionMemIncompleta ? ' (Incompleto)' : '') : '' }}
+                                    {{ usuario.cambioLineaBaseMem ? '-Línea de base MEM' + (usuario.lineaBaseMemIncompleta ? ' (Incompleto)' : '') : '' }}
+                                    {{ usuario.cambioLineaSalidaMem ? '-Línea de salida MEM' + (usuario.lineaSalidaMemIncompleta ? ' (Incompleto)' : '') : '' }}
+                                </p>
+                            </ion-text>
+                            <ion-text color="resaltado" *ngIf="usuario.txt_incompleto">
+                                <p>⚠️ {{ usuario.txt_incompleto }}</p>
+                            </ion-text>
+                        </ion-label>
+                    </ion-item>
+
+                    <ion-item-options side="end" mode="ios">
+                        <ion-item-option (click)="eliminarSolicitud(usuario)" *ngIf="usuario.txt_tipo_cambio && !usuario.nid_solicitud">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row>
+                                    <ion-col>Eliminar</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Solicitud</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>{{usuario.txt_tipo_cambio.split(' ')[0]}}</ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item-option>
+                        <ion-item-option color="danger" (click)="eliminarAsignacionYachachiq(usuario)" *ngIf="usuario.flg_cambio_yachachiq">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row>
+                                    <ion-col>Eliminar</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Asignación</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Yachachiq</ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item-option>
+                        <ion-item-option color="danger" (click)="eliminarFichaCaracterizacion(usuario)" *ngIf="usuario.cambioCaracterizacion">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row>
+                                    <ion-col>Eliminar</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Ficha</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Caract.</ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item-option>
+                        <ion-item-option color="danger" (click)="eliminarFichaMujer(usuario)" *ngIf="usuario.cambioFichaMujer">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row>
+                                    <ion-col>Eliminar</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Ficha</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Caract.</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>MEM</ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item-option>
+                        <ion-item-option color="danger" (click)="eliminarLinSalidaFichaVivienda(usuario)" *ngIf="usuario.eliminaFichaLSalidaVivienda">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row>
+                                    <ion-col>Eliminar</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Lin. Sal.</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Ficha</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col>Vivienda</ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item-option>
+                    </ion-item-options>
+                </ion-item-sliding>
+            <!-- </ion-virtual-scroll> -->
+        </ion-list>
+
+    </cdk-virtual-scroll-viewport>
+
+    <!-- [isOpen]="isActionUsuariosModalOpen" (willDismiss)="isActionUsuariosModalOpen = false" -->
+    <ion-modal [isOpen]="isActionUsuariosModalOpen" (willDismiss)="isActionUsuariosModalOpen = false" [initialBreakpoint]="1" [breakpoints]="[0, 0.25, 0.5, 0.75, 1]">
+        <ng-template>
+            <!-- <ion-content> -->
+                <ion-list mode="ios">
+                    <!-- <ion-list-header mode="md">
+                        <ion-label>{{usuarioSeleccionado}}</ion-label>
+                    </ion-list-header> -->
+                    <ion-item>
+                        <ion-label class="ion-text-wrap letra14">{{usuarioSeleccionado}}</ion-label>
+                    </ion-item>
+                    <ion-item *ngFor="let item of opcionesMenu" (click)="isActionUsuariosModalOpen = false; item.handler()">
+                        <ion-icon slot="start" [name]="item.icon" ></ion-icon>
+                        <ion-label class="ion-text-wrap letra14">{{item.text}}</ion-label>
+                    </ion-item>
+                </ion-list>
+            <!-- </ion-content> -->
+        </ng-template>
+    </ion-modal>
+
+</ion-content>
+
+

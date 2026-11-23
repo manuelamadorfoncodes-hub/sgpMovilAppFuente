@@ -1,0 +1,18 @@
+<ion-item [id]="idSelect" (click)="presentPopover($event)" button detail="true" detail-icon="caret-down-outline">
+    <ion-label >
+        <ion-text color="tertiary" class="ion-text-wrap letra13">{{etiqueta}}</ion-text>
+        <p *ngIf="!itemSeleccionado">{{customPlaceholder}}</p>
+        <!-- <ion-label *ngIf="itemSeleccionado" class="ion-text-wrap letra13">{{itemSeleccionado ? (itemSeleccionado[campo] ? itemSeleccionado[campo] : customPlaceholder) : customPlaceholder}}</ion-label> -->
+        <ion-label *ngIf="itemSeleccionado" class="ion-text-wrap letra13">{{itemSeleccionado[campo]}}</ion-label>
+    </ion-label>
+</ion-item>
+
+<ion-popover #popover [isOpen]="isOpenPopover" (didDismiss)="isOpenPopover = false" [trigger]="idSelect" alignment="end" [dismissOnSelect]="true" >
+    <ng-template>
+        <ion-content>
+            <ion-item *ngFor="let item of items" [button]="true" [detail]="false" (click)="seleccionarItem(item)">
+                <ion-label class="ion-text-wrap letra13">{{item[campo]}}</ion-label>
+            </ion-item>
+        </ion-content>
+    </ng-template>
+</ion-popover>

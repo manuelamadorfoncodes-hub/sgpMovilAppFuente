@@ -1,0 +1,65 @@
+ion-list-header {
+    padding-right: 10px;
+}
+
+ion-item, ion-list-header {
+    ion-label {
+        font-size: 14px;
+        white-space: normal !important;
+    }
+}
+
+ion-grid {
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.custom-label-stacked {
+    color: var(--ion-color-tertiary);
+    font-size: 18px;
+    white-space: normal !important;
+}
+
+.modal-agregar {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.letra-mediana {
+    font-size: 105%;
+}
+
+ion-input {
+    --padding-bottom: 0px;
+    --padding-end: 0px;
+    --padding-start: 0px;
+    --padding-top: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.tabla-partida {
+    font-size: 13px;
+    padding-left: 10px;
+    padding-right: 1px;
+}
+
+.custom-label-input {
+    color: var(--ion-color-tertiary);
+    font-size: 14px;
+    white-space: normal !important;
+}
+
+.letra14 {
+    font-size: 14px;
+}
+// .margen-outline {
+//     margin-left: 20px;
+//     margin-right: 20px;
+// }
+
+ion-select::part(placeholder),
+ion-select::part(text) {
+    font-size: 14px !important;
+    white-space: normal !important;
+}

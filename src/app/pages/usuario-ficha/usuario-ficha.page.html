@@ -1,0 +1,233 @@
+<app-header-modal [titulo]="titulo" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <h5 *ngIf="linea === 1">Línea de Salida</h5>
+    
+    <div *ngIf="ficha.nid_version_ficha === 1 && ((anhoProyecto >= 2025 && linea === 0) || (anhoProyecto >= 2022 && linea > 0))">
+        <h5>PARCELA</h5>
+    
+        <app-multiple-checkbox etiqueta="¿Cuál es la tenencia de su(s) parcela(s)?" [items]="parametros.tenenciaParcela" [(valor)]="ficha.txt_tip_tenencia_parcela" (varlorChage)="actualizarListaArea()"></app-multiple-checkbox>
+        <!-- <app-custom-select-tipo idSelect="selectTenenciaParcela" etiqueta="¿Cuál es la tenencia de la parcela?" [items]="parametros.tenenciaParcela" [(valor)]="ficha.cod_tenencia_parcela"></app-custom-select-tipo> -->
+        <ion-item *ngIf="ficha.txt_tip_tenencia_parcela?.includes('99')" mode="ios">
+            <ion-input [(ngModel)]="ficha.txt_otro_tenencia_parcela" placeholder="Especifique"></ion-input>
+        </ion-item>
+        
+        <ion-item mode="ios">
+            <ion-label>Area de la(s) parcela(s)</ion-label>
+        </ion-item>
+        <ion-item mode="md">
+            <ion-select class="select-padding" [(ngModel)]="ficha.nid_unidad_medida_area" label="Unidad de Medida" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}" disabled="true">
+                <ion-select-option *ngFor="let item of parametros.unidadAreaParcela" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <div *ngFor="let item of listaTenenciaParcela; let i=index">
+            <ion-item mode="ios" *ngIf="item.seleccionado">
+                <ion-input [(ngModel)]="item.numero" [label]="'Area Parcela ' + item.txt_tipo" type="number" pattern="[0-9]" placeholder="Cantidad" class="ion-text-right" (ionChange)="validarNumero(i)">
+                </ion-input>
+            </ion-item>
+        </div>
+        <ion-item>
+            <ion-label>Total Area</ion-label>
+            <ion-label class="ion-text-right">{{totalArea}}</ion-label>
+        </ion-item>
+    
+        <app-multiple-checkbox etiqueta="¿El área de su(s) parcela(s) está dedica a?" [items]="parametros.usoParcela" [(valor)]="ficha.txt_tip_uso_parcela"></app-multiple-checkbox>
+        <ion-item *ngIf="ficha.txt_tip_uso_parcela?.includes('99')" mode="ios">
+            <ion-input [(ngModel)]="ficha.txt_otro_uso_parcela" placeholder="Especifique"></ion-input>
+        </ion-item>
+        
+        <app-multiple-checkbox etiqueta="¿Cuál es la fuente principal de agua que empleó en su(s) parcela(s)?" [items]="parametros.fuenteParcela" [(valor)]="ficha.txt_tip_fuente_parcela"></app-multiple-checkbox>
+        <!-- <app-custom-select-tipo idSelect="selectFuenteParcela" etiqueta="¿Cuál es la fuente principal de agua que empleó en esta parcela? (marcar solo una opcipon)" [items]="parametros.fuenteParcela" [(valor)]="ficha.cod_fuente_parcela"></app-custom-select-tipo> -->
+        <ion-item *ngIf="ficha.txt_tip_fuente_parcela?.includes('99')" mode="ios">
+            <ion-input [(ngModel)]="ficha.txt_otro_fuente_parcela" placeholder="Especifique"></ion-input>
+        </ion-item>
+
+    </div>
+
+    <h5>VIVIENDA</h5>
+
+    <app-custom-select-tipo idSelect="selectMaterialPared" etiqueta="¿Cuál es el material predominante en las paredes exteriores de su vivienda?" [items]="parametros.materialParedes" [(valor)]="ficha.cod_material_pared"></app-custom-select-tipo>
+    <ion-item *ngIf="ficha.cod_material_pared === '99'" mode="ios">
+        <ion-input [(ngModel)]="ficha.txt_otro_material_pared" placeholder="Especifique"></ion-input>
+    </ion-item>
+
+    <app-custom-select-tipo idSelect="selectMaterialTecho" etiqueta="¿Cuál es el material predominante de los techos de su vivienda?" [items]="parametros.materialTecho" [(valor)]="ficha.cod_material_techo"></app-custom-select-tipo>
+    <ion-item *ngIf="ficha.cod_material_techo === '99'" mode="ios">
+        <ion-input [(ngModel)]="ficha.txt_otro_material_techo" placeholder="Especifique"></ion-input>
+    </ion-item>
+
+    <div *ngIf="ficha.nid_version_ficha === 2">
+        <app-custom-select-tipo idSelect="selectIluminacion" etiqueta="¿Cómo ilumina su vivienda?" [items]="parametros.iluminacion" [(valor)]="ficha.cod_iluminacion"></app-custom-select-tipo>
+        <ion-item *ngIf="ficha.cod_iluminacion === '99'" mode="ios">
+            <ion-input [(ngModel)]="ficha.txt_otro_iluminacion" placeholder="Especifique"></ion-input>
+        </ion-item>
+    </div>
+
+    <ion-item mode="ios">
+        <ion-input [(ngModel)]="ficha.num_habitaciones" labelPlacement="fixed" type="number" placeholder="Cantidad" slot="end" class="ion-text-right">
+            <div slot="label" class="custom-label-input">¿Cuántas habitaciones hay en su casa (excluyendo cocina, baño, pasadizos, corral, patio)?</div>
+        </ion-input>
+    </ion-item>
+    
+    <app-custom-select-tipo idSelect="selectAmbienteCocinar" etiqueta="¿Su vivienda cuenta con un ambiente para cocinar y dónde está ubicada?" [items]="parametros.ambienteCocinar" [(valor)]="ficha.cod_ambiente_cocinar"></app-custom-select-tipo>
+
+    <app-custom-select-tipo idSelect="selectTipoCocina" etiqueta="¿Con qué tipo de cocina cuenta en su hogar y que funcione actualmente?" [items]="parametros.tipoCocina" [(valor)]="ficha.cod_tipo_cocina"></app-custom-select-tipo>
+    <ion-item *ngIf="ficha.cod_tipo_cocina === '99'" mode="ios">
+        <ion-input [(ngModel)]="ficha.txt_otro_tipo_cocina" placeholder="Especifique"></ion-input>
+    </ion-item>
+
+    <div *ngIf="ficha.nid_version_ficha === 1 && ficha.cod_tipo_cocina && ficha.cod_tipo_cocina !== '03'">
+        <ion-item mode="ios">
+            <ion-label>Consumo de material de combustión (mensual)</ion-label>
+        </ion-item>
+        <ion-item mode="ios">
+            <ion-text>Kg. Leña </ion-text>
+            <ion-input [(ngModel)]="ficha.num_lenha" type="number" placeholder="Cantidad" slot="end" class="ion-text-right"></ion-input>
+        </ion-item>
+        <ion-item mode="ios">
+            <ion-text>Kg. Bosta</ion-text>
+            <ion-input [(ngModel)]="ficha.num_bosta" type="number" placeholder="Cantidad" slot="end" class="ion-text-right"></ion-input>
+        </ion-item>
+    </div>
+
+    <div *ngIf="ficha.nid_version_ficha === 2 && (ficha.cod_tipo_cocina === '01' || ficha.cod_tipo_cocina === '02')">
+        <app-multiple-checkbox etiqueta="Tipo de combustible" [items]="parametros.combustibleCocina" [(valor)]="ficha.txt_tip_combustible"></app-multiple-checkbox>
+        <ion-item *ngIf="ficha.txt_tip_combustible?.includes('99')" mode="ios">
+            <ion-input [(ngModel)]="ficha.txt_otro_combustible" placeholder="Especifique"></ion-input>
+        </ion-item>
+    </div>
+
+    <h5>PRACTICAS SALUDABLES</h5>
+
+    <h6>Residuos sólidos</h6>
+    <ion-item mode="md">
+        <ion-select class="select-padding" [(ngModel)]="ficha.flg_residuos" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+            <div slot="label" class="custom-label-input">¿Realiza la segregación de sus residuos?</div>
+            <ion-select-option value="1">Sí</ion-select-option>
+            <ion-select-option value="0">No</ion-select-option>
+        </ion-select>
+    </ion-item>
+
+    <div *ngIf="ficha.flg_residuos == '1'">
+        <app-custom-select-tipo idSelect="selectComoRecicla" etiqueta="¿Cómo lo segrega?" [items]="parametros.comoRecicla" [(valor)]="ficha.cod_recicla"></app-custom-select-tipo>
+        <ion-item *ngIf="ficha.cod_recicla === '99'" mode="ios">
+            <ion-textarea [(ngModel)]="ficha.txt_otro_recicla" class="ion-text-wrap" placeholder="Especifique"></ion-textarea>
+        </ion-item>
+    </div>
+
+    <div *ngIf="ficha.flg_residuos == '0'">
+        <app-custom-select-tipo idSelect="selectResiduosSolidos" etiqueta="¿Qué hace con los residuos sólidos?" [items]="parametros.residuosSolidos" [(valor)]="ficha.cod_residuos"></app-custom-select-tipo>
+        <ion-item *ngIf="ficha.cod_residuos === '99'" mode="ios">
+            <ion-textarea [(ngModel)]="ficha.txt_otro_residuos" class="ion-text-wrap" placeholder="Especifique"></ion-textarea>
+        </ion-item>
+    </div>
+
+    <h6>Agua Segura</h6>
+    <app-custom-select-tipo idSelect="selectTratamientoAgua" etiqueta="¿Realiza algún tratamiento al agua antes de beberla?" [items]="parametros.tratamientoAgua" [(valor)]="ficha.cod_tratamiento_agua"></app-custom-select-tipo>
+
+    <h5>FOTOGRAFIAS VIVIENDA Y COCINA</h5>
+    <app-fotos [fotos]="fotos" [consulta]="consulta"></app-fotos>
+
+    <div *ngIf="ficha.nid_version_ficha === 1">
+        <h5>EMPRENDIMIENTOS RURALES Y ASOCIATIVIDAD</h5>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_pertenece_org" placeholder="Seleccione" interface="popover" (ionChange)="registrarEmpredimiento($event)" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">¿Pertenece a alguna organización o agrupación que le permite ingresos?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <div *ngFor="let emprend of emprendimientos; let i=index">
+            <ion-item-divider>
+                <ion-label color="primarytext">{{i+1}}.- EMPRENDIMIENTO</ion-label>
+            </ion-item-divider>
+            <hr>
+            
+            <app-custom-select-tipo [idSelect]="selectId('LineaNegocio',i)" etiqueta="¿A qué tipo de actividad está vinculada la organización o agrupación a la que pertenece?" [items]="parametros.lineaNegocio" [(valor)]="emprend.cod_tipo"></app-custom-select-tipo>
+            <ion-item *ngIf="'21,27,99'.includes(emprend.cod_tipo)" mode="ios">
+                <ion-input [(ngModel)]="emprend.txt_otro_tipo" placeholder="Especifique" maxlength="120"></ion-input>
+            </ion-item>
+            
+            <ion-item mode="ios">
+                <ion-input [(ngModel)]="emprend.num_integrantes" labelPlacement="fixed" type="number" placeholder="Cantidad" slot="end" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">N° Integrantes de la organización o agrupación</div>
+                </ion-input>
+            </ion-item>
+            
+            <app-custom-select-tipo [idSelect]="selectId('TiempoAgrupacion',i)" etiqueta="¿Hace cuánto tiempo pertenece a esta organización o agrupación?" [items]="parametros.tiempoAgrupacion" [(valor)]="emprend.cod_tiempo"></app-custom-select-tipo>
+            
+            <ion-item mode="ios">
+                <ion-input [(ngModel)]="emprend.imp_ingresos" labelPlacement="fixed" type="number" placeholder="S/." slot="end" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">Ingresos mensuales de la organización o agrupación</div>
+                </ion-input>
+            </ion-item>
+            
+            <ion-item mode="ios">
+                <ion-label color="primarytext">Fotografías</ion-label>
+            </ion-item>
+            <app-fotos [fotos]="emprend.fotos" [consulta]="consulta"></app-fotos>
+        </div>
+        <ion-item *ngIf="emprendimientos && !consulta" mode="ios">
+            <ion-label color="primarytext">¿Desea agregar otro emprendimiento?</ion-label>
+            <ion-button (click)="agregarEmprendimiento()" expand="block" fill="outline" shape="round">Agregar</ion-button>
+        </ion-item>
+    </div>
+
+    <div *ngIf="ficha.nid_version_ficha === 2">
+        <h5>ORGANIZACION</h5>
+        <ion-item mode="md">
+            <ion-select [(ngModel)]="ficha.flg_pertenece_org" placeholder="Seleccione" interface="popover" (ionChange)="registrarEmpredimiento($event)" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                <div slot="label" class="custom-label-input">¿Pertenece a alguna organización o agrupación que le permite gestionar sus recursos naturales?</div>
+                <ion-select-option value="1">Sí</ion-select-option>
+                <ion-select-option value="0">No</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <div *ngFor="let emprend of emprendimientos; let i=index">
+            <hr>
+            <ion-item-sliding>
+                <ion-item>
+                    <ion-label color="primarytext">{{i+1}}.- ORGANIZACION</ion-label>
+                </ion-item>
+                <ion-item-options *ngIf="!emprend.nid_ficha_emprendimiento && i!=0" side="end">
+                    <ion-item-option (click)="eliminarOrganizacion(i)">Eliminar</ion-item-option>
+                </ion-item-options>
+            </ion-item-sliding>
+            
+            <app-custom-select-tipo [idSelect]="selectId('RecursoNatural',i)" etiqueta="¿A qué recursos naturales está vinculada la organización o agrupación a la que pertenece?" [items]="parametros.recursoNatural" [(valor)]="emprend.cod_recurso_natural"></app-custom-select-tipo>
+            <ion-item *ngIf="emprend.cod_recurso_natural === '99'" mode="ios">
+                <ion-input [(ngModel)]="emprend.txt_otro_recurso" placeholder="Especifique" maxlength="120"></ion-input>
+            </ion-item>
+            
+            <ion-item mode="md">
+                <ion-select [(ngModel)]="emprend.flg_proyectos" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}">
+                    <div slot="label" class="custom-label-input">¿Su organización ha ejecutado proyectos para la gestión de sus recursos naturales en los últimos 5 años?</div>
+                    <ion-select-option value="1">Sí</ion-select-option>
+                    <ion-select-option value="0">No</ion-select-option>
+                </ion-select>
+            </ion-item>
+
+            <ion-item *ngIf="emprend.flg_proyectos == '1'">
+                <ion-textarea [(ngModel)]="emprend.txt_desc_proyectos" labelPlacement="stacked" [autoGrow]="true" [counter]="true" maxlength="300">
+                    <div slot="label" class="custom-label-stacked">Indique los proyectos y sus financiadores</div>
+                </ion-textarea>
+            </ion-item>
+        </div>
+        <hr>
+        <ion-item *ngIf="emprendimientos && !consulta" mode="ios">
+            <ion-label color="primarytext">¿Desea agregar otra organización?</ion-label>
+            <ion-button (click)="agregarEmprendimiento()" expand="block" fill="outline" shape="round">Agregar</ion-button>
+        </ion-item>
+    </div>
+</ion-content>
+
+<ion-footer *ngIf="!consulta" mode="ios" translucent="true">
+    <ion-toolbar mode="ios">
+        <ion-row class="ion-align-items-center">
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <ion-button shape="round" expand="block" color="primary" (click)="guardar()">Guardar</ion-button>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

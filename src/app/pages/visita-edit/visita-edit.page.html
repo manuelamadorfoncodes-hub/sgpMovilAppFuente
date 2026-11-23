@@ -1,0 +1,79 @@
+<app-header-modal [titulo]="titulo + ' Visita'" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+<!-- 
+    <ion-list-header>
+        <ion-text color="primarytext">
+            <h5>{{visita.nid_visita ? '' : 'NUEVA'}} VISITA {{visita.nid_visita ? 'Nro. ' + visita.nid_visita : ''}}</h5>
+        </ion-text>
+    </ion-list-header> -->
+
+    <ion-list-header>
+        <ion-label color="primarytext">
+            <h4>PROYECTO Nro. {{visita.codigo_expediente}}</h4>
+            <!-- <h4>VISITA: {{visita.nid_visita ? 'Nro. ' + visita.nid_visita : 'NUEVA'}} ({{visita.fec_visita | date:'dd/MM/yyyy'}})</h4> -->
+        </ion-label>
+    </ion-list-header>
+    
+    <ion-list>
+        <ion-item>
+            <ion-label>NOTA: Es <ion-text class="negrita">obligatorio</ion-text> que en la foto cargada en esta sección se encuentre presente el agente.</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary">FECHA VISITA:</ion-label>
+            <ion-label class="ion-text-right">{{visita.fec_visita | date:'dd/MM/yyyy'}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-textarea [(ngModel)]="visita.txt_observacion" labelPlacement="stacked" placeholder="Registre un comentario" [autoGrow]="true">
+                <div slot="label" class="custom-label-stacked">Comentario de la visita:</div>
+            </ion-textarea>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary">FOTOGRAFIA DEL AGENTE EN CAMPO</ion-label>
+        </ion-item>
+    </ion-list>
+
+    <app-fotos [fotos]="fotos" [consulta]="consulta" [verMapa]="true"></app-fotos>
+
+    <!-- <ion-list>
+
+        
+        <ion-item mode="ios">
+            <ion-select [(ngModel)]="visita.tip_etapa" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <div slot="label" class="custom-label-input">Etapa: </div>
+                <ion-select-option *ngFor="let item of etapas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+
+        <ion-item mode="ios">
+            <ion-textarea [(ngModel)]="visita.txt_observacion" class="ion-text-wrap" placeholder="Observación" maxlength="200" rows="5" [autoGrow]="true">
+                <div slot="label" class="custom-label-input">Observación: </div>
+            </ion-textarea>
+        </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+        <ion-text color="primarytext">
+            <h5>Fotografías y georreferencia:</h5>
+        </ion-text>
+    </ion-list-header>
+
+    <app-fotos [fotos]="fotos" [consulta]="!visita.cambio" [multiple]="true"></app-fotos> -->
+
+    <!-- <app-fotos [fotos]="fotos" [consulta]="!visita.cambio" [multiple]="true"></app-fotos> -->
+    
+    
+    <!-- <ion-item *ngIf="visita.cambio">
+        <ion-label></ion-label>
+        <ion-chip outline="true" color="primarytext" (click)="agregarFoto()">
+            <ion-label color="primarytext">Agregar foto</ion-label>
+        </ion-chip>
+    </ion-item> -->
+
+</ion-content>
+
+<ion-footer *ngIf="!consulta" mode="ios" translucent="true">
+    <ion-toolbar mode="ios" class="ion-text-center">
+        <ion-button class="custom-centrado" shape="round" color="primary" (click)="guardar()">Guardar</ion-button>
+    </ion-toolbar>
+</ion-footer>

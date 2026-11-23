@@ -1,0 +1,299 @@
+<app-header-modal titulo="Avance Grupo Partidas" (cerrar)="salir()"></app-header-modal>
+<ion-content>
+    <br>
+    <ion-list-header>
+        <ion-label color="primarytext">
+            <h4>PROYECTO Nro. {{visita.codigo_expediente}}</h4>
+            <h4>VISITA: {{visita.nid_visita ? 'Nro. ' + visita.nid_visita : 'NUEVA'}} ({{visita.fec_visita | date:'dd/MM/yyyy'}})</h4>
+            <h4>SUBPRESUPUESTO: {{subPptoSelec.txt_subpresupuesto}}</h4>
+            <h4>GRUPO DE PARTIDAS: {{grupoPartida.txt_grupo}}</h4>
+        </ion-label>
+    </ion-list-header>
+    <br>
+
+    <!------ AVANCE GRUPO ------->
+    <div *ngIf="accion === 'avanceGrupo'">
+        <ion-item-divider>
+            <ion-label *ngIf="!subPptoSelec.esPartidaRepresentativa" color="tertiary">GRUPO DE PARTIDAS</ion-label>
+            <ion-label *ngIf="subPptoSelec.esPartidaRepresentativa" color="tertiary">
+                <h4>PARTIDAS REPRESENTATIVAS</h4>
+                <div *ngIf="partidaRepresentativa">
+                    <h4>Presupuestado: {{partidaRepresentativa.num_presupuestado}} {{partidaRepresentativa.txt_unidad_partida}}</h4>
+                    <h4>Programado del mes: {{partidaRepresentativa.num_programado}} {{partidaRepresentativa.txt_unidad_partida}}</h4>
+                    <h4>Metrado Acumulado Valorizado: {{metradoAnterior}} {{partidaRepresentativa.txt_unidad_partida}}</h4>
+                    <h4>Avance acumulado visitas en campo: {{avanceAnterior * 100}}%</h4>
+                </div>
+            </ion-label>
+        </ion-item-divider>
+        <ion-item *ngIf="esSupervisor">
+            <ion-grid class="ion-text-center">
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="5" class="ion-no-padding">
+                        <ion-label>EJECUTADO ACUMULADO</ion-label> 
+                    </ion-col>
+                    <ion-col size="3.5">
+                        <ion-label *ngIf="!subPptoSelec.esPartidaRepresentativa">PROGRAM. ACUM. DEL CONJUNTO DE PARTIDAS</ion-label> 
+                        <ion-label *ngIf="subPptoSelec.esPartidaRepresentativa">PROGRAM. ACUM.</ion-label> 
+                    </ion-col>
+                    <ion-col size="3.5">
+                        <ion-label>AVANCE VALORIZ.</ion-label> 
+                    </ion-col>
+                </ion-row>
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="3" class="ion-text-right ion-no-padding">
+                            <ion-input *ngIf="subPptoSelec.esPartidaRepresentativa && partidaRepresentativa" [(ngModel)]="partidaRepresentativa.num_ejecutado_actual" type="number" placeholder="0" aria-label="none" fill="solid" mode="md"></ion-input> 
+                            <ion-input *ngIf="!subPptoSelec.esPartidaRepresentativa" [(ngModel)]="grupoPartida.porAvanceEdit" (ionChange)="cambioPorcentaje = true" type="number" placeholder="0" aria-label="none" fill="solid" mode="md"></ion-input> 
+                    </ion-col>
+                    <ion-col size="2" class="ion-text-left">
+                        <ion-label>{{(subPptoSelec.esPartidaRepresentativa && partidaRepresentativa) ? partidaRepresentativa.txt_unidad_partida : ' %'}}</ion-label> 
+                    </ion-col>
+                    <ion-col size="3.5">
+                        <ion-label>{{grupoPartida.porAvanceProgramado * 100 | number : '1.2-2'}}%</ion-label> 
+                    </ion-col>
+                    <ion-col size="3.5">
+                        <ion-label>{{grupoPartida.porAvanceEjecutado * 100 | number : '1.2-2'}}%</ion-label> 
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+        <div class="modal-agregar">
+            <br>
+            <ion-textarea class="letra14" [(ngModel)]="grupoPartida.txt_comentario" labelPlacement="stacked" placeholder="Registre sus comentarios" fill="outline" [autoGrow]="true" mode="md">
+                <div slot="label" class="custom-label-stacked">Comentarios del grupo de partidas</div>
+            </ion-textarea>
+            <br>
+            <ion-label class="letra14">Colocar el nivel de incumplimiento del grupo de partidas representadas</ion-label>
+            <ion-select [(ngModel)]="grupoPartida.tip_riesgo" placeholder="Seleccione" fill="outline" mode="md" interface="popover">
+                <div class="custom-label-input" slot="label">Nivel de riesgo:</div>
+                <ion-select-option value="01">Bajo</ion-select-option>
+                <ion-select-option value="02">Medio</ion-select-option>
+                <ion-select-option value="03">Alto</ion-select-option>
+            </ion-select>
+            <br>
+            <ion-textarea class="letra14" [(ngModel)]="grupoPartida.txt_riesgo" labelPlacement="stacked" placeholder="Registre el motivo del riesgo" fill="outline" [autoGrow]="true" mode="md">
+                <div slot="label" class="custom-label-stacked">Motivo del riesgo</div>
+            </ion-textarea>
+            <br>
+        </div>
+        <ion-item-divider>
+            <ion-label color="tertiary">FOTOGRAFIAS Y GEORREFERENCIA</ion-label>
+        </ion-item-divider>
+        <ion-item *ngIf="!consulta" lines="full">
+            <ion-chip outline="true" color="primarytext" (click)="agregarFoto()" slot="end">Agregar foto</ion-chip>
+        </ion-item>
+        <ion-list #fotoList>
+            <div *ngFor="let grupoFoto of grupoFotos; let idx='index'">
+                <!-- <ion-item-sliding> -->
+                    <ion-item lines="none">
+                        <ion-label>
+                            <h5>{{grupoFoto.txt_nombre}} <ion-text color="danger">{{grupoFoto.eliminada ? '(Eliminada)' : ''}}</ion-text></h5>
+                            <p>{{grupoFoto.txt_descripcion}}</p>
+                        </ion-label>
+                        <ion-icon *ngIf="!consulta" (click)="modificarFoto(idx)" aria-hidden="true" name="create-outline" slot="end" color="primary"></ion-icon>
+                        <ion-icon *ngIf="!consulta" (click)="eliminarFoto(idx)" aria-hidden="true" name="trash-outline" slot="end" color="primary"></ion-icon>
+                    </ion-item>
+                    <!-- <ion-item-options *ngIf="!consulta" side="end"> -->
+                        <!-- <ion-item-option (click)="eliminarFoto(idx)">Eliminar</ion-item-option> -->
+                    <!-- </ion-item-options> -->
+                <!-- </ion-item-sliding> -->
+                <app-fotos [fotos]="grupoFoto.fotos" [consulta]="consulta || grupoFoto.eliminada" [verMapa]="true"></app-fotos>
+            </div>
+        </ion-list>
+        <!-- <div *ngFor="let grupoFoto of grupoFotos; let idx='index'">
+            <ion-item lines="none">
+                <ion-label>{{grupoFoto.txt_nombre}}</ion-label>
+                <ion-icon *ngIf="!consulta" (click)="modificarFoto(idx)" aria-hidden="true" name="create-outline" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <app-fotos [fotos]="grupoFoto.fotos" [consulta]="consulta"></app-fotos>
+        </div> -->
+    
+    </div>
+
+    <!------ AVANCE PARTIDA ------>
+    <div *ngIf="accion === 'avancePartida'">
+        <ion-item-divider>
+            <ion-label color="tertiary">LISTADO DE PARTIDAS</ion-label>
+        </ion-item-divider>
+        <ion-grid class="tabla-partida">
+            <ion-row class="ion-text-center">
+                <ion-col size="3"><ion-text color="tertiary">UNIDAD MEDIDA</ion-text></ion-col>
+                <ion-col size="3"><ion-text color="tertiary">METRADO PROGRAM.</ion-text></ion-col>
+                <ion-col size="3"><ion-text color="tertiary">METRADO CALCUL.</ion-text></ion-col>
+                <ion-col size="3"><ion-text color="tertiary">METRADO VALORIZ.</ion-text></ion-col>
+            </ion-row>
+            <div *ngFor="let partida of grupoPartida.partida">
+                <ion-row >
+                    <ion-col size="12">{{partida.txt_partida}}</ion-col>
+                </ion-row>
+                <ion-row class="ion-align-items-center ion-text-right" >
+                    <ion-col size="2.8" class="ion-text-left">{{partida.txt_unidad_partida}}</ion-col>
+                    <ion-col size="2.7">{{partida.num_programado | number : '1.3-3'}}</ion-col>
+                    <ion-col size="3.8"><ion-input [(ngModel)]="partida.num_ejecutado_actual" type="number" placeholder="0" aria-label="none" fill="solid" mode="md"></ion-input></ion-col>
+                    <ion-col size="2.7">{{partida.num_ejecutado | number : '1.3-3'}}</ion-col>
+                </ion-row>
+    
+            </div>
+        </ion-grid>
+    </div>
+
+    <!------ GESTIONAR FOTOGRAFIAS ------>
+    <div *ngIf="accion === 'gestionObservacion'">
+        <ion-item-divider>
+            <ion-label color="tertiary">OBSERVACIONES ANTERIORES</ion-label>
+        </ion-item-divider>
+        <div *ngFor="let obsFoto of observFotos; let idx='index'">
+            <ion-item>
+                <ion-label>
+                    <h4>{{obsFoto.txt_nombre}}</h4>
+                    <h4>Fecha: {{obsFoto.fec_fotografia | date:'dd/MM/yyyy'}}</h4>
+                    <h4>{{obsFoto.flg_reiterada ? 'Reiterada' : (obsFoto.flg_levantada ? 'Levantada' : '')}}</h4>
+                    <ion-text color="danger">
+                        <h3>{{obsFoto.cambio ? '- Cambio sin enviar ' : ''}}</h3>
+                    </ion-text>
+                    <p>{{obsFoto.txt_descripcion}}</p>
+                    <!-- <h4><ion-text color="tertiary">{{obsFoto.flg_reiterada ? 'Reiterada' : ''}}</ion-text></h4>
+                    <h4><ion-text color="tertiary">{{obsFoto.flg_levantada ? 'Levantada' : ''}}</ion-text></h4> -->
+                </ion-label>
+            </ion-item>
+            <ion-item>
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-text-center">
+                        <ion-col size="4.3">
+                            <ion-chip *ngIf="!consulta && esSupervisor" (click)="retiterarObservacion(idx)" color="primarytext" mode="ios" outline="true">
+                                <ion-label>Reiterar Observación</ion-label>
+                            </ion-chip>
+                        </ion-col>
+                        <ion-col size="4.3">
+                            <ion-chip *ngIf="!consulta" (click)="levantarObservacion(idx)" color="primarytext" mode="ios" outline="true">
+                                <ion-label>Levantar Observación</ion-label>
+                            </ion-chip>
+                        </ion-col>
+                        <ion-col size="3.4">
+                            <ion-chip (click)="historialObservacion(idx)" color="primarytext" mode="ios" outline="true">
+                                <ion-label>Historial</ion-label>
+                            </ion-chip>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+            <app-fotos [fotos]="obsFoto.fotos" [consulta]="true" [verMapa]="true"></app-fotos>
+        </div>
+    </div>
+
+</ion-content>
+
+<ion-footer *ngIf="!consulta" mode="ios" translucent="true">
+    <ion-toolbar mode="ios" class="ion-text-center">
+        <ion-button class="custom-centrado" shape="round" color="primary" (click)="guardar()">Guardar</ion-button>
+    </ion-toolbar>
+</ion-footer>
+
+<!-- MODAL AGREGAR FOTO -->
+<ion-popover class="modal-s" [isOpen]="isAgregaFotoOpen" (willDismiss)="cerrarAgregarFoto()" show-backdrop="true" mode="ios"> 
+    <ng-template>
+        <ion-header>
+            <!-- <ion-label color="primarytext" class="ion-text-center">Agregar nueva foto al reporte</ion-label> -->
+            <ion-toolbar class="ion-text-center">
+                <ion-label color="primarytext">Agregar nueva foto al reporte</ion-label>
+            </ion-toolbar>
+        </ion-header>
+        <div class="modal-agregar">
+            <br>
+            <ion-textarea [(ngModel)]="nombreFoto" label="Nombre de la fotografía" labelPlacement="floating" fill="outline" color="primary" [autoGrow]="true" mode="md"></ion-textarea>
+            <br>
+            <ion-textarea [(ngModel)]="descripFoto" label="Descripción de la foto" labelPlacement="floating" fill="outline" color="primary" [autoGrow]="true" mode="md"></ion-textarea>
+            <br>
+            <ion-select [(ngModel)]="tipoFoto" label="Tipo de foto" label-placement="floating" fill="outline" interface="popover" mode="md">
+                <ion-select-option *ngFor="let resp of tipoFotoList" [value]="resp.cod_tipo" class="ion-text-wrap">{{resp.txt_tipo}}</ion-select-option>
+                <!-- <ion-select-option value="01">Avance</ion-select-option>
+                <ion-select-option value="02">Representativa</ion-select-option>
+                <ion-select-option value="03">Observación</ion-select-option> -->
+            </ion-select>
+            <br>
+        </div>
+        <ion-footer mode="ios">
+            <ion-toolbar>
+                <ion-grid class="ion-no-padding">
+                    <ion-row>
+                        <ion-col size="6" class="ion-text-center">
+                            <ion-button class="letra-mediana" (click)="cerrarAgregarFoto()" [strong]="true" expand="block" fill="clear" size="small">Cancelar</ion-button>
+                        </ion-col>
+                        <ion-col size="6" class="ion-text-center">
+                            <ion-button class="letra-mediana" (click)="aceptarFoto()" [strong]="true" expand="block" fill="clear" size="small">Aceptar</ion-button>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-toolbar>
+        </ion-footer>
+    </ng-template>
+</ion-popover>
+
+<!-- MODAL CERRAR O REITERAR FOTO -->
+<ion-popover class="modal-s" [isOpen]="isGestionObserOpen" (willDismiss)="cerrarGestionObservacion()" show-backdrop="true" mode="ios"> 
+    <ng-template>
+        <ion-header>
+            <!-- <ion-label color="primarytext" class="ion-text-center">Agregar nueva foto al reporte</ion-label> -->
+            <ion-toolbar class="ion-text-center">
+                <ion-label color="primarytext">{{tipoFoto === '04' ? 'Reiterar' : 'Levantar'}} observación</ion-label>
+            </ion-toolbar>
+        </ion-header>
+        <div class="modal-agregar">
+            <br>
+            <ion-textarea [(ngModel)]="nombreFoto" label="Nombre de la fotografía" labelPlacement="floating" fill="outline" color="primary" [autoGrow]="true" mode="md"></ion-textarea>
+            <br>
+            <ion-textarea [(ngModel)]="descripFoto" label="Descripción de la foto" labelPlacement="floating" fill="outline" color="primary" [autoGrow]="true" mode="md"></ion-textarea>
+            <br>
+            <app-fotos [fotos]="foto"></app-fotos>
+            <br>
+        </div>
+        <ion-footer mode="ios">
+            <ion-toolbar>
+                <ion-grid class="ion-no-padding">
+                    <ion-row>
+                        <ion-col size="6" class="ion-text-center">
+                            <ion-button class="letra-mediana" (click)="cerrarGestionObservacion()" [strong]="true" expand="block" fill="clear" size="small">Cancelar</ion-button>
+                        </ion-col>
+                        <ion-col size="6" class="ion-text-center">
+                            <ion-button class="letra-mediana" (click)="aceptarObservacion()" [strong]="true" expand="block" fill="clear" size="small">Aceptar</ion-button>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-toolbar>
+        </ion-footer>
+    </ng-template>
+</ion-popover>
+
+
+    <!------ HISTORIAL FOTOGRAFIAS ------>
+<ion-modal [isOpen]="isHistorialOpen" (willDismiss)="cerrarHistorial()">
+    <ng-template>
+        <app-header-modal titulo="Historial de observaciones" (cerrar)="cerrarHistorial()"></app-header-modal>
+        <ion-content>
+            <br>
+            <ion-list-header>
+                <ion-label color="primarytext">
+                    <h4>PROYECTO Nro. {{visita.codigo_expediente}}</h4>
+                    <h4>VISITA: {{visita.nid_visita ? 'Nro. ' + visita.nid_visita : 'NUEVA'}} ({{visita.fec_visita | date:'dd/MM/yyyy'}})</h4>
+                    <h4>SUBPRESUPUESTO: {{subPptoSelec.txt_subpresupuesto}}</h4>
+                    <h4>GRUPO DE PARTIDAS: {{grupoPartida.txt_grupo}}</h4>
+                    <!-- <h4>PRESUPUESTADO: {{partidaRepresentativa.num_presupuestado}} {{partidaRepresentativa.txt_unidad_partida}}</h4> -->
+                </ion-label>
+            </ion-list-header>
+            <br>
+            <ion-item-divider>
+                <ion-label color="tertiary">HISTORIAL DE OBSERVACIONES</ion-label>
+            </ion-item-divider>
+            <div *ngFor="let historial of historialFoto; let idx='index'">
+                <ion-item>
+                    <ion-label>
+                        <h4>{{historial.txt_nombre}}</h4>
+                        <h4>Fecha: {{historial.fec_fotografia | date:'dd/MM/yyyy'}}</h4>
+                        <p>{{historial.txt_descripcion}}</p>
+                    </ion-label>
+                </ion-item>
+                <app-fotos [fotos]="historial.fotos" [consulta]="true" [verMapa]="true"></app-fotos>
+            </div>
+        </ion-content>
+    </ng-template>
+</ion-modal>
+

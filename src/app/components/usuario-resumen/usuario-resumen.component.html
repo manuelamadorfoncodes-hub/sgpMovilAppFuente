@@ -1,0 +1,60 @@
+       
+<!-- <ion-label class="ion-no-margin" class="ion-no-padding">
+    <p class="resumen">
+        <ion-text color="tertiary">Total: {{usuarios.length}} - Activos: {{contarActivo()}}, - Nuevos: {{contarNuevo()}} </ion-text>
+    </p>
+    <p class="resumen">
+        <ion-text color="tertiary"></ion-text>
+    </p>
+</ion-label> -->
+
+<ion-card>
+    <ion-card-content>
+        <ion-card-title color="primary">Resumen de Usuarios</ion-card-title>
+        <ion-card-subtitle color="tertiary">USUARIOS</ion-card-subtitle>
+
+        <ion-grid class="ion-no-padding">
+            <ion-row>
+                <ion-col size="6">Activos</ion-col>
+                <ion-col size="6">{{contarActivo()}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="6">Nuevos</ion-col>
+                <ion-col size="6">{{contarNuevo()}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="6">Total</ion-col>
+                <ion-col size="6">{{usuarios.length}}</ion-col>
+            </ion-row>
+        </ion-grid>
+        <ion-card-subtitle color="tertiary">SOLICITUDES</ion-card-subtitle>
+        <ion-grid class="ion-no-padding">
+            <ion-row>
+                <ion-col size="6">Sin enviar</ion-col>
+                <ion-col size="6">{{contarSinEnviar()}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="6">Enviada</ion-col>
+                <ion-col size="6">{{contarEnviada()}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="6">Observada</ion-col>
+                <ion-col size="6">{{contarObservada()}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="6">Total</ion-col>
+                <ion-col size="6">{{contarSolicitud()}}</ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <ion-row class="ion-align-items-center">
+            <ion-col size="4"></ion-col>
+            <ion-col size="4">
+                <ion-chip color="primary" outline="true" (click)="cerrar()" class="ion-align-self-center" size="small">
+                    <ion-label>Cerrar</ion-label>
+                </ion-chip>
+            </ion-col>
+            <ion-col size="4"></ion-col>
+        </ion-row>
+    </ion-card-content>
+</ion-card>

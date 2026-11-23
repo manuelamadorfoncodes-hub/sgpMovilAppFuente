@@ -1,0 +1,30 @@
+ion-select::part(placeholder),
+ion-select::part(text) {
+    font-size: 14px !important;
+    white-space: normal !important;
+}
+
+ion-select::part(icon) {
+    opacity: 0.6;
+    // font-size: 14px !important;;
+}
+
+
+.custom-label-input {
+    // color: var(--ion-color-tertiary);
+    font-size: 14px;
+    white-space: normal !important;
+    text-align: start !important;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.negrita {
+    font-weight: bold !important;
+    font-size: 14px;
+}
+
+ion-grid {
+    --ion-grid-padding: 0px;
+    font-size: 14px;
+}

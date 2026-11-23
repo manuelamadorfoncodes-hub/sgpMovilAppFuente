@@ -1,0 +1,279 @@
+<app-header-modal titulo="Informe del ERI" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <!-- <form [formGroup]="informeForm"> -->
+        <ion-text color="primarytext" class="ion-text-center">
+            <p>ERI {{eri.cod_nri}}: {{eri.txt_nri}} - GI: {{eri.txt_grupo_interes}}</p>
+        </ion-text>
+
+        <ion-item>
+            <ion-label color="tertiary"> Fecha: </ion-label>
+            <ion-label class="ion-text-wrap">{{informe.fec_valorizacion ? (informe?.fec_valorizacion | date:'dd/MM/yyyy HH:mm') : '00/00/0000 00:00'}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary">Periodo:</ion-label>
+            <ion-label>{{informe.cod_periodo}}</ion-label>
+        </ion-item>
+        <!-- <ion-item mode="ios">
+            <ion-select [(ngModel)]="informe.est_nri" class="ion-text-wrap" label-placement="stacked" placeholder="Seleccione" interface="popover" >
+                <div slot="label" class="custom-label-stacked">Estado del ERI</div>
+                <ion-select-option *ngFor="let item of estadosEri" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item> -->
+
+        <app-custom-select idSelect="selectEstado" [items]="estadosEri" campo="txt_tipo" campoValor="cod_tipo" [valor]="informe.est_nri"  etiqueta="Estado del ERI" customPlaceholder="Seleccione" (seleccionarEvent)="seleccionarEstado($event)"></app-custom-select> 
+        
+        <div *ngIf="informe.est_nri == '8' || informe.est_nri == '6' || informe.est_nri == 'X'">
+            <app-custom-select idSelect="selectCausa" [items]="causalesEstadoEri" campo="txt_tipo" campoValor="cod_tipo" [valor]="informe.cod_causal" etiqueta="Causal del estado" customPlaceholder="Seleccione" (seleccionarEvent)="seleccionarCausal($event)"></app-custom-select> 
+            <ion-item *ngIf="informe.cod_causal === '99'">
+                <ion-textarea [(ngModel)]="informe.txt_otra_causal" placeholder="Especifique" [autoGrow]="true" maxlength="80">
+                    <!-- <div slot="label" class="custom-label-stacked">Observaciones</div> -->
+                </ion-textarea>
+            </ion-item>
+        </div>
+
+        <ion-item *ngIf="user?.perfil.nidperfil !== 34" mode="md">
+            <ion-select class="select-padding" [(ngModel)]="informe.tip_informacion" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <div slot="label" class="custom-label-input">Información de: </div>
+                <ion-select-option *ngFor="let item of tipoInformacion" [value]="item" class="ion-text-wrap">{{item}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+
+        <!-- (seleccionarEvent)="seleccionarPartida($event)" -->
+    <div *ngIf="informe.est_nri && informe.est_nri !== '2' && informe.est_nri !== '9' && informe.est_nri !== 'X'">
+        <h6>Elaboración del plan de capacitación y asistencia técnica</h6>
+        <ion-item>
+            <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="9">
+                        <ion-text class="ion-text-wrap" color="tertiary">% acumulado de avance en pago del asistente:</ion-text>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-input [(ngModel)]="informe.por_avance_pago" type="number" placeholder="%" class="ion-text-right" min="0" max="1" errorText="Ingrese un valor entre 0 y 1"></ion-input>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+        <ion-item>
+            <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="9" class="paddingLeft">
+                        <ion-text class="ion-text-wrap" color="tertiary">% acumulado de avance en la implementacion del NRI:</ion-text>
+                    </ion-col>
+                    <ion-col size="3" class="paddingRight">
+                        <ion-input [(ngModel)]="informe.por_avance_imp_nri" type="number" placeholder="%" class="ion-text-right" min="0" max="1" errorText="Ingrese un valor entre 0 y 1"></ion-input>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+        <ion-item>
+            <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="9" class="paddingLeft">
+                        <ion-text class="ion-text-wrap" color="tertiary">% acumulado de avance de los resultados esperados del ERI:</ion-text>
+                    </ion-col>
+                    <ion-col size="3" class="paddingRight">
+                        <ion-input [(ngModel)]="informe.por_avance_resul_nri" type="number" placeholder="%" class="ion-text-right" min="0" max="1" errorText="Ingrese un valor entre 0 y 1"></ion-input>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+        <ion-item>
+            <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="9" class="paddingLeft">
+                        <ion-text class="ion-text-wrap" color="tertiary">Número de eventos de asistencia técnica programada en el periodo:</ion-text>
+                    </ion-col>
+                    <ion-col size="3" class="paddingRight">
+                        <ion-input [(ngModel)]="informe.num_evento_at_prog" type="number" placeholder="0" class="ion-text-right"></ion-input>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+        <ion-item>
+            <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="9" class="paddingLeft">
+                        <ion-text class="ion-text-wrap" color="tertiary">Número de eventos de asistencia técnica realizada en el periodo:</ion-text>
+                    </ion-col>
+                    <ion-col size="3" class="paddingRight">
+                        <ion-input [(ngModel)]="informe.num_evento_at_real" type="number" placeholder="0" class="ion-text-right"></ion-input>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+        <ion-item>
+            <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="9" class="paddingLeft">
+                        <ion-text class="ion-text-wrap" color="tertiary">Número de trabajadores en el periodo:</ion-text>
+                    </ion-col>
+                    <ion-col size="3" class="paddingRight">
+                        <ion-input [(ngModel)]="informe.num_trabajadores" type="number" placeholder="0" class="ion-text-right"></ion-input>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+    </div>
+
+    <div *ngIf="informe.est_nri && informe.est_nri !== '2' && informe.est_nri !== '9' && informe.est_nri !== 'X'">
+        <h6>Adquisición de insumos y activos</h6>
+        <ion-item>
+            <ion-grid   class="ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="9">
+                        <ion-text class="ion-text-wrap" color="tertiary">% acumulado de avance en la entrega de insumos/activos:</ion-text>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-input [(ngModel)]="informe.por_avance_insumo" type="number" placeholder="%" class="ion-text-right" min="0" max="1" errorText="Ingrese un valor entre 0 y 1"></ion-input>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+    </div>
+
+    <div *ngIf="informe.est_nri && informe.est_nri !== '2' && informe.est_nri !== '9' && informe.est_nri !== 'X'">
+        <h6>Inicio de la AT del ERI</h6>
+        <ion-item>
+            <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                    <ion-col size="9">
+                        <ion-text class="ion-text-wrap" color="tertiary">Fecha de inicio de contrato de AT:</ion-text>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-label class="ion-text-right">{{informe.fec_ini_at ? (informe.fec_ini_at | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-label>
+                        <!-- <ion-input type="number" placeholder="00/00/0000" ></ion-input> -->
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+    </div>
+    
+    <div *ngIf="informe.est_nri && informe.est_nri !== '2' && informe.est_nri !== '9' && informe.est_nri !== 'X'">
+        <br>
+        <ion-checkbox [(ngModel)]="informe.produccion" labelPlacement="end" justify="start">Producción</ion-checkbox>
+    </div>
+
+    <div *ngIf="informe.produccion">
+        <div *ngIf="informe.est_nri && informe.est_nri !== '2' && informe.est_nri !== '9' && informe.est_nri !== 'X'">
+            <h6>Producción</h6>
+            <ion-item>
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-align-items-center">
+                        <ion-col size="9">
+                            <ion-text class="ion-text-wrap" color="tertiary">Producción valorizada del producto mas importante (S/. Mes inicial):</ion-text>
+                        </ion-col>
+                        <ion-col size="3">
+                            <ion-input *ngIf="!informe.existeProdInicial" [(ngModel)]="informe.imp_prod_ini" type="number" placeholder="S/." class="ion-text-right"></ion-input>
+                            <ion-label *ngIf="informe.existeProdInicial" class="ion-text-right">{{informe.imp_prod_ini | number:'1.0-2'}}</ion-label>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+            <ion-item>
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-align-items-center">
+                        <ion-col size="9">
+                            <ion-text class="ion-text-wrap" color="tertiary">(A) Producción valorizada del producto mas importante (S/. Mes actual/valorizado):</ion-text>
+                        </ion-col>
+                        <ion-col size="3">
+                            <ion-input [(ngModel)]="informe.imp_prod_mes" type="number" placeholder="S/." class="ion-text-right"></ion-input>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+        </div>
+        
+        <div *ngIf="informe.est_nri && informe.est_nri !== '2' && informe.est_nri !== '9' && informe.est_nri !== 'X'">
+            <h6>Comercialización</h6>
+            <ion-item>
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-align-items-center">
+                        <ion-col size="9">
+                            <ion-text class="ion-text-wrap" color="tertiary">Total de ingreso por ventas (S/. Mes actual/valorizado):</ion-text>
+                        </ion-col>
+                        <ion-col size="3">
+                            <ion-input [(ngModel)]="informe.imp_vol_venta" type="number" placeholder="S/." class="ion-text-right"></ion-input>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+            <ion-item>
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-align-items-center">
+                        <ion-col size="9">
+                            <ion-text class="ion-text-wrap" color="tertiary">Total de ingreso por ventas del producto más importante (S/. Mes inicial):</ion-text>
+                        </ion-col>
+                        <ion-col size="3">
+                            <ion-input *ngIf="!informe.existeComerInicial" [(ngModel)]="informe.imp_ventas_ini" type="number" placeholder="S/." class="ion-text-right"></ion-input>
+                            <ion-label *ngIf="informe.existeComerInicial" class="ion-text-right">{{informe.imp_ventas_ini | number:'1.0-2'}}</ion-label>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+            <ion-item>
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-align-items-center">
+                        <ion-col size="9">
+                            <ion-text class="ion-text-wrap" color="tertiary">(B) Total de ingreso por ventas del producto más importante (S/. Mes actual/valorizado):</ion-text>
+                        </ion-col>
+                        <ion-col size="3">
+                            <ion-input [(ngModel)]="informe.imp_ventas_actual" type="number" placeholder="S/." class="ion-text-right"></ion-input>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+            <ion-item>
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-align-items-center">
+                        <ion-col size="9">
+                            <ion-text class="ion-text-wrap" color="tertiary">(C) Utilidad del producto más importante = (B) - (A):</ion-text>
+                        </ion-col>
+                        <ion-col size="3" class="ion-text-right">
+                            <ion-text color="tertiary">{{(informe.imp_ventas_actual ? informe.imp_ventas_actual : 0) - (informe.imp_prod_mes ? informe.imp_prod_mes : 0)}}</ion-text>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+        </div>
+    </div>
+
+    <div *ngIf="informe.est_nri && informe.est_nri !== '2' && informe.est_nri !== '9' && informe.est_nri !== 'X'">
+        <h6>Término de la AT del ERI</h6>
+        <ion-item mode="ios">
+            <ion-label color="tertiary" class="ion-text-wrap">Fecha de verificación de cumplimiento de la AT:</ion-label>
+            <ion-button id="open-modal-fin-at" fill="clear" color="dark">{{informe.fec_fin_at ? (informe.fec_fin_at | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" trigger="open-modal-fin-at" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime [(ngModel)]="informe.fec_fin_at" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+        </ion-item>
+    </div>
+
+    <div>
+        <h6>Observaciones y recomendaciones</h6>
+        <ion-item>
+            <ion-textarea [(ngModel)]="informe.txt_conclusiones" labelPlacement="stacked" [autoGrow]="true">
+                <div slot="label" class="custom-label-stacked">Observaciones y/o estado situacional</div>
+            </ion-textarea>
+        </ion-item>
+        <ion-item>
+            <ion-textarea [(ngModel)]="informe.txt_recomendaciones" labelPlacement="stacked" [autoGrow]="true">
+                <div slot="label" class="custom-label-stacked">Recomendaciones</div>
+            </ion-textarea>
+        </ion-item>
+    </div>
+
+    <div *ngIf="informe.est_nri && informe.est_nri !== '2' && informe.est_nri !== '9' && informe.est_nri !== 'X'">
+        <h4 >Fotografías y georreferencia</h4>
+        <app-fotos [fotos]="fotos" [consulta]="consulta"></app-fotos>
+    </div>
+
+</ion-content>
+
+<ion-footer *ngIf="!consulta" mode="ios" translucent="true">
+    <ion-toolbar mode="ios" class="ion-text-center">
+        <ion-button class="custom-centrado" shape="round" color="primary" (click)="guardar()">Guardar</ion-button>
+    </ion-toolbar>
+</ion-footer>

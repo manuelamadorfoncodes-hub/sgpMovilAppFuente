@@ -1,0 +1,56 @@
+<ion-menu side="start" menuId="menuPrincipal" contentId="principal" (ionWillOpen)="validarAccesos()">
+    <ion-header>
+        <ion-toolbar color="primary">
+            <ion-title>SGP Móvil</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content>
+        <ion-list>
+            <div *ngIf="accesoConsultasReportes">
+                <ion-list-header>
+                    <ion-label color="primarytext">CONSULTAS Y REPORTES</ion-label>
+                </ion-list-header>
+                <ion-menu-toggle>
+                    <ion-item (click)="reportesAvanceTec()" mode="ios">
+                        <ion-icon slot="start" name="document-text-outline"></ion-icon>
+                        <ion-label class="ion-text-wrap">Reportes de avance de tecnologías</ion-label>
+                    </ion-item>
+                </ion-menu-toggle>
+            </div>
+            <ion-list-header>
+                <ion-label color="primarytext">SEGURIDAD</ion-label>
+            </ion-list-header>
+            <!-- OJO no pasa a producción (11/08/2021)
+            <ion-menu-toggle>
+                <ion-item (click)="acuerdoConfidencialidad()" mode="ios">
+                    <ion-icon slot="start" name="reader-outline"></ion-icon>
+                    <ion-label class="ion-text-wrap">Acuerdo de Confidencialidad de la Información</ion-label>
+                </ion-item>
+            </ion-menu-toggle> -->
+            <ion-menu-toggle>
+                <ion-item (click)="cambiarZonal()" mode="ios">
+                    <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+                    <ion-label class="ion-text-wrap">Cambiar Unidad Territorial / Perfil</ion-label>
+                </ion-item>
+            </ion-menu-toggle>
+            <ion-menu-toggle>
+                <ion-item (click)="confirmarContrasenha()" mode="ios">
+                    <ion-icon slot="start" name="key-outline"></ion-icon>
+                    <ion-label class="ion-text-wrap">Confirmar contraseña</ion-label>
+                </ion-item>
+            </ion-menu-toggle>
+            <!-- <ion-menu-toggle>
+                <ion-item (click)="onClick()">
+                    <ion-label>Cambiar contraseña</ion-label>
+                    <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+                </ion-item>
+            </ion-menu-toggle> -->
+            <ion-menu-toggle>
+                <ion-item (click)="cerrarSesion()" mode="ios">
+                    <ion-icon slot="start" name="exit-outline"></ion-icon>
+                    <ion-label class="ion-text-wrap">Cerrar sesión</ion-label>
+                </ion-item>
+            </ion-menu-toggle>
+        </ion-list>
+    </ion-content>
+</ion-menu>

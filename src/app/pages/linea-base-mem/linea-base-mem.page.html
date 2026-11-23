@@ -1,0 +1,160 @@
+<app-header-modal [titulo]="nidLinea === 1 ? 'Línea de salida MEM' : 'Línea de base MEM' " (cerrar)="salir()"></app-header-modal>
+
+<ion-content [fullscreen]="true">
+  
+    <ion-item-divider md="ios">
+        <ion-label class="ion-text-wrap" color="primarytext">1.	Datos generales</ion-label>
+    </ion-item-divider>
+
+    <ion-item  mode="ios">
+        <ion-label class="ion-text-wrap">
+            <h6><ion-text color="tertiary">Nro. Expediente: {{usuario.codigo_expediente}}</ion-text></h6>
+            <h6><ion-text color="tertiary">{{usuario.txt_apellido_paterno}} {{usuario.txt_apellido_materno}}, {{usuario.txt_nombres}}</ion-text></h6>
+            <h6><ion-text color="tertiary">Edad: {{edad}}</ion-text></h6>
+            <h6><ion-text color="tertiary">DNI: {{usuario.txt_documento_identidad}}</ion-text></h6>
+            <h6><ion-text color="tertiary">Celular: {{usuario.txt_telefono}}</ion-text></h6>
+            <h6><ion-text color="tertiary">Fecha de incio: {{usuario.fec_inicio | date:'dd/MM/yyyy'}}</ion-text></h6>
+            <h6><ion-text color="tertiary">Localidad: {{usuario.txt_ubigeo}}</ion-text></h6>
+            <h6><ion-text color="tertiary">Dirección: {{usuario.txt_domicilio}}</ion-text></h6>
+        </ion-label>
+    </ion-item>
+
+    <app-custom-select-tipo idSelect="osb" etiqueta="Organización Social de Base (OSB):" [items]="tipoOrganizacionBase" [(valor)]="ficha.tip_organizacion_base"></app-custom-select-tipo>
+    <ion-item>
+        <ion-grid class="ion-no-padding">
+            <ion-row>
+                <ion-text class="custom-aria-label" color="tertiary">Nombre de OSB:</ion-text>
+            </ion-row>
+            <ion-row>
+                <ion-textarea class="letra14" [(ngModel)]="ficha.txt_organizacion_base" labelPlacement="stacked" placeholder="Especifique" [autoGrow]="true" maxlength="300"></ion-textarea>
+            </ion-row>
+        </ion-grid>
+    </ion-item>
+
+    <div *ngFor="let item of detalle; let i=index">
+        <div *ngIf="!item.flg_eliminado">
+            <div *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'SUN'">
+                <app-custom-select-tipo [idSelect]="item.cod_pregunta" [etiqueta]="item.pregunta.txt_tipo" [items]="item.pregunta.subTipos" [(valor)]="item.cod_respuesta1" (valorChange)="validarRespuesta(i)"></app-custom-select-tipo>
+                <ion-item *ngIf="item.cod_respuesta1?.includes('99')">
+                    <ion-textarea class="letra14" [(ngModel)]="item.txt_otro" [autoGrow]="true" placeholder="Especifique"></ion-textarea>
+                </ion-item>
+            </div>
+
+            <ion-item *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'SYN'" mode="md">
+                <ion-select class="select-padding" [(ngModel)]="item.cod_respuesta1" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}" (ionChange)="validarRespuesta(i)">
+                    <div slot="label" class="custom-label-input">{{item.pregunta.txt_tipo}}</div>
+                    <ion-select-option *ngFor="let resp of item.pregunta.subTipos" [value]="resp.cod_tipo" class="ion-text-wrap">{{resp.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+
+            <ion-item *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'TXT'">
+                <ion-grid class="ion-no-padding">
+                    <ion-row>
+                        <ion-text class="custom-aria-label" color="tertiary">{{item.pregunta.txt_tipo}}</ion-text>
+                    </ion-row>
+                    <ion-row>
+                        <ion-textarea class="letra14" [(ngModel)]="item.txt_dato" labelPlacement="stacked" placeholder="Especifique" [autoGrow]="true" maxlength="300"></ion-textarea>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+
+            <div *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'FDA'">
+                <ion-item>
+                    <ion-label class="ion-text-wrap letra14" color="tertiary">{{item.pregunta.txt_tipo}}</ion-label>
+                </ion-item>
+                <ion-item>
+                    <ion-label class="letra14" color="tertiary">Del:</ion-label>
+                    <ion-button id="open-modal-fecha1" fill="clear" color="dark">{{item.fec_dato1 ? (item.fec_dato1 | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+                    <ion-modal id="date-modal" trigger="open-modal-fecha1" [keepContentsMounted]="true">
+                        <ng-template>
+                            <ion-datetime [(ngModel)]="item.fec_dato1" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios"></ion-datetime>
+                        </ng-template>
+                    </ion-modal>
+                </ion-item>
+                <ion-item>
+                    <ion-label class="letra14" color="tertiary">Al:</ion-label>
+                    <ion-button id="open-modal-fecha2" fill="clear" color="dark">{{item.fec_dato2 ? (item.fec_dato2 | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+                    <ion-modal id="date-modal" trigger="open-modal-fecha2" [keepContentsMounted]="true">
+                        <ng-template>
+                            <ion-datetime [(ngModel)]="item.fec_dato2" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios"></ion-datetime>
+                        </ng-template>
+                    </ion-modal>
+                </ion-item>
+            </div>
+
+            <div *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'MYN'">
+                <app-multiple-data [etiqueta]="item.pregunta.txt_tipo" [items]="item.pregunta.subTipos" [codigos]="item.txt_list_codigo" [valores]="item.txt_list_data" (valorChange)="actualizaValor($event, i)"></app-multiple-data>
+            </div>
+
+            <div *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'INC'">
+                <ion-item>
+                    <ion-input [(ngModel)]="item.num_dato" placeholder="Cantidad" maxlength="2" class="ion-text-right letra14" (keypress)="validarTecla($event)">
+                        <div slot="label" class="custom-label-input">{{item.pregunta.txt_tipo}}</div>
+                    </ion-input>
+                </ion-item>
+            </div>
+
+            <div *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'INS'">
+                <ion-item>
+                    <ion-input [(ngModel)]="item.num_dato" placeholder="S/." type="number" class="ion-text-right letra14" (keypress)="validarTecla($event)">
+                        <div slot="label" class="custom-label-input">{{obtenerEtiqueta(item.cod_pregunta)}}</div>
+                    </ion-input>
+                </ion-item>
+            </div>
+
+            <div *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'MCX'">
+                <app-multiple-data [etiqueta]="item.pregunta.txt_tipo" [items]="item.pregunta.subTipos" [codigos]="item.txt_list_codigo" [valores]="item.txt_list_data" tipo="numberInput" [tituloColunma]="item.pregunta.txt_dato4" (valorChange)="actualizaValor($event, i)"></app-multiple-data>
+            </div>
+            
+            <div *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'MCT'">
+                <app-multiple-data [etiqueta]="item.pregunta.txt_tipo" [items]="item.pregunta.subTipos" [codigos]="item.txt_list_codigo" [valores]="item.txt_list_data" tipo="numberInputTot" [tituloColunma]="item.pregunta.txt_dato4" (valorChange)="actualizaValor($event, i)" customPlaceholder="Cantidad"></app-multiple-data>
+            </div>
+
+            <div *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'MST'">
+                <app-multiple-data [etiqueta]="item.pregunta.txt_tipo" [items]="item.pregunta.subTipos" [codigos]="item.txt_list_codigo" [valores]="item.txt_list_data" tipo="numberInputTot" [tituloColunma]="item.pregunta.txt_dato4" (valorChange)="actualizaValor($event, i)" customPlaceholder="S/."></app-multiple-data>
+            </div>
+
+            <div *ngIf="item.pregunta.txt_dato2.substring(0,3) === 'MCB'">
+                <app-multiple-checkbox [etiqueta]="item.pregunta.txt_tipo" [items]="item.pregunta.subTipos" [(valor)]="item.txt_list_data" [dobleColumna]="false"></app-multiple-checkbox>
+                <ion-item *ngIf="item.txt_list_data?.includes('99')">
+                    <ion-input [(ngModel)]="item.txt_otro" type="text" placeholder="Especifique"></ion-input>
+                </ion-item>
+            </div>
+
+            <!-- Segunda posición del txt_dato2 -->
+            <div *ngIf="item.pregunta.txt_dato2.substring(4,7) === 'SUN'">
+                <div *ngIf="item.cod_respuesta1">
+                    <div *ngIf="obtenerSubTipos(item.pregunta.subTipos, item.cod_respuesta1, i)">
+                        <app-custom-select-tipo [idSelect]="item.cod_pregunta + '2'" [etiqueta]="item.pregunta.txt_dato4" [items]="obtenerSubTipos(item.pregunta.subTipos, item.cod_respuesta1, i)" [(valor)]="item.cod_respuesta2"></app-custom-select-tipo>
+                    </div>
+                </div>
+            </div>
+
+            <ion-item *ngIf="item.pregunta.txt_dato2.substring(4,7) === 'SYN'" mode="md">
+                <ion-select class="select-padding" [(ngModel)]="item.cod_respuesta1" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-xs'}" (ionChange)="validarRespuesta(i)">
+                    <div slot="label" class="custom-label-input">{{item.pregunta.txt_dato4}}</div>
+                    <ion-select-option *ngFor="let resp of item.pregunta.subTipos" [value]="resp.cod_tipo" class="ion-text-wrap">{{resp.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+
+            <div *ngIf="item.pregunta.txt_dato2.substring(4,7) === 'INS'">
+                <ion-item>
+                    <ion-input [(ngModel)]="item.num_dato" placeholder="S/." type="number" class="ion-text-right letra14" (keypress)="validarTecla($event)">
+                        <div slot="label" class="custom-label-input">{{item.pregunta.txt_dato4}}</div>
+                    </ion-input>
+                </ion-item>
+            </div>
+
+            <ion-item *ngIf="item.textoError">
+                <ion-label class="ion-text-right ion-text-wrap" color="danger">{{item.textoError}}</ion-label>
+            </ion-item>
+
+        </div>
+    </div>
+</ion-content>
+
+<ion-footer *ngIf="!consulta" mode="ios">
+    <ion-toolbar class="ion-text-center">
+        <ion-button class="padding-button" color="primary" shape="round" (click)="guardar()">  Guardar  </ion-button>
+    </ion-toolbar>
+</ion-footer>

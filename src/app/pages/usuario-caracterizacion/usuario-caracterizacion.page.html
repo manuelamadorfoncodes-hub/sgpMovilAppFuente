@@ -1,0 +1,177 @@
+<app-header-modal titulo="Ficha de Caracterización" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <ion-text color="primarytext">
+        <h6>1. DATOS GENERALES</h6>
+    </ion-text>
+    <ion-item>
+        <ion-label>
+            <h3><ion-text color="tertiary">DNI: </ion-text>{{usuario.txt_documento_identidad}}</h3>
+            <h3 class="francesa"><ion-text color="tertiary">Nombre: </ion-text>{{usuario.txt_apellido_paterno}} {{usuario.txt_apellido_materno}}, {{usuario.txt_nombres}}</h3>
+            <h3 class="francesa"><ion-text color="tertiary">Entevistador: </ion-text>{{ficha.txt_entrevistador}}</h3>
+            <h3><ion-text color="tertiary">Fecha de visita: </ion-text>{{ficha.fec_visita | date:'dd/MM/yyyy'}}</h3>
+        </ion-label>
+    </ion-item>
+
+    <ion-text color="primarytext">
+        <h6 class="francesa">2. FORTALECIMIENTO Y CONSOLIDACIÓN DE LOS SISTEMAS DE PRODUCCIÓN FAMILIAR</h6>
+    </ion-text>
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="tertiary">¿Cómo fue la participación del usuario al mes 24 en la tecnología productiva ...?</ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let pregunta of seccionTec; let i=index" mode="ios">
+            <ion-select [(ngModel)]="pregunta.cod_respuesta" placeholder="Seleccione" interface="popover" (ionChange)="calificar('TEC',i)" [interfaceOptions]="{cssClass:'custom-radio-popover-m'}">
+                <div slot="label" class="custom-label-input">{{pregunta.txt_pregunta}}</div>
+                <ion-select-option *ngFor="let item of parametros.fichaRespuestaTec" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>  
+    </ion-list>
+
+    <ion-text color="primarytext">
+        <h6 class="francesa">3. MEJORA DE LA VIVIENDA SALUDABLE</h6>
+    </ion-text>
+    <ion-list>
+        <ion-item *ngFor="let pregunta of seccionViv; let i=index" mode="ios">
+            <ion-select [(ngModel)]="pregunta.cod_respuesta" placeholder="Seleccione" interface="popover" (ionChange)="calificar('VIV',i)" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <div slot="label" class="custom-label-input">{{pregunta.txt_pregunta}}</div>
+                <ion-select-option *ngFor="let item of pregunta.respuestas" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>  
+    </ion-list>
+
+    <ion-text color="primarytext">
+        <h6 class="francesa">4. COMERCIALIZACIÓN y ASOCIATIVIDAD</h6>
+    </ion-text>
+    <ion-list>
+        <ion-item *ngFor="let pregunta of seccionCom; let i=index" mode="ios">
+            <ion-select [(ngModel)]="pregunta.cod_respuesta" placeholder="Seleccione" interface="popover" (ionChange)="calificar('COM',i)" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <div slot="label" class="custom-label-input">{{pregunta.txt_pregunta}}</div>
+                <ion-select-option *ngFor="let item of parametros.fichaRespuestaCom" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>  
+    </ion-list>
+
+    <div *ngIf="ficha.tip_resultado === 'C' || ficha.tip_resultado === 'E'">
+        <ion-text color="primarytext">
+            <h6 class="francesa">5. AUTOEVALUACIÓN DEL USUARIO (CAPACITACIÓN Y ASISTENCIA TÉCNICA)</h6>
+        </ion-text>
+        <ion-list>
+            <ion-item *ngFor="let pregunta of seccionAut; let i=index" mode="ios">
+                <ion-select [(ngModel)]="pregunta.cod_respuesta" placeholder="Seleccione" interface="popover" (ionChange)="calificar('AUT',i)" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                    <div slot="label" class="custom-label-input">{{pregunta.txt_pregunta}}</div>
+                    <ion-select-option *ngFor="let item of parametros.fichaRespuestaAut" [value]="item.cod_tipo" class="ion-text-wrap">{{item.txt_tipo}}</ion-select-option>
+                </ion-select>
+            </ion-item>  
+        </ion-list>
+    </div>
+    
+    <div>
+        <ion-text color="primarytext">
+            <h6 class="francesa">FOTOGRAFIAS Y GEORREFERENCIA</h6>
+        </ion-text>
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="tertiary">Capture una fotografía del usuario con la(s) tecnologías productivas(s) implementada(s) o con vista panorámica de su vivienda interior/exterior o comercializando sus productos.</ion-label>
+            </ion-list-header>
+        </ion-list>
+        <app-fotos [fotos]="fotos" [consulta]="ficha.est_ficha === 'E' ? true : false"></app-fotos>
+    </div>
+
+    <div *ngIf="ficha.est_ficha === 'E'">
+        <ion-text color="primarytext">
+            <h6 class="francesa">CALIFICACIÓN OBTENIDA</h6>
+        </ion-text>
+        <ion-grid no-pading class="letra13">
+            <ion-row>
+                <ion-col size="9" class="negrita"><ion-text color="tertiary">Sección</ion-text></ion-col>
+                <ion-col size="3" class="negrita ion-text-right"><ion-text color="tertiary">Puntaje</ion-text></ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="10">Fortalecimiento y Consolidación de los Sistemas de Producción Familiar</ion-col>
+                <ion-col size="2" class="ion-text-right">{{totalTec | number:'1.2-2'}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="10">Mejora de la vivienda saludable</ion-col>
+                <ion-col size="2" class="ion-text-right">{{totalViv | number:'1.2-2'}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="10">Comercialización y asociatividad</ion-col>
+                <ion-col size="2" class="ion-text-right">{{totalCom | number:'1.2-2'}}</ion-col>
+            </ion-row>
+            <ion-row *ngIf="ficha.tip_resultado === 'C' || ficha.tip_resultado === 'E'">
+                <ion-col size="10">Autoevaluación de usuario (capacitación y asistencia técnica)</ion-col>
+                <ion-col size="2" class="ion-text-right">{{totalAut | number:'1.2-2'}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="10" class="negrita">Puntaje total</ion-col>
+                <ion-col size="2" class="negrita ion-text-right">{{totalPuntaje | number:'1.2-2'}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="6"><ion-text color="tertiary" class="negrita">Resultado:</ion-text></ion-col>
+                <ion-col size="6" class="negrita ion-text-right"><ion-text color="tertiary">{{resultado}}</ion-text></ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+    <br>
+</ion-content>
+
+<ion-footer *ngIf="ficha.est_ficha === 'R'" mode="ios" translucent="true">
+    <ion-toolbar mode="ios">
+        <ion-row class="ion-align-items-center">
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <ion-button shape="round" expand="block" color="primary" (click)="guardar()">Guardar</ion-button>
+                <ion-modal id="resumenModal" #modalAvance [isOpen]="mostarResumen">
+                    <ng-template>
+                        <div class="wrapper">
+                            <ion-header>
+                            <ion-toolbar class="ion-text-center">
+                                <ion-label color="primarytext">CALIFICACION OBTENIDA</ion-label>
+                            </ion-toolbar>
+                            </ion-header>
+                            <ion-grid no-pading class="letra13">
+                                <ion-row>
+                                    <ion-col size="9" class="negrita"><ion-text color="tertiary">Sección</ion-text></ion-col>
+                                    <ion-col size="3" class="negrita ion-text-right"><ion-text color="tertiary">Puntaje</ion-text></ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="10">Fortalecimiento y Consolidación de los Sistemas de Producción Familiar</ion-col>
+                                    <ion-col size="2" class="ion-text-right">{{totalTec | number:'1.2-2'}}</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="10">Mejora de la vivienda saludable</ion-col>
+                                    <ion-col size="2" class="ion-text-right">{{totalViv | number:'1.2-2'}}</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="10">Comercialización y asociatividad</ion-col>
+                                    <ion-col size="2" class="ion-text-right">{{totalCom | number:'1.2-2'}}</ion-col>
+                                </ion-row>
+                                <ion-row *ngIf="ficha.tip_resultado === 'C' || ficha.tip_resultado === 'E'">
+                                    <ion-col size="10">Autoevaluación de usuario (capacitación y asistencia técnica)</ion-col>
+                                    <ion-col size="2" class="ion-text-right">{{totalAut | number:'1.2-2'}}</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="10" class="negrita">Puntaje total</ion-col>
+                                    <ion-col size="2" class="negrita ion-text-right">{{totalPuntaje | number:'1.2-2'}}</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="6"><ion-text color="tertiary" class="negrita">Resultado:</ion-text></ion-col>
+                                    <ion-col size="6" class="negrita ion-text-right"><ion-text color="tertiary">{{resultado}}</ion-text></ion-col>
+                                </ion-row>
+                            </ion-grid>
+                            <ion-footer>
+                                <ion-toolbar class="ion-justify-content-center">
+                                    <ion-title>
+                                        <ion-button (click)="cerrarResumen()" shape="round" size="small" mode="ios" color="primary">Cerrar</ion-button>
+                                    </ion-title>
+                                </ion-toolbar>
+                            </ion-footer>
+                        </div>
+                    </ng-template>
+                </ion-modal>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

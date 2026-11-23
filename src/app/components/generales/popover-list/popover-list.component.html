@@ -1,0 +1,7 @@
+<ion-list>
+    <div *ngFor="let item of items">
+        <ion-item *ngIf="item.visible" (click)="seleccionar(item)" mode='ios'>
+            <ion-label>{{item.nombre}}</ion-label>
+        </ion-item>
+    </div>
+</ion-list>

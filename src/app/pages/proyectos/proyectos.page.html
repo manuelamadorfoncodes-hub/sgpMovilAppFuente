@@ -1,0 +1,30 @@
+<app-header [titulo]="titulo" [defaultHref]="defaultHref" [verMenu]="verMenu"></app-header>
+
+<ion-content>
+    <ion-searchbar (ionInput)="buscar( $event )" placeholder="Buscar"></ion-searchbar>
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="tertiary">Expediente - Nombre NE</ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let proyecto of proyectos | filtro: textoBuscar: 'codigo_expediente': 'nombre_ne': 'nombre_nec': 'nombre_nec', let i=index" (click)="abrirOpciones(proyecto)" detail>
+            <ion-label class="ion-text-wrap">
+                <h4>{{proyecto.codigo_expediente}} - {{proyecto.nombre_ne}}</h4>
+                <h4>{{proyecto.nombre_nec}}</h4>
+                <h4 color="resaltado" *ngIf="proyecto.txt_incompleto">⚠️ <ion-text color="resaltado">{{proyecto.txt_incompleto}}</ion-text></h4>
+            </ion-label>
+            <!-- <ion-checkbox slot="start" [(ngModel)]="proyecto.seleccionado"></ion-checkbox> -->
+        </ion-item>
+    </ion-list>
+
+    <!-- <ion-modal [isOpen]="isActionModalOpen" (willDismiss)="isActionModalOpen = false" [initialBreakpoint]="1" [breakpoints]="[0, 0.25, 0.5, 0.75, 1]">
+        <ng-template>
+                <ion-list mode="ios">
+                    <ion-item *ngFor="let item of opcionesMenu" (click)="setOpen(false); item.handler()" [disabled]="item.deshabilitado">
+                        <ion-icon slot="start" [name]="item.icon" ></ion-icon>
+                        <ion-label class="ion-text-wrap">{{item.text}}</ion-label>
+                    </ion-item>
+                </ion-list>
+        </ng-template>
+    </ion-modal> -->
+
+</ion-content>

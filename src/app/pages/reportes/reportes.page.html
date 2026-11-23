@@ -1,0 +1,151 @@
+<app-header titulo="Consultas y Reportes" [defaultHref]="defaultHref" [verMenu]="verMenu"></app-header>
+
+<ion-content [fullscreen]="true">
+    <h5><ion-text color="primarytext">Reportes de avance de las tecnologías</ion-text></h5>
+
+    <h6><ion-text class="letra13" color="tertiary">Seleccione el reporte:</ion-text></h6>
+  
+    <app-custom-select idSelect="selectReporte" [items]="reportes" campo="txt_parametro" [itemSeleccionado]="reporteSeleccionado" (seleccionarEvent)="seleccionarReporte($event)" customPlaceholder="Seleccione reporte"></app-custom-select>
+
+    <h6><ion-text class="letra13" color="tertiary">Seleccione el proyecto:</ion-text></h6>
+    <ion-item class="no-padding-left">
+        <ion-select class="letra13"  [(ngModel)]="proyectoSeleccionado" placeholder="Selecione el proyecto" (ionChange)="obtenerDatos()" interface="popover" side="bottom" alignment="end" [interfaceOptions]="{cssClass:'custom-select-popover-l'}"> 
+            <ion-select-option *ngFor="let proyecto of proyectos" [value]="proyecto">{{proyecto.codigo_expediente}} {{proyecto.nombre_ne}}</ion-select-option>
+            
+        </ion-select>
+    </ion-item>
+
+    <div *ngIf="!esYachachiq">
+        <h6><ion-text class="letra13" color="tertiary">Seleccione el Yachachiq Productivo:</ion-text></h6>
+        <ion-item class="no-padding-left">
+            <ion-select class="letra13"  [(ngModel)]="yachachiqSeleccionado" placeholder="Selecione el Yachachiq" (ionChange)="validarSeleccion()" interface="popover"  [interfaceOptions]="{cssClass:'custom-select-popover'}">
+                <ion-select-option *ngFor="let yachachiq of yachachiqList" [value]="yachachiq">{{yachachiq.txt_apellido_paterno}} {{yachachiq.txt_apellido_materno}}, {{yachachiq.txt_nombres}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+    </div>
+
+    <h6><ion-text class="letra13" color="tertiary">Seleccione el periodo:</ion-text></h6>
+    <ion-item>
+        <ion-select class="letra13"  [(ngModel)]="periodoSeleccionado" placeholder="Selecione el periodo" (ionChange)="validarSeleccion()" interface="popover"  [interfaceOptions]="{cssClass:'custom-select-popover'}">
+            <ion-select-option *ngFor="let periodo of periodos" [value]="periodo">{{periodo.txt_periodo}}</ion-select-option>
+        </ion-select>
+    </ion-item>
+
+    <div *ngIf="!esYachachiq">
+        <h6><ion-text class="letra13" color="tertiary">Seleccione la partida:</ion-text></h6>
+        <app-custom-select idSelect="selectPartida" [items]="tecnologias" campo="txt_partida" [itemSeleccionado]="partidaSeleccionada" customPlaceholder="Seleccione partida" (seleccionarEvent)="seleccionarPartida($event)"></app-custom-select>
+
+        <!-- <ion-item>
+            <ion-select [(ngModel)]="partidaSeleccionada" placeholder="Selecione la partida" (ionChange)="validarSeleccion()" interface="popover"  [interfaceOptions]="{cssClass:'custom-select-popover'}">
+                <ion-select-option *ngFor="let tecnologia of tecnologias" [value]="tecnologia">{{tecnologia.txt_partida}}</ion-select-option>
+            </ion-select>
+        </ion-item> -->
+    </div>
+
+    <br>
+    <ion-grid class="ion-text-center">
+        <ion-row >
+            <ion-col size="6">
+                <ion-chip (click)="setOpenModalPdf(true)" [disabled]="deshabilitarBotones" color="primarytext" outline="true" mode="ios">Visualizar PDF</ion-chip>
+            </ion-col>
+            <ion-col size="6">
+                <ion-chip (click)="descargarPdf()" [disabled]="deshabilitarBotones" color="primarytext" outline="true" mode="ios">Descargar PDF</ion-chip>
+            </ion-col>
+        </ion-row>
+        <ion-row *ngIf="esYachachiq">
+            <ion-col size="6">
+                <ion-chip (click)="setOpenModalDatos(true)" [disabled]="deshabilitarBotones || reporteSeleccionado.cod_parametro === '44'" color="primarytext" outline="true" mode="ios">Previsualizar datos</ion-chip>
+            </ion-col>
+            <ion-col size="6">
+                <ion-chip (click)="enviarCorreo()" [disabled]="deshabilitarBotones" color="primarytext" outline="true" mode="ios">Enviar por correo</ion-chip>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <br>
+
+    <ion-modal [isOpen]="isModalOpenDatos">
+        <ng-template>
+            
+            <app-header-modal titulo="Previsualizar reporte" (cerrar)="setOpenModalDatos(false)"></app-header-modal>
+            <ion-content>
+                <div class="ion-padding ion-text-center">
+                    <h5><ion-text color="primarytext">{{reporteSeleccionado.txt_parametro}}</ion-text></h5>
+                    <p>Proyecto: {{proyectoSeleccionado.codigo_expediente}} {{proyectoSeleccionado.nombre_ne}}</p>
+                    <p>Periodo: {{periodoSeleccionado.txt_periodo}}</p>
+                    <br>
+                    <p>RESUMEN</p>
+                </div>
+
+                <div *ngIf="reporteSeleccionado.cod_parametro === '41' ">
+                    <ion-grid fixed >
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="9">Número de registros:</ion-col>
+                            <ion-col size="2" class="ion-text-right">{{cabecera?.num_registros ? cabecera.num_registros : 0 }}</ion-col>
+                        </ion-row>
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="9">Número de días:</ion-col>
+                            <ion-col size="2" class="ion-text-right">{{cabecera?.num_dias ? cabecera.num_dias : 0}}</ion-col>
+                        </ion-row>
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="9">Número de hogares visitados:</ion-col>
+                            <ion-col size="2" class="ion-text-right">{{cabecera?.num_usuarios ? cabecera.num_usuarios : 0}}</ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+
+                <div *ngIf="reporteSeleccionado.cod_parametro === '42' ">
+                    <ion-grid class="ion-no-padding">
+                        <ion-row>
+                            <ion-col size="6"><div class="grafico2"><strong class="barra" style="width: 100%;">% Implementado</strong></div></ion-col>
+                            <ion-col size="6"><div class="grafico2"><strong class="barra2" style="width: 100%">% Apropiado</strong></div></ion-col>
+                        </ion-row>
+                    </ion-grid>
+                    <div *ngFor="let partida of detalle">
+                        <p class="custom-no-padding">{{partida.txt_partida}}</p>
+                        <!-- <div class="grafico"><strong class="barra" style="width: 24%;">24%</strong><strong class="barra2" style="width: 20%;">20%</strong></div> -->
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                <ion-col size="6"><div class="grafico2"><strong class="barra" [style]="'width: '+ partida.implementado +'%'">{{partida.implementado}}</strong></div></ion-col>
+                                <!-- <ion-col size="6"><div class="grafico2"><strong class="barra2" [style]="'width: '+(partida.num_1_culminado >0 ? partida.num_apropiado * 100 / partida.num_1_culminado : 0)+'%'">{{((partida.num_1_culminado > 0) ? (partida.num_apropiado * 100 / partida.num_1_culminado) : 0)}}</strong></div></ion-col> -->
+                                <ion-col size="6"><div class="grafico2"><strong class="barra2" [style]="'width: '+ partida.apropiado +'%'">{{partida.apropiado}}</strong></div></ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+                    <br>
+                </div>
+
+                <div *ngIf="reporteSeleccionado.cod_parametro === '43' ">
+                    <ion-grid fixed >
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="9">Total de tecnologías asignadas:</ion-col>
+                            <ion-col size="2" class="ion-text-right">{{cabecera.num_partidas}}</ion-col>
+                        </ion-row>
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="9">Total de hogares visitados en el periodo:</ion-col>
+                            <ion-col size="2" class="ion-text-right">{{cabecera.num_visita_periodo}}</ion-col>
+                        </ion-row>
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="9">Total de inconsistencias en el trimestre:</ion-col>
+                            <ion-col size="2" class="ion-text-right">{{cabecera.num_inconsistencia3}}</ion-col>
+                        </ion-row>
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="9">Total de hogares no visitados en los últimos 60 días:</ion-col>
+                            <ion-col size="2" class="ion-text-right">{{cabecera.num_visita_mas_60}}</ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+            </ion-content>
+        </ng-template>
+    </ion-modal>
+
+    <!-- <ion-modal [isOpen]="isModalOpenPdf" (ionModalDidPresent)="pdfIonModalDidPresent($event)"> -->
+    <ion-modal [isOpen]="isModalOpenPdf">
+        <ng-template>
+            <app-header-modal titulo="Visualizar PDF" (cerrar)="setOpenModalPdf(false)"></app-header-modal>
+            <ion-content>
+                <pdf-viewer [src]="urlReporte" [render-text]="true" [original-size]="false" style="width: 100%; height: 100%" [zoom]="2.1"></pdf-viewer>
+            </ion-content>
+        </ng-template>
+    </ion-modal>
+
+</ion-content>

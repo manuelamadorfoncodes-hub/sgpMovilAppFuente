@@ -1,0 +1,170 @@
+<app-header titulo="Proyecto {{proyecto ? proyecto.codigo_expediente : ''}}" [defaultHref]="defaultHref"></app-header>
+
+<ion-content>
+    <br>
+    <ion-grid class="ion-no-padding">
+        <ion-row class="ion-text-center ion-align-items-center" >
+            <ion-col size="12">
+                <ion-label color="primarytext" class="ion-text-center">AVANCES</ion-label>
+            </ion-col>
+        </ion-row>
+        <ion-row class="ion-text-center ion-align-items-center">
+            <ion-col size="7" offset="2.5">
+                <ion-card>
+                    <ion-grid>
+                        <ion-row class="ion-text-center ion-align-items-center">
+                            <ion-col size="7">
+                                <ion-text color="dark">Avance físico <br> en campo</ion-text>
+                            </ion-col>
+                            <ion-col size="5">
+                                <ion-text color="dark">
+                                    <h4 color="dark">{{porcentajeAvance * 100 | number : '1.1-1' }}%</h4>
+                                </ion-text>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="ion-text-center ion-align-items-center">
+                            <ion-col size="7">
+                                <ion-text color="dark">Avance <br> valorizado</ion-text>
+                            </ion-col>
+                            <ion-col size="5">
+                                <ion-text color="dark">
+                                    <h4 color="dark">{{avanceUltimaVisita * 100 | number : '1.1-1' }}%</h4>
+                                </ion-text>
+                            </ion-col>
+                        </ion-row>
+                        <!-- <br> -->
+                        <!-- <ion-row class="ion-text-center ion-align-items-center">
+                            <ion-col size="12">
+                                <ion-text color="dark">AVANCE VALORIZADO {{avanceUltimaVisita * 100 | number : '1.1-1'}}%</ion-text>
+                            </ion-col>
+                        </ion-row> -->
+                    </ion-grid>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <ion-list-header>
+        <ion-label color="primarytext">LISTA DE VISITAS</ion-label>
+        <ion-chip *ngIf="!existeAbierta" outline="true" color="primarytext" (click)="abrirVisita()">Nueva Visita</ion-chip>
+    </ion-list-header>
+
+    <ion-list #listaVisitas>
+        <ion-item-sliding *ngFor="let visita of visitas; let i=index">
+            <ion-item (click)="abrirOpciones(visita, i)" mode="ios" detail>
+                <ion-label>
+                    <h6>VISITA {{visita.nid_visita ? 'Nro. ' + visita.nid_visita : 'NUEVA'}} - FECHA: {{visita.fec_visita | date:'dd/MM/yyyy'}}</h6>
+                    <p>
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                <ion-col size="6">Avance {{(visita.por_avance * 100) | number : '1.1-1' }}%</ion-col>
+                                <ion-col size="6" class="ion-text-right">{{visita.txt_estado_visita}}</ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </p>
+                    <ion-text color="danger">
+                        <h3>
+                            {{visita.incompleto ? '- Incompleto ' : ''}}
+                            {{visita.cambio ? '- Cambio sin enviar ' : ''}}
+                        </h3>
+                    </ion-text>
+                </ion-label>
+            </ion-item>
+            <ion-item-options side="end">
+                <ion-item-option *ngIf="!visita.nid_visita" (click)="eliminarVisita(i)">Eliminar</ion-item-option>
+            </ion-item-options>
+        
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>
+
+
+<!-- MODAL SUBPRESUPUESTOS -->
+<ion-modal [isOpen]="isSubpptoOpen" (willDismiss)="cerrarSubppto()">
+    <ng-template>
+        <app-header-modal titulo="Subpresupuestos" (cerrar)="cerrarSubppto()"></app-header-modal>
+        <ion-content>
+            <br>
+            <ion-list-header>
+                <ion-label color="primarytext">
+                    <h4>PROYECTO Nro. {{visitaSelec.codigo_expediente}}</h4>
+                    <h4>VISITA: {{visitaSelec.nid_visita ? 'Nro. ' + visitaSelec.nid_visita : 'NUEVA'}} ({{visitaSelec.fec_visita | date:'dd/MM/yyyy'}})</h4>
+                </ion-label>
+            </ion-list-header>
+            <br>
+            <ion-item *ngFor="let subPpto of subPptoList; let i=index" class="ion-text-wrap" mode="ios" (click)="abriGrupos(subPpto, i)" mode="ios" detail>
+                <ion-label>
+                    <h4>{{subPpto.txt_subpresupuesto}}</h4>
+                    <p>Av. Campo: {{subPpto.porAvanceActual * 100 | number : '1.2-2' }}% - Ultimo reporte: {{subPpto.fec_ult_reporte ? (subPpto.fec_ult_reporte | date:'dd/MM/yyyy') : '00/00/0000'}}</p>
+                    <p>Av. Valoriz.: {{subPpto.porAvanceEjecutado * 100 | number : '1.2-2' }}% - Valorización: {{subPpto.fec_valorizacion ? (subPpto.fec_valorizacion | date:'dd/MM/yyyy') : '00/00/0000'}}</p>
+                    <!-- <p>Avance {{subPpto.porAvanceActual | number : '1.2-2' }}% - Ultimo reporte: {{(subPpto.fec_valorizacion | date:'dd/MM/yyyy') : '00/00/0000'}}</p> -->
+                    <ion-text color="danger">
+                        <h3>
+                            {{subPpto.cambio ? '- Cambio sin enviar ' : ''}}
+                        </h3>
+                    </ion-text>
+                </ion-label>
+                <ion-icon *ngIf="subPpto.icono === 2" color="success" slot="end" name="checkmark-circle" ></ion-icon>
+                <ion-icon *ngIf="subPpto.icono === 1" color="warning" slot="end" name="contrast" ></ion-icon>
+                <ion-icon *ngIf="subPpto.icono === 0" color="primary" slot="end" name="ellipse-outline" ></ion-icon>
+            </ion-item>
+        </ion-content>
+    </ng-template>
+</ion-modal>
+
+
+<!-- MODAL GRUPO DE PARTIDAS -->
+<ion-modal [isOpen]="isGruposOpen" (willDismiss)="cerrarGrupos()">
+    <ng-template>
+        <app-header-modal titulo="Grupo de Partidas" (cerrar)="cerrarGrupos()"></app-header-modal>
+        <br>
+        <ion-list-header>
+            <ion-label color="primarytext">
+                <h4>PROYECTO Nro. {{visitaSelec.codigo_expediente}}</h4>
+                <h4>VISITA: {{visitaSelec.nid_visita ? 'Nro. ' + visitaSelec.nid_visita : 'NUEVA'}} ({{visitaSelec.fec_visita | date:'dd/MM/yyyy'}})</h4>
+                <h4>SUBPRESUPUESTO: {{subPptoSelec.txt_subpresupuesto}}</h4>
+            </ion-label>
+        </ion-list-header>
+        <ion-content>
+            <ion-item-divider>
+                <ion-grid class="ion-no-padding">
+                    <ion-row>
+                        <ion-col size="8">
+                            <p><ion-text color="tertiary">Comentario del subpresupuesto:</ion-text></p>
+                        </ion-col>
+                        <ion-col size="4" class="ion-text-center" >
+                            <app-datos-boton-modal *ngIf="visitaSelec.est_visita === '01'" [(valor)]="subPptoSelec.txt_comentario" [etiquetaBoton]="(subPptoSelec.txt_comentario ? 'Modificar' : 'Registrar') + ' comentario'" titulo="Registrar comentario del subpresupuesto" etiquetaData="Comentario" (valorChange)="registrarComentSubppto()"></app-datos-boton-modal>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-label class="ion-text-wrap" color="dark">{{subPptoSelec.txt_comentario}}</ion-label>
+                    </ion-row>
+                </ion-grid>
+            </ion-item-divider>
+
+            <ion-item-divider>
+                <ion-label *ngIf="!subPptoSelec.esPartidaRepresentativa" color="tertiary">GRUPO DE PARTIDAS</ion-label>
+                <ion-label *ngIf="subPptoSelec.esPartidaRepresentativa" color="tertiary">PARTIDAS REPRESENTATIVAS</ion-label>
+            </ion-item-divider>
+            <!-- <ion-item-divider>
+                <ion-checkbox *ngIf="subPptoSelec.esPartidaRepresentativa" color="tertiary" labelPlacement="end"><ion-text color="tertiary">Ver finalizadas</ion-text></ion-checkbox>
+            </ion-item-divider> -->
+            <ion-item *ngFor="let grupo of grupoList, let iGrupo=index" mode="ios" (click)="abrirOpcionesGrupo(grupo, iGrupo)" mode="ios" detail>
+                <ion-label>
+                    <h4>{{grupo.txt_grupo}}</h4>
+                    <p>Avance {{grupo.porAvanceActual * 100 | number : '1.2-2'}}%</p>
+                    <ion-text color="danger">
+                        <h3>
+                            {{grupo.cambio ? '- Cambio sin enviar ' : ''}}
+                        </h3>
+                    </ion-text>
+                </ion-label>
+                <ion-icon *ngIf="grupo.icono === 2" color="success" slot="end" name="checkmark-circle" ></ion-icon>
+                <ion-icon *ngIf="grupo.icono === 1" color="warning" slot="end" name="contrast" ></ion-icon>
+                <ion-icon *ngIf="grupo.icono === 0" color="primary" slot="end" name="ellipse-outline" ></ion-icon>
+            </ion-item>
+        </ion-content>
+    </ng-template>
+</ion-modal>
+
+

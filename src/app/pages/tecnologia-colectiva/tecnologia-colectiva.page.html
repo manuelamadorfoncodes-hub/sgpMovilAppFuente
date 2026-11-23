@@ -1,0 +1,167 @@
+<app-header [titulo]="'Proyecto ' + proyecto?.codigo_expediente" defaultHref="/tabsPrincipal/tabsPrincipal/proyectos"></app-header>
+
+<ion-content [fullscreen]="true">
+    <ion-list-header>
+        <ion-label color="primarytext">
+            <h2>TECNOLOGIAS COLECTIVAS</h2>
+        </ion-label>
+    </ion-list-header>
+    <ion-list #lista mode="ios">
+        <div *ngFor="let tecnologia of tecnologias; let i=index">
+            <ion-item  (click)="abrirOpcionesTecnologia(tecnologia, i)" id="open-action-sheet" mode="ios" detail>
+                <ion-label class="ion-text-wrap">
+                    <h3><ion-text color="tertiary">{{tecnologia.txt_tecnologia}}</ion-text></h3>
+                    <h6><ion-text color="tertiary">{{tecnologia.txt_partida}}</ion-text></h6>
+                    <h6>Metrado de la partida: {{tecnologia.num_metrado_partida}} {{tecnologia.txt_unidad_partida}}</h6>
+                </ion-label>
+            </ion-item>
+            <div class="margenDetalle" *ngIf="tecnologia.detalle">
+                <ion-list >
+                    <ion-item-sliding *ngFor="let detalle of tecnologia.detalle; let idx=index">
+                        <ion-item (click)="abrirOpcionesDetalle(tecnologia, i, detalle, idx)" >
+                            <ion-label>
+                                <h3 class="ion-text-wrap">{{detalle.txt_detalle}}</h3>
+                                <h3>Metrado del detalle: {{detalle.num_metrado_detalle}} {{tecnologia.txt_unidad_partida}}</h3>
+                                <p *ngIf="detalle.txt_yachachiq">Yachachiq: {{ detalle.txt_yachachiq }}</p>
+                                <ion-text color="danger">
+                                    <h3>
+                                        {{detalle.cambio ? 'Detalle (Sin enviar)' : ''}}
+                                        {{detalle.cambioAvance ? (detalle.avance ? (detalle.avance.flg_informacion_contraste ? '- Seguimiento' : '- Avance') + (detalle.avanceIncompleto ? ' (Incompleto)' : '') + ' (Sin enviar)'  : '') : ''}}
+                                        {{detalle.flg_cambio_yachachiq ? '-Cambio Yachachiq' : '' }}
+                                    </h3>
+                                </ion-text>
+                            </ion-label>
+                        </ion-item>
+                        <ion-item-options *ngIf="!detalle.nid_detalle || (detalle.avance && !detalle.avance?.nid_avance) || detalle.flg_cambio_yachachiq" side="end" mode="ios">
+                            <ion-item-option color="danger" (click)="eliminarDetalle(tecnologia, i, detalle, idx)" *ngIf="!detalle.nid_detalle">
+                                Eliminar Detalle
+                            </ion-item-option>
+                            <ion-item-option color="primary" (click)="eliminarAvance(tecnologia, i, detalle, idx)" *ngIf="detalle.avance && !detalle.avance?.nid_avance">
+                                Eliminar {{detalle.avance.flg_informacion_contraste ? 'Seguimiento' : 'Avance'}}
+                            </ion-item-option>
+                            <ion-item-option color="primary" (click)="eliminarAsignacion(tecnologia, i, detalle, idx)" *ngIf="detalle.flg_cambio_yachachiq">
+                                Eliminar asignación del Yachachiq
+                            </ion-item-option>
+                        </ion-item-options>
+                    </ion-item-sliding>
+                </ion-list>
+            </div>
+        </div>
+    </ion-list>
+
+    <ion-modal class="modal-m" [isOpen]="isActionTecColecModalOpen" (willDismiss)="onWillDismiss($event)">
+        <ng-template>
+            <ion-header mode="ios">
+                <ion-toolbar>
+                    <ion-title color="primarytext">{{nuevoDetalle ? 'Agregar detalle' : (detalleAgregado.nid_detalle ? 'Editar Descripción' : 'Editar')}}</ion-title>
+                </ion-toolbar>
+            </ion-header>
+            <div class="modal-agregar">
+                <br>
+                <ion-label color="tertiary">
+                    <h2>{{tecnologiaSeleccionada.txt_tecnologia}} </h2>
+                    <h2>{{tecnologiaSeleccionada.txt_partida}}</h2>
+                    <h2>Metrado disponible: {{tecnologiaSeleccionada.metradoDisponible}} {{tecnologiaSeleccionada.txt_unidad_partida}}</h2>
+                </ion-label>
+                <br>
+                <ion-item mode="ios">
+                    <ion-input *ngIf="!detalleAgregado.nid_detalle || (detalleAgregado.nid_detalle && (!detalleAgregado.ultimoAvance && !detalleAgregado.ultimoSeguimiento))" [(ngModel)]="cantidad" type="number" class="ion-text-right">
+                        <div slot="label" class="custom-label-input">Metrado programado ({{tecnologiaSeleccionada.txt_unidad_partida}})</div>
+                    </ion-input>
+                    <ion-label *ngIf="detalleAgregado.nid_detalle && (detalleAgregado.ultimoSeguimiento || detalleAgregado.ultimoAvance)" color="tertiary" class="ion-text-wrap letra15">Metrado programado ({{tecnologiaSeleccionada.txt_unidad_partida}})</ion-label>
+                    <ion-label *ngIf="detalleAgregado.nid_detalle && (detalleAgregado.ultimoSeguimiento || detalleAgregado.ultimoAvance)" class="letra15 ion-text-right">{{detalleAgregado.num_metrado_detalle}}</ion-label>
+                </ion-item>
+                <ion-item>
+                    <ion-textarea class="letra15" [(ngModel)]="descripcion" labelPlacement="stacked" [autoGrow]="true" maxlength="150">
+                        <div slot="label" class="custom-label-stacked">Descripción</div>
+                    </ion-textarea>
+                </ion-item>
+                <br>
+            </div>
+            <ion-footer mode="ios">
+                <ion-toolbar>
+                    <ion-grid class="ion-no-padding">
+                        <ion-row>
+                            <ion-col size="6" class="ion-text-center">
+                                <ion-button (click)="cancel()" [strong]="true" expand="block" fill="clear" size="small">Cancelar</ion-button>
+                            </ion-col>
+                            <ion-col size="6" class="ion-text-center">
+                                <ion-button (click)="confirm()" [strong]="true" expand="block" fill="clear" size="small">Aceptar</ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-toolbar>
+            </ion-footer>
+        </ng-template>
+    </ion-modal>
+
+    <ion-modal class="modal-m" [isOpen]="isYachachiqModalOpen" (willDismiss)="onWillDismiss($event)">
+        <ng-template>
+            <ion-header mode="ios">
+                <ion-toolbar>
+                    <ion-title color="primarytext">Asignación del Yachachiq</ion-title>
+                </ion-toolbar>
+            </ion-header>
+            <div class="modal-agregar">
+                <br>
+                <ion-label>
+                    <h2>{{tecnologiaSeleccionada.txt_tecnologia}} </h2>
+                    <h2>{{tecnologiaSeleccionada.txt_partida}}</h2>
+                    <h2>Detalle: {{detalleAgregado.txt_detalle}}</h2>
+                    <h2>Yachachiq: {{detalleAgregado.txt_yachachiq}}</h2>
+                    <h2>Fecha de inicio: {{detalleAgregado.fec_inicio_yachachiq | date:'dd/MM/yyyy'}}</h2>
+                </ion-label>
+                <br>
+                <ion-label color="tertiary">Cambiar Asignación del Yachachiq</ion-label>
+                <br>
+                <ion-item *ngIf="detalleAgregado.nid_personal_yachachiq">
+                    <ion-label color="tertiary" class="ion-text-wrap">
+                        <ion-text color="danger">* </ion-text>
+                        Fec. Término Yachachiq:
+                    </ion-label>
+                    <ion-button id="open-modal-fin" fill="clear" color="dark">{{fecFinYachachiq ? (fecFinYachachiq | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+                    <ion-modal id="date-modal" trigger="open-modal-fin" [keepContentsMounted]="true">
+                        <ng-template>
+                            <ion-datetime [(ngModel)]="fecFinYachachiq" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios"></ion-datetime>
+                        </ng-template>
+                    </ion-modal>
+                </ion-item>
+
+                <ion-item>
+                    <ion-select [(ngModel)]="nidNuevoYachachiq" placeholder="Seleccione" (ionChange)="cambioYachachiq($event)" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}" label-placement="stacked">
+                        <div slot="label" class="custom-label-stacked"><ion-text color="danger">* </ion-text> <ion-text color="tertiary">Yachachiq:</ion-text></div>
+                        <ion-select-option *ngFor="let yachachiq of yachachiqs" [value]="yachachiq.nidPersonal">{{yachachiq.nombre}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label color="tertiary" class="ion-text-wrap">
+                        <ion-text color="danger">* </ion-text>
+                        Fec. Asignación Yachachiq:
+                    </ion-label>
+                    <ion-button id="open-modal-ini" fill="clear" color="dark">{{fecIniYachachiq ? (fecIniYachachiq | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+                    <ion-modal id="date-modal" trigger="open-modal-ini" [keepContentsMounted]="true">
+                        <ng-template>
+                            <ion-datetime [(ngModel)]="fecIniYachachiq" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios"></ion-datetime>
+                        </ng-template>
+                    </ion-modal>
+                </ion-item>
+                <br>
+            </div>
+            <ion-footer mode="ios">
+                <ion-toolbar>
+                    <ion-grid class="ion-no-padding">
+                        <ion-row>
+                            <ion-col size="6" class="ion-text-center">
+                                <ion-button (click)="cancelaAsignacion()" [strong]="true" expand="block" fill="clear" size="small">Cancelar</ion-button>
+                            </ion-col>
+                            <ion-col size="6" class="ion-text-center">
+                                <ion-button (click)="confirmaAsignacion()" [strong]="true" expand="block" fill="clear" size="small">Aceptar</ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-toolbar>
+            </ion-footer>
+        </ng-template>
+    </ion-modal>
+</ion-content>

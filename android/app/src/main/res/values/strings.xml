@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SGP</string>
+    <string name="title_activity_main">SGP</string>
+    <string name="package_name">pe.gob.foncodes.sgp</string>
+    <string name="custom_url_scheme">pe.gob.foncodes.sgp</string>
+</resources>

@@ -1,0 +1,110 @@
+<app-header-modal [titulo]="(portafolio === 117 || (portafolio === 123 && grupo === 'NF')) ? 'Líneas de negocio' : 'Tecnologías'" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <div *ngIf="tecnologias.length > 0">
+        <h4 >{{(portafolio === 117 || (portafolio === 123 && grupo === 'NF')) ? 'Líneas de negocio' : 'Tecnologías'}} Ofertadas Individuales</h4>
+        <ion-list #listaTecOfer>
+            <ion-item-sliding *ngFor="let tecnologia of tecnologias; let i=index">
+                <ion-item  (click)="abrirOpciones(tecnologia, i, true, false)" mode="ios" detail>
+                    <ion-label class="ion-text-wrap">
+                        <ion-text color="tertiary">
+                            <h2>{{tecnologia.txt_tecnologia}}</h2>
+                        </ion-text>
+                        <h3>{{tecnologia.txt_partida}}</h3>
+                        <ion-text color="danger">
+                            <h3>{{tecnologia.solicitudTecnologia ? '- Cambio' + (tecnologia.cambioIncompleto ? ' (Incompleto)' : '') + (tecnologia.solicitudTecnologia.flg_observado ? ' (Observado)' : '') : ''}}
+                                {{tecnologia.avance ? (tecnologia.avance.flg_informacion_contraste ? '- Seguimiento' : '- Avance') + (tecnologia.avanceIncompleto ? ' (Incompleto)' : '') : ''}}
+                                {{tecnologia.cambioEntregaInsumos ? ('- Entrega de activos' + (tecnologia.entregaInsumosIncompleto ? ' (Incompleto)' : '')) : ''}}
+                            </h3>
+                        </ion-text>
+                    </ion-label>
+                </ion-item>
+                <ion-item-options side="end" mode="ios">
+                    <ion-item-option (click)="eliminarCambio(tecnologia, i, true)" *ngIf="tecnologia.solicitudTecnologia && !usuario.nid_solicitud">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                <ion-col>Eliminar</ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <ion-col>Cambio</ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item-option>
+                    <ion-item-option color="danger" (click)="eliminarAvance(tecnologia, i)" *ngIf="tecnologia.avance && !tecnologia.avance.nid_avance">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                <ion-col>Eliminar</ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <ion-col>{{tecnologia.avance ? (tecnologia.avance.flg_informacion_contraste ? 'Seguimiento' : 'Avance') : ''}}</ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item-option>
+                </ion-item-options>
+            </ion-item-sliding>
+        </ion-list>
+    </div>
+
+    <div *ngIf="tecnologiasColectivas.length > 0">
+        <h4 >{{(portafolio === 117 || (portafolio === 123 && grupo === 'NF')) ? 'Líneas de negocio' : 'Tecnologías'}} Ofertadas Colectivas</h4>
+        <ion-list #listaTecOfer>
+            <ion-item-sliding *ngFor="let tecnologiaColectiva of tecnologiasColectivas; let i=index">
+                <ion-item  (click)="abrirOpciones(tecnologiaColectiva, i, true, true)" mode="ios" detail>
+                    <ion-label class="ion-text-wrap">
+                        <ion-text color="tertiary">
+                            <h2>{{tecnologiaColectiva.txt_tecnologia}}</h2>
+                        </ion-text>
+                        <h3>{{tecnologiaColectiva.txt_partida}}</h3>
+                        <ion-text color="danger">
+                            <h3>{{tecnologiaColectiva.solicitudTecnologia ? '- Cambio' + (tecnologiaColectiva.cambioIncompleto ? ' (Incompleto)' : '') + (tecnologiaColectiva.solicitudTecnologia.flg_observado ? ' (Observado)' : '') : ''}}
+                            </h3>
+                        </ion-text>
+                    </ion-label>
+                </ion-item>
+                <ion-item-options side="end" mode="ios">
+                    <ion-item-option (click)="eliminarCambio(tecnologiaColectiva, i, true)" *ngIf="tecnologiaColectiva.solicitudTecnologia && !usuario.nid_solicitud">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                <ion-col>Eliminar</ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <ion-col>Cambio</ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item-option>
+                </ion-item-options>
+            </ion-item-sliding>
+        </ion-list>
+    </div>
+
+
+    <h4>{{(portafolio === 117 || (portafolio === 123 && grupo === 'NF')) ? 'Líneas de negocio' : 'Tecnologías'}} No Ofertadas</h4>
+    <ion-list #listaTecNoOfer>
+        <ion-item-sliding *ngFor="let tecnologia of tecnologiaNoOfertada; let i=index">
+            <ion-item  (click)="abrirOpciones(tecnologia, i, false, false)" mode="ios" detail>
+                <ion-label class="ion-text-wrap">
+                    <ion-text color="tertiary">
+                        <h2>{{tecnologia.txt_tecnologia}}</h2>
+                    </ion-text>
+                    <h3>{{tecnologia.txt_partida}}</h3>
+                    <h2>Tipo de beneficio: {{tecnologia.tip_beneficio === 'C' ? 'Colectivo' : 'Individual'}}</h2>
+                    <ion-text color="danger">
+                        <h3>{{tecnologia.solicitudTecnologia ? 'Cambio' + (tecnologia.cambioIncompleto ? ' (Incompleto)' : '') : ''}}</h3>
+                    </ion-text>
+                </ion-label>
+            </ion-item>
+            <ion-item-options side="end" mode="ios">
+                <ion-item-option (click)="eliminarCambio(tecnologia, i, false)" *ngIf="tecnologia.solicitudTecnologia && !usuario.nid_solicitud">
+                    <ion-grid class="ion-no-padding">
+                        <ion-row>
+                            <ion-col>Eliminar</ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col>Cambio</ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

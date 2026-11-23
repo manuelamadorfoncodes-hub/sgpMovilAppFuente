@@ -1,0 +1,255 @@
+<app-header-modal titulo="Actividad Productiva" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <ion-text *ngIf="linea === 1" color="primarytext">
+        <h4>Línea de salida</h4>
+    </ion-text>
+
+    <ion-text *ngIf="!nuevo || detalle" color="primarytext">
+        <h4>{{actividadProd.txt_actividad}}</h4>
+    </ion-text>
+    
+    <form [formGroup]="actividadProductivaForm">
+        <h5 *ngIf="nuevo && !detalle">Registre la actividad productiva</h5>
+
+        <ion-item *ngIf="nuevo || detalle">
+            <ion-label color="tertiary" class="ion-text-wrap">
+                <ion-text color="danger">* </ion-text> Fecha:
+            </ion-label>
+            <ion-label>{{actividad.fec_visita | date:'dd/MM/yyyy'}}</ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="nuevo && !detalle">
+            <ion-label color="tertiary" position="floating">
+                <ion-text color="danger">* </ion-text>
+                Actividad Productiva:
+            </ion-label>
+            <ion-select formControlName="nid_actividad" placeholder="Seleccione" label-placement="stacked" md="ios" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                <div slot="label" class="custom-label-stacked">
+                    <ion-text color="danger">* </ion-text>
+                    Actividad Productiva:
+                </div>
+                <ion-select-option *ngFor="let actividad of actividadProdNuevas" [value]="actividad.nid_actividad">{{actividad.txt_actividad}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+
+        <ion-item *ngIf="otra">
+            <ion-label color="tertiary" position="floating">Especifique la actividad productiva:</ion-label>
+            <ion-textarea formControlName="txt_actividad_otra" class="ion-text-wrap" placeholder="Especifique"></ion-textarea>
+        </ion-item>
+
+        <ion-item *ngIf="variables[16]">
+            <ion-label color="tertiary" position="floating">Fines</ion-label>
+            <ion-select formControlName="cod_fines" placeholder="Seleccione" md="ios" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                <ion-select-option *ngFor="let item of fines" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+
+        <ion-item *ngIf="variables[17]">
+            <ion-label>Usos</ion-label>
+            <ion-select formControlName="cod_usos" placeholder="Seleccione" md="ios" interface="popover">
+                <ion-select-option *ngFor="let item of usos" [value]="item.cod_tipo">{{item.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+
+        <div *ngIf="(nuevo || detalle) && !otra">
+            <ion-item *ngIf="productos && productos[0]">
+                <!-- <ion-label color="tertiary" position="floating">Producto:</ion-label> -->
+                <ion-select formControlName="nid_producto" placeholder="Seleccione" md="ios" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                    <div slot="label" class="custom-label-input">Producto</div>
+                    <ion-select-option *ngFor="let producto of productos" [value]="producto.nid_producto">{{producto.txt_producto}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="otroProducto">
+                <ion-input formControlName="txt_producto_otro" placeholder="Especifique"></ion-input>
+            </ion-item>
+
+            <ion-label *ngIf="variables[0]" color="tertiary">{{variables[0].txt_variable}}</ion-label>
+            <ion-item *ngIf="variables[0]">
+                <ion-label>Unidad</ion-label>
+                <ion-select formControlName="nid_unidad_area_riego" placeholder="Unidad" md="ios" interface="popover">
+                    <ion-select-option *ngFor="let unidad of variables[0].unidades" [value]="unidad.nid_unidad">{{unidad.txt_unidad}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="variables[0]">
+                <!-- <ion-label>Cantidad</ion-label> -->
+                <ion-input formControlName="num_area_riego" type="number" placeholder="Cantidad" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">Cantidad</div>
+                </ion-input>
+            </ion-item>
+
+            <ion-text *ngIf="variables[1]" color="tertiary">
+                <p>{{variables[1].txt_variable}}</p>
+            </ion-text>
+            <ion-item *ngIf="variables[1]">
+                <!-- <ion-label>Unidad</ion-label> -->
+                <ion-select formControlName="nid_unidad_area_instalada" placeholder="Unidad" md="ios" interface="popover">
+                    <div slot="label" class="custom-label-input">Unidad</div>
+                    <ion-select-option *ngFor="let unidad of variables[1].unidades" [value]="unidad.nid_unidad">{{unidad.txt_unidad}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="variables[1]">
+                <!-- <ion-label>Cantidad</ion-label> -->
+                <ion-input formControlName="num_area_instalada" type="number" placeholder="Cantidad" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">Cantidad</div>
+                </ion-input>
+            </ion-item>
+
+            <ion-label *ngIf="variables[4]" color="tertiary">{{variables[4].txt_variable}}</ion-label>
+            <ion-item *ngIf="variables[4]">
+                <ion-label>Kilogramos (kg)</ion-label>
+                <ion-input formControlName="num_consumo_lenha" type="number" placeholder="Cantidad" slot="end" class="ion-text-right"></ion-input>
+            </ion-item>
+
+            <ion-label *ngIf="variables[5]" color="tertiary">{{variables[5].txt_variable}}</ion-label>
+            <ion-item *ngIf="variables[5]">
+                <!-- <ion-label>Metros Cúbicos (m3)</ion-label> -->
+                <ion-input formControlName="num_volumen_almacenamiento" type="number" placeholder="Cantidad" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">Metros Cúbicos (m3)</div>
+                </ion-input>
+            </ion-item>
+
+            <p *ngIf="variables[15]" color="tertiary">
+                <ion-text color="tertiary"> {{variables[15].txt_variable}}</ion-text>
+            </p>
+            <ion-item *ngIf="variables[15]">
+                <!-- <ion-label>Unidad</ion-label> -->
+                <ion-select formControlName="nid_unidad_periodicidad" placeholder="Unidad" md="ios" interface="popover">
+                    <div slot="label" class="custom-label-input">Unidad</div>
+                    <ion-select-option *ngFor="let unidad of variables[15].unidades" [value]="unidad.nid_unidad">{{unidad.txt_unidad}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+
+            <p *ngIf="variables[18]" color="tertiary">
+                <ion-text color="tertiary"> {{variables[18].txt_variable}}</ion-text>
+            </p>
+            <ion-item *ngIf="variables[18]">
+                <!-- <ion-label class="ion-text-wrap">Cantidad</ion-label> -->
+                <ion-input formControlName="num_cortes_anho" placeholder="Cantidad" type="number" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">Cantidad</div>
+                </ion-input>
+            </ion-item>
+
+            <p *ngIf="variables[2]">
+                <ion-text color="tertiary"> {{variables[2].txt_variable}}</ion-text>
+            </p>
+            <ion-item *ngIf="variables[2]">
+                <ion-label>Unidad</ion-label>
+                <ion-select formControlName="nid_unidad_unidades_produccion" placeholder="Unidad" md="ios" interface="popover">
+                    <ion-select-option *ngFor="let unidad of variables[2].unidades" [value]="unidad.nid_unidad">{{unidad.txt_unidad}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="variables[2]">
+                <!-- <ion-label>Cantidad</ion-label> -->
+                <ion-input formControlName="num_unidades_produccion" type="number" placeholder="Cantidad" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">Cantidad</div>
+                </ion-input>
+            </ion-item>
+
+            <p *ngIf="variables[3]" color="tertiary">
+                <ion-text color="tertiary"> {{variables[3].txt_variable}}</ion-text>
+            </p>
+            <ion-item *ngIf="variables[3]">
+                <!-- <ion-label>Unidad</ion-label> -->
+                <ion-select formControlName="nid_unidad_produccion" placeholder="Unidad" md="ios" interface="popover">
+                    <div slot="label" class="custom-label-input">Unidad</div>
+                    <ion-select-option *ngFor="let unidad of (actividad.unidadesUnidProdList ? actividad.unidadesUnidProdList : variables[3].unidades)" [value]="unidad.nid_unidad">{{unidad.txt_unidad}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="variables[3]">
+                <!-- <ion-label>Cantidad</ion-label> -->
+                <ion-input formControlName="num_produccion" [color]="alertaProduccion() ? 'danger' : ''" type="number" placeholder="Cantidad" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">Cantidad</div>
+                </ion-input>
+            </ion-item>
+
+            <p *ngIf="variables[3]" color="tertiary">
+                <ion-text color="tertiary"> DESTINO DE LA PRODUCCION</ion-text>
+            </p>
+            <ion-item *ngIf="variables[6]">
+                <!-- <ion-label class="ion-text-wrap">{{variables[6].txt_variable}}</ion-label> -->
+                <ion-input formControlName="num_autoconsumo" type="number" [placeholder]="actividad.unidadProd" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">{{variables[6].txt_variable}}</div>
+                </ion-input>
+            </ion-item>
+            <ion-item *ngIf="variables[7]">
+                <!-- <ion-label class="ion-text-wrap">{{variables[7].txt_variable}}</ion-label> -->
+                <ion-input formControlName="num_semilla" type="number" [placeholder]="actividad.unidadProd" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">{{variables[7].txt_variable}}</div>
+                </ion-input>
+            </ion-item>
+            <ion-item *ngIf="variables[8]">
+                <!-- <ion-label class="ion-text-wrap">{{variables[8].txt_variable}}</ion-label> -->
+                <ion-input formControlName="num_incubacion" type="number" [placeholder]="actividad.unidadProd" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">{{variables[8].txt_variable}}</div>
+                </ion-input>
+            </ion-item>
+            <ion-item *ngIf="variables[9]">
+                <!-- <ion-label class="ion-text-wrap">{{variables[9].txt_variable}}</ion-label> -->
+                <ion-input formControlName="num_perdida" type="number" [placeholder]="actividad.unidadProd" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">{{variables[9].txt_variable}}</div>
+                </ion-input>
+            </ion-item>
+            <ion-item *ngIf="variables[10] || variables[12]">
+                <ion-label color="tertiary">Intercambio Comercial</ion-label>
+            </ion-item>
+            <ion-item *ngIf="variables[10]">
+                <!-- <ion-label class="ion-text-wrap">{{variables[10].txt_variable}}</ion-label> -->
+                <ion-input formControlName="num_cantidad_intermediarios" type="number" [placeholder]="actividad.unidadProd" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">{{variables[10].txt_variable}}</div>
+                </ion-input>
+            </ion-item>
+            <ion-item *ngIf="variables[11]">
+                <!-- <ion-label class="ion-text-wrap">{{variables[11].txt_variable}}</ion-label> -->
+                <ion-input formControlName="imp_precio_intermediarios" type="number" placeholder="S/." class="ion-text-right">
+                    <div slot="label" class="custom-label-input">{{variables[11].txt_variable}}</div>
+                </ion-input>
+            </ion-item>
+            <ion-item *ngIf="variables[12]">
+                <!-- <ion-label class="ion-text-wrap">{{variables[12].txt_variable}}</ion-label> -->
+                <ion-input formControlName="num_cantidad_mercado" type="number" [placeholder]="actividad.unidadProd" class="ion-text-right">
+                    <div slot="label" class="custom-label-input">{{variables[12].txt_variable}}</div>
+                </ion-input>
+            </ion-item>
+            <ion-item *ngIf="variables[13]">
+                <!-- <ion-label class="ion-text-wrap">{{variables[13].txt_variable}}</ion-label> -->
+                <ion-input formControlName="imp_precio_mercado" type="number" labelPlacement="fixed" placeholder="S/." class="ion-text-right">
+                    <div slot="label" class="custom-label-input">{{variables[13].txt_variable}}</div>
+                </ion-input>
+            </ion-item>
+            <div *ngIf="variables[3]">
+                <ion-item>
+                    <ion-label color="tertiary">Total Producción: </ion-label>
+                    <ion-label [color]="alertaProduccion() ? 'danger' : ''" class="ion-text-right"> {{totalProduccion()}}</ion-label>
+                </ion-item>
+                <ion-item>
+                    <ion-label color="tertiary">Total Soles (S/.): </ion-label>
+                    <ion-label class="ion-text-right">{{totalSoles()}}</ion-label>
+                </ion-item>
+            </div>
+        </div>
+
+        <h4 *ngIf="!detalle">Fotografías y georreferencia</h4>
+        <app-fotos *ngIf="!detalle" [fotos]="fotos" [consulta]="consulta"></app-fotos>
+
+        <div *ngIf="nuevo || detalle">
+            <h4>Observación</h4>
+            <ion-item>
+                <ion-textarea formControlName="txt_observacion" class="ion-text-wrap" placeholder="Observación" [autoGrow]="true"></ion-textarea>
+            </ion-item>
+        </div>
+
+    </form>
+</ion-content>
+
+<ion-footer *ngIf="!consulta" mode="ios" translucent="true">
+    <ion-toolbar mode="ios">
+        <ion-row class="ion-align-items-center">
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <ion-button shape="round" expand="block" color="primary" (click)="guardar()" [disabled]="actividadProductivaForm.invalid">Guardar</ion-button>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

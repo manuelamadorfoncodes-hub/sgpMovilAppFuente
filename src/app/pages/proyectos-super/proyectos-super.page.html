@@ -1,0 +1,14 @@
+<app-header titulo="Proyectos" [defaultHref]="defaultHref"></app-header>
+
+<ion-content>
+    <ion-searchbar (ionInput)="buscar( $event )" placeholder="Buscar"></ion-searchbar>
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="primary">Expediente - Nombre NE - Nombre NEC</ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let proyecto of proyectos | filtro: textoBuscar: 'codigo_expediente': 'nombre_ne': 'nombre_nec', let i=index" (click)="abrirDetalle(proyectos[i])" detail>
+            <ion-label>{{proyecto.codigo_expediente}} - {{proyecto.nombre_ne}} - {{proyecto.nombre_nec}}</ion-label>
+            <!-- <ion-checkbox slot="start" [(ngModel)]="proyecto.seleccionado"></ion-checkbox> -->
+        </ion-item>
+    </ion-list>
+</ion-content>

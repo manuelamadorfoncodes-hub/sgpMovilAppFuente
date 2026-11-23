@@ -1,0 +1,56 @@
+// ion-item {
+//     font-size: 12px !important;
+// }
+
+ion-button {
+    font-size: 16px !important;
+}
+
+.modal-agregar {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.custom-label-input {
+    color: var(--ion-color-tertiary);
+    font-size: 16px;
+    white-space: normal !important;
+    text-align: start !important;
+    // display: inline-block !important;
+}
+
+.custom-label-stacked {
+    color: var(--ion-color-tertiary);
+    font-size: 20px;
+    white-space: normal !important;
+    margin-bottom: 5px;
+}
+
+
+.letra15 {
+    font-size: 15px !important;
+}
+
+ion-input {
+    font-size: 15px !important;
+}
+
+.margenDetalle {
+    margin-left: 20px;
+}
+
+.margenModal {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+ion-item-option {
+    width: fit-content;
+    max-width: 120px;
+    text-align: center;
+}
+
+ion-select::part(placeholder),
+ion-select::part(text) {
+    white-space: normal !important;
+}

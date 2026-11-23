@@ -1,0 +1,70 @@
+<ion-item>
+    <ion-grid *ngIf="tipo ==='yesNoRadio'" >
+        <ion-row>
+            <ion-col size="12">
+                <ion-text color="tertiary" class="ion-text-wrap letra14">{{etiqueta}}</ion-text>
+            </ion-col>
+        </ion-row>
+        <ion-row class="letra14">
+            <ion-col size="9"></ion-col>
+            <ion-col size="1.5" class="ion-text-right">
+                <ion-text color="tertiary">SI</ion-text>
+            </ion-col>
+            <ion-col size="1.5" class="ion-text-right">
+                <ion-text color="tertiary">NO</ion-text>
+            </ion-col>
+        </ion-row>
+        <div *ngFor="let item of items">
+
+            <ion-radio-group [(ngModel)]="item[nombreValor]" (ionChange)="actualizaValor()">
+                <ion-row class="ion-align-items-center letra14">
+                    <ion-col size="9">
+                        <label class="ion-text-wrap">{{item[nombreTexto]}}</label>
+                    </ion-col>
+                    <ion-col size="1.5">
+                        <ion-radio value="01" justify="end"></ion-radio><br />
+                    </ion-col>
+                    <ion-col size="1.5">
+                        <ion-radio value="02" justify="end"></ion-radio><br />
+                    </ion-col>
+                    
+                </ion-row>
+            </ion-radio-group>
+        </div >
+    </ion-grid>
+
+    <ion-grid *ngIf="tipo ==='numberInput' || tipo ==='numberInputTot'" class="ion-no-padding" >
+        <ion-row>
+            <ion-col size="12">
+                <ion-text color="tertiary" class="ion-text-wrap letra14">{{etiqueta}}</ion-text>
+            </ion-col>
+        </ion-row>
+        <ion-row class="letra14">
+            <ion-col size="9"></ion-col>
+            <ion-col size="3" class="ion-text-right">
+                <ion-text color="tertiary">{{tituloColunma}}</ion-text>
+            </ion-col>
+        </ion-row>
+        <div *ngFor="let item of items">
+            <ion-row class="ion-align-items-center letra14">
+                <ion-col size="9">
+                    <label class="ion-text-wrap">{{item[nombreTexto]}}</label>
+                </ion-col>
+                <ion-col size="3">
+                    <ion-input [(ngModel)]="item[nombreValor]" [placeholder]="customPlaceholder" type="number" (ionChange)="actualizaValor()" class="ion-text-right letra14" mode="ios" (keypress)="validarTecla($event)">
+                        <!-- <div slot="label" class="custom-label-input">{{item.pregunta.txt_tipo}}</div> -->
+                    </ion-input>
+                </ion-col>
+            </ion-row>
+        </div >
+        <ion-row *ngIf="tipo ==='numberInputTot'" class="ion-padding letra14">
+            <ion-col size="9">
+                <ion-text color="tertiary">TOTAL</ion-text>
+            </ion-col>
+            <ion-col size="3" class="ion-text-right">
+                <ion-text color="tertiary">{{calculaTotal()}}</ion-text>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+</ion-item>

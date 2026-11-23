@@ -1,0 +1,140 @@
+<app-header-modal titulo="Solicitud de Acción de Mejora" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <h5>Datos de la Solicitud de Acción de Mejora</h5>
+    <ion-item>
+        <ion-label>
+            <h3>Plan de viaje: <ion-text color="dark"> {{actividad.cod_plan}}</ion-text></h3>
+            <h3>Proceso / Actividad: <ion-text color="dark"> {{actividad.txt_actividad}}</ion-text></h3>
+            <div *ngIf="actividad.txt_zonal_ambito || actividad.txt_portafolio || actividad.txt_proyectos">
+                <h3>Ambito de la actividad:</h3>
+                <h3 *ngIf="actividad.txt_zonal_ambito"><ion-text color="dark"> Unidad Territorial: {{actividad.txt_zonal_ambito}}</ion-text></h3>
+                <h3 *ngIf="actividad.txt_portafolio"><ion-text color="dark"> Portafolio: {{actividad.txt_portafolio}}</ion-text></h3>
+                <h3 *ngIf="actividad.txt_proyectos"><ion-text color="dark"> Proyectos: {{actividad.txt_proyectos}}</ion-text></h3>
+            </div>
+            <h3>Detectado y observado por: <ion-text color="dark"> {{sam.txt_detecta}}</ion-text></h3>
+            <h3>Unidad Territorial: <ion-text color="dark"> {{sam.txt_zonal_detecta}}</ion-text></h3>
+        </ion-label>
+    </ion-item>
+
+    <h6>1. Identificar la situación</h6>
+    <ion-item mode="ios">
+        <ion-label color="tertiary">Fecha de detección / observación:</ion-label>
+        <!-- <ion-button class="letra14" id="open-modal-fec-deteccion" fill="clear" color="dark">{{sam.fec_deteccion ? (sam.fec_deteccion | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button> -->
+        <ion-button class="letra14" id="open-modal-fec-deteccion" fill="clear" color="dark">{{sam.fec_deteccion ? (sam.fec_deteccion | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+        <ion-modal id="date-modal" trigger="open-modal-fec-deteccion" [keepContentsMounted]="true">
+            <ng-template>
+                <ion-datetime [(ngModel)]="sam.fec_deteccion" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios" [min]="fechaInicioValida" [max]="fechaFinValida"></ion-datetime>
+            </ng-template>
+        </ion-modal>
+    </ion-item>
+    <ion-item mode="ios">
+        <!-- <ion-label class="letra14" position="stacked">Origen o fuente:</ion-label> -->
+        <ion-select [(ngModel)]="sam.tip_origen" label-placement="stacked" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+            <div slot="label" ><ion-text color="tertiary" class="letra16">Origen o fuente:</ion-text></div>
+            <ion-select-option value="01">Auditoria Interna</ion-select-option>
+            <ion-select-option value="02">Quejas del Usuario</ion-select-option>
+            <ion-select-option value="03">Sugerencia / recomendación</ion-select-option>
+            <ion-select-option value="04">Supervisión/Auditoria Externa</ion-select-option>
+            <ion-select-option value="99">Otros:</ion-select-option>
+        </ion-select>
+    </ion-item>
+    <ion-item *ngIf="sam.tip_origen === '99'" mode="ios">
+        <ion-textarea [(ngModel)]="sam.txt_origen_otro" placeholder="Especifique el origen o fuente" [autoGrow]="true" aria-label="x"></ion-textarea>
+    </ion-item>
+    <ion-item mode="ios">
+        <!-- <ion-label class="letra14" position="stacked">Tipo:</ion-label> -->
+        <!-- <ion-select [(ngModel)]="sam.tip_solicitud" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}"> -->
+        <ion-select [(ngModel)]="sam.tip_solicitud" label-placement="stacked" placeholder="Seleccione" interface="popover">
+            <div slot="label" ><ion-text color="tertiary" class="letra18">Tipo:</ion-text></div>
+            <ion-select-option value="01">No conformidad</ion-select-option>
+            <ion-select-option value="02">Oportunidad de mejora</ion-select-option>
+        </ion-select>
+    </ion-item>
+    <ion-item mode="ios">
+        <ion-label class="letra14" position="stacked">Describir la no conformidad o la oportunidad de mejora:</ion-label>
+        <ion-textarea [(ngModel)]="sam.txt_descripcion" [autoGrow]="true" aria-label="x"></ion-textarea>
+    </ion-item>
+    <ion-item mode="ios">
+        <ion-label class="letra14" position="stacked">Documento de referencia:</ion-label>
+        <ion-textarea [(ngModel)]="sam.txt_documento" [autoGrow]="true" aria-label="x"></ion-textarea>
+    </ion-item>
+
+    <h6>2. Analizar la causa de las NC o sustento de la recomendación de mejora</h6>
+    <ion-item mode="ios">
+        <ion-label class="letra14" position="stacked">Descripción:</ion-label>
+        <ion-textarea [(ngModel)]="sam.txt_causa" [autoGrow]="true" aria-label="x"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+        <!-- <ion-label class="letra18" position="stacked">Investigado / Sustentado por:</ion-label> -->
+        <ion-select [(ngModel)]="sam.nid_investiga" label-placement="stacked"  placeholder="Seleccione" cancelText="Cancelar" okText="Aceptar" [interfaceOptions]="{cssClass:'custom-select-alert'}">
+            <div slot="label" ><ion-text color="tertiary" class="letra18 label-stacked">Investigado / Sustentado por:</ion-text></div>
+            <ion-select-option *ngFor="let persona of personal" [value]="persona.nid_personal">{{persona.txt_personal}}</ion-select-option>
+        </ion-select>
+    </ion-item>
+    <div *ngIf="sam.nid_investiga == 0">
+        <ion-item>
+            <ion-input [(ngModel)]="sam.txt_investiga" type="text" placeholder="Ingrese el nombre"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-input [(ngModel)]="sam.txt_correo_investiga" type="text" placeholder="Ingrese el correo electrónico"></ion-input>
+        </ion-item>
+    </div>
+
+    <h6>3. Planificar las acciones</h6>
+    <div *ngFor="let accion of acciones; let i=index">
+        <ion-item-divider>
+            <ion-label>Acción {{accion.orden}}</ion-label>
+        </ion-item-divider>
+        <ion-item-sliding>
+            <ion-item mode="ios">
+                <ion-label class="letra14" position="stacked">Acción</ion-label>
+                <ion-textarea [(ngModel)]="accion.txt_accion" [autoGrow]="true" aria-label="x"></ion-textarea>
+            </ion-item>
+            <ion-item-options *ngIf="!accion.nid_accion" side="end">  
+                <ion-item-option color="primary" (click)="eliminarAccion(i)">Eliminar</ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+        <ion-item>
+            <ion-select [(ngModel)]="accion.nid_responsable" label-placement="stacked"  placeholder="Seleccione" cancelText="Cancelar" okText="Aceptar" [interfaceOptions]="{cssClass:'custom-select-alert'}">
+                <div slot="label" ><ion-text color="tertiary" class="letra16">Responsable de la implementación</ion-text></div>
+                <ion-select-option *ngFor="let persona of personal" [value]="persona.nid_personal">{{persona.txt_personal}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <div *ngIf="accion.nid_responsable == 0">
+            <ion-item>
+                <ion-input [(ngModel)]="accion.txt_responsable" type="text" placeholder="Ingrese el nombre"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-input [(ngModel)]="accion.txt_correo_responsable" type="text" placeholder="Ingrese el correo electrónico"></ion-input>
+            </ion-item>
+        </div>
+        <ion-item>
+            <ion-label color="tertiary">Fecha de implementación:</ion-label>
+            <ion-button class="letra14" [id]="accion.controlFecha" fill="clear" color="dark">{{accion.fec_implementacion ? (accion.fec_implementacion | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" [trigger]="accion.controlFecha" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime [(ngModel)]="accion.fec_implementacion" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios" [min]="fechaInicioValida" [max]="fechaFinExtendida"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+        </ion-item>
+        <ion-item>
+            <ion-checkbox slot="start" disabled="true" [(ngModel)]="accion.flg_correo_enviado" labelPlacement="end" >Correo enviado</ion-checkbox>
+        </ion-item>
+    </div>
+
+    <ion-chip color="primarytext" mode="ios" outline="true" (click)="agregarAccion()">
+        <ion-label>Agregar Acción</ion-label>
+    </ion-chip>
+</ion-content>
+
+<ion-footer mode="ios" translucent="true">
+    <ion-toolbar mode="ios">
+        <ion-row>
+            <ion-col class="ion-text-center">
+                <ion-button shape="round" color="primary" (click)="guardar()">Guardar</ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

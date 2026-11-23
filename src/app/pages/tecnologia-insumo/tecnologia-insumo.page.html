@@ -1,0 +1,209 @@
+<ion-header>
+    <app-header-modal titulo="Entrega de activos" (cerrar)="salir()"></app-header-modal>
+
+    <ion-toolbar class="padding-header">
+        <ion-label color="primarytext">
+            <h2 *ngIf="tecnologia">{{tecnologia.txt_tecnologia}}</h2>
+            <h2 *ngIf="tecnologia">{{tecnologia.txt_partida}}</h2>
+            <!-- <h2 *ngIf="tecnologiaColectiva">{{tecnologiaColectiva.txt_tecnologia}}</h2>
+            <h2 *ngIf="tecnologiaColectiva">{{tecnologiaColectiva.txt_partida}}</h2> -->
+        </ion-label>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <ion-accordion-group [multiple]="true">
+        <div *ngFor="let entrega of entregas; let idx=index">
+            <ion-accordion [value]="idx">
+                <ion-item slot="header" color="light">
+                    <ion-label color="tertiary">
+                        <h2>Fecha de entrega: {{entrega.fec_entrega | date:'dd/MM/yyyy HH:mm'}}</h2>
+                        <h2>{{entrega.est_entrega === 'E' ? 'Enviado' : ''}}</h2>
+                        <h2><ion-text color="danger">
+                            {{entrega.est_entrega === 'R' ? 'Registrado (Sin enviar)' : (entrega.est_entrega === 'O' ? 'Observado' : '')}}
+                            {{entrega.incompleto ? ' (Incompleto)' : ''}}
+                        </ion-text></h2>
+                    </ion-label>
+                </ion-item>
+                <div class="padding-left" slot="content">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col size="12">
+                                <ion-text color="tertiary">INSUMOS</ion-text>
+                            </ion-col>
+                        </ion-row>
+                        <div *ngFor="let insumo of entrega.insumos; let i=index">
+                            <div *ngIf="insumo.flg_entregado" >
+                                <ion-row class="ion-align-items-center">
+                                    <ion-col size="1">
+                                        <ion-text>✔</ion-text>
+                                    </ion-col>
+                                    <ion-col size="11">
+                                        <ion-text>{{insumo.num_cantidad}} {{insumo.txt_unidad_insumo}} {{insumo.txt_insumo}}</ion-text>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row *ngIf="insumo.txt_observacion || insumo.flg_observacion">
+                                    <ion-col size="1"></ion-col>
+                                    <ion-col size="11">
+                                        <ion-label>{{insumo.txt_observacion}}</ion-label>
+                                    </ion-col>
+                                </ion-row>
+                            </div>
+                        </div>
+                        <div>
+                            <ion-label>
+                                <h2>Activos entregados a: </h2>
+                                <h3>Número de DNI: {{entrega.txt_dni_usuario}}</h3>
+                                <h3>Usuario: {{entrega.txt_usuario}}</h3>
+                            </ion-label>
+                        </div>
+                        <ion-row>
+                            <ion-col size="12">
+                                <app-firmar [firmas]="entrega.firmas" [consulta]="true"></app-firmar>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row mode="ios">
+                            <ion-col size="12" class="ion-text-center">
+                                <ion-button *ngIf="!entrega.nid_entrega" class="padding-button" color="primarytext" fill="outline" size="small" (click)="eliminarEntrega(idx)">  Eliminar  </ion-button>
+                                <ion-button *ngIf="entrega.est_entrega === 'O' || entrega.est_entrega === 'R'" class="padding-button" color="primarytext" fill="outline" size="small" (click)="editarEntrega(entrega, idx)">  Editar  </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+            </ion-accordion>
+        </div>
+    </ion-accordion-group>
+
+    <ion-modal [isOpen]="isModalOpen" (willDismiss)="onWillDismiss($event)">
+        <ng-template>
+            <ion-header>
+                <app-header-modal titulo="Registar entrega de activos" (cerrar)="cerrarModal()"></app-header-modal>
+                <ion-toolbar class="padding-header">
+                    <ion-label color="primarytext">
+                        <h2 *ngIf="tecnologia">{{tecnologia.txt_tecnologia}}</h2>
+                        <h2 *ngIf="tecnologia">{{tecnologia.txt_partida}}</h2>
+                        <!-- <h2 *ngIf="tecnologiaColectiva">{{tecnologiaColectiva.txt_tecnologia}}</h2>
+                        <h2 *ngIf="tecnologiaColectiva">{{tecnologiaColectiva.txt_partida}}</h2> -->
+                    </ion-label>
+                </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-padding">
+                <ion-grid>
+                    <ion-row>
+                        <ion-col size="12">
+                            <ion-label color="tertiary">
+                                <h2>Fecha de entrega: {{entregaEdit.fec_entrega | date:'dd/MM/yyyy HH:mm'}}</h2>
+                                <h2>{{entregaEdit.est_entrega === 'E' ? 'Enviado' : ''}}</h2>
+                                <h2><ion-text color="danger">
+                                    {{entregaEdit.est_entrega === 'R' ? 'Registrado (Sin enviar)' : (entregaEdit.est_entrega === 'O' ? 'Observado' : '')}}
+                                </ion-text></h2>
+                            </ion-label>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col size="8" class="ion-text-right">
+                            <ion-text color="tertiary">Marcar/Desmarcar Todo</ion-text>
+                        </ion-col>
+                        <ion-col size="2" class="ion-text-center">
+                            <ion-checkbox color="tertiary" (ionChange)="marcarTodo($event)"></ion-checkbox>
+                        </ion-col>
+                        <ion-col size="2"></ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col size="8">
+                            <ion-text color="tertiary">INSUMO</ion-text>
+                        </ion-col>
+                        <ion-col size="2" class="ion-text-center">
+                            <ion-text color="tertiary">ENTR.</ion-text>
+                        </ion-col>
+                        <ion-col size="2" class="ion-text-center">
+                            <ion-text color="tertiary">OBS.</ion-text>
+                        </ion-col>
+            
+                    </ion-row>
+                    <div *ngFor="let insumo of insumos; let i=index">
+                        <ion-row class="ion-align-items-center">
+                            <ion-col size="8">
+                                <ion-text>{{insumo.num_cantidad}} {{insumo.txt_unidad_insumo}} {{insumo.txt_insumo}}</ion-text>
+                            </ion-col>
+                            <ion-col size="2" class="ion-text-center">
+                                <ion-checkbox [disabled]="insumo.flg_eliminado" [(ngModel)]="insumo.flg_entregado"></ion-checkbox>
+                            </ion-col>
+                            <ion-col size="2" class="ion-text-center">
+                                <ion-button *ngIf="insumo.flg_entregado || insumo.nid_insumo" (click)="agregarObservacion(i)" fill="line" shape="round" size="small">
+                                    <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="insumo.txt_observacion || insumo.flg_observacion">
+                            <ion-col size="12">
+                                <ion-textarea [(ngModel)]="insumo.txt_observacion" placeholder="Observación" [autoGrow]="true"></ion-textarea>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                    <br>
+                    <div *ngIf="entregaEdit.tip_entrega === 'U'">
+                        <ion-label>
+                            <h2><ion-text color="tertiary">Activos entregados a: </ion-text></h2>
+                            <h3><ion-text color="tertiary">Número de DNI: </ion-text>{{entregaEdit.txt_dni_usuario}}</h3>
+                            <h3><ion-text color="tertiary">Usuario: </ion-text>{{entregaEdit.txt_usuario}}</h3>
+                        </ion-label>
+                    </div>
+                    <div *ngIf="entregaEdit.tip_entrega === 'C'">
+                        <ion-row>
+                            <ion-col size="12">
+                                <ion-label>
+                                    <h2><ion-text color="tertiary">Activos entregados a:</ion-text></h2>
+                                    <h2>Ingrese el número de DNI del usuario que recibe los insumos:</h2>
+                                </ion-label>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row  class="ion-align-items-center">
+                            <ion-col size="4">
+                                <ion-text color="tertiary">Número de DNI:</ion-text>
+                            </ion-col>
+                            <ion-col size="5">
+                                <ion-input [(ngModel)]="usuarioFirma.txt_dni_firma" type="number" placeholder="00000000"></ion-input>
+                            </ion-col>
+                            <ion-col size="3">
+                                <ion-button color="primarytext" (click)="buscarUsuario()" expand="block" fill="outline" size="small" shape="round" mode="ios">Buscar</ion-button>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="12">
+                                <ion-label><ion-text color="tertiary">Usuario: </ion-text>{{usuarioFirma?.txt_usuario_firma ? (usuarioFirma?.txt_usuario_firma) : ''}}</ion-label>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                    <ion-row *ngIf="puedeCambiarAHuella">
+                        <ion-col size="12">
+                            <ion-checkbox [(ngModel)]="usarHuella" (ionChange)="cambiarAHuella()" labelPlacement="end">Cambiar a huella digital.</ion-checkbox>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="!usarHuella">
+                        <ion-col size="12">
+                            <app-firmar [firmas]="entregaEdit.firmas"></app-firmar>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="usarHuella">
+                        <ion-col size="12">
+                            <app-fotos [fotos]="entregaEdit.firmas"></app-fotos>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-content>
+            <ion-footer mode="ios">
+                <ion-toolbar class="ion-text-center">
+                        <ion-button class="padding-button" color="primary" (click)="guardar()">  Guardar  </ion-button>
+                </ion-toolbar>
+            </ion-footer>
+            
+        </ng-template>
+    </ion-modal>
+</ion-content>
+
+<ion-footer mode="ios" *ngIf="verAgregarEntrega && !consulta">
+    <ion-toolbar class="ion-text-center">
+        <ion-button class="padding-button" color="primary" (click)="agregarEntrega()">  Agregar entrega de activos  </ion-button>
+    </ion-toolbar>
+</ion-footer>

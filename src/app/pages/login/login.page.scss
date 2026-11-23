@@ -1,0 +1,86 @@
+// .mainSlide,
+// .mainSlide ion-slide {
+//     width: 100%;
+//     height: 100%;
+//     background-image: url("../../../assets/imagenes/arch-pattern.png");
+//     // background-repeat: no-repeat;
+//     // background-size: auto;
+// }
+
+swiper-container {
+    width: 100%;
+    height: 100%;
+    background-image: url("../../../assets/imagenes/arch-pattern.png");
+}
+
+swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    // background: #fff;
+    // display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+ion-card {
+    // padding-top: 30px;
+    background-color: rgba(192, 192, 192, 0.5);
+    // position: relative;
+    // left: 0;
+    // right: 0;
+    // top: 45%;
+    // transform: translateY(-45%);
+    margin: 10px;
+}
+
+.texto-negro {
+    color: black !important;
+}
+
+a {
+    text-decoration: underline;
+}
+
+// a:link {
+//     color: rgb(243, 238, 182) !important;
+// }
+
+// a:visited {
+//     color: rgb(182, 240, 182) !important;
+// }
+
+// a:hover {
+//     color: rgb(242, 201, 222) !important;
+// }
+
+// a:active {
+//     color: white !important;
+// }
+
+ion-img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+}
+.link {
+    --color: var( --ion-color-primarytext);
+    text-decoration: underline;
+}
+
+.creditos {
+    padding-top: 10px;
+    font-size: 11px;
+}
+
+ion-item {
+    --background: #ffffff;
+    --color: #000000;
+    --padding-end: 10px;
+    --padding-start: 10px;
+}
+
+ion-list {
+    background-color: rgba(192, 192, 192, 0.05);
+    padding: 10px;
+}

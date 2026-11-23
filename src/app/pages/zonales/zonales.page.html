@@ -1,0 +1,14 @@
+<app-header titulo="Unidades Territoriales"></app-header>
+
+<ion-content class="ion-padding">
+    <ion-searchbar (ionInput)="buscar( $event )" placeholder="Buscar"></ion-searchbar>
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="primarytext">Codigo - Nombre Unidad Territorial</ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let zonal of zonales | filtro: textoBuscar: 'cod_zonal': 'txt_zonal': 'txt_zonal': 'txt_zonal', let i=index" (click)="abrirDetalle(zonales[i])" detail>
+            <ion-label>{{zonal.cod_zonal}} - {{zonal.txt_zonal}}</ion-label>
+            <!-- <ion-checkbox slot="start" [(ngModel)]="proyecto.seleccionado"></ion-checkbox> -->
+        </ion-item>
+    </ion-list>
+</ion-content>

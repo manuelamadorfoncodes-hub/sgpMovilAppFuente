@@ -1,0 +1,37 @@
+<div *ngFor="let firma of firmas; let i=index">
+    <ion-grid>
+        <ion-row class="ion-align-items-center">
+            <ion-col size="12">
+                <ion-label>{{firma.txt_archivo}}</ion-label>
+            </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+            <ion-col size="5" class="ion-text-center">
+                <ion-thumbnail>
+                    <img [src]="firma.urlArchivoHttp ? firma.urlArchivoHttp : (firma.nid_archivo ? siFoto : noFoto)" (click)="verFoto(i, $event)"/>
+                </ion-thumbnail>
+            </ion-col>
+            <ion-col size="7" >
+                <ion-label>
+                    <h3>Fecha: {{ firma.fec_archivo | date:'dd/MM/yyyy HH:mm'}}</h3>
+                    <h3 *ngIf="firma.flg_georeferencia">Latitud: {{ firma.num_latitud }}</h3>
+                    <h3 *ngIf="firma.flg_georeferencia">Longitud: {{ firma.num_longitud }}</h3>
+                </ion-label>
+                <div class="ion-text-center" *ngIf="!consulta">
+                    <ion-button (click)="registrarFirma(i)" shape="round" fill="outline" size="small" mode="ios" color="primarytext">Registrar firma</ion-button>
+                </div>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</div>
+
+<ion-modal id="modalFirma">
+    <ng-template>
+        <ion-header>
+            <ion-toolbar color="primary">
+                <ion-title>Registrar Firma</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <app-canvas (cancelar)="cancelar()" (registrar)="registrar($event)"></app-canvas>
+    </ng-template>
+</ion-modal>

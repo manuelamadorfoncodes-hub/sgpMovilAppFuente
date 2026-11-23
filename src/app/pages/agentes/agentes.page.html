@@ -1,0 +1,33 @@
+<app-header titulo="Proyecto {{codigoProyecto}}" [defaultHref]="defaultHref"></app-header>
+
+<ion-content>
+    <ion-list #lista>
+        <ion-list-header>
+            <ion-label color="primarytext">AGENTES DEL PROYECTO: {{codigoProyecto}}</ion-label>
+        </ion-list-header>
+        <ion-searchbar (ionInput)="buscar( $event )" placeholder="Buscar"></ion-searchbar>
+        <ion-item-sliding *ngFor="let agente of agentes | filtro: textoBuscar: 'txt_dni': 'txt_funcion': 'nombre': 'txt_dni', let i=index">
+            <ion-item mode="ios" (click)="abrirOpciones(agente, i)">
+                <ion-label class="ion-text-wrap">
+                    <ion-label color="tertiary">{{agente.txt_apellido_paterno}} {{agente.txt_apellido_materno}}, {{agente.txt_nombres}}</ion-label>
+                    <ion-label>DNI: {{agente.txt_dni}} - Estado:
+                        <ion-text color="tertiary">{{agente.txt_estado}}</ion-text>
+                    </ion-label>
+                    <h3>Función: {{agente.txt_funcion}}</h3>
+                    <h3>Inicio: {{agente.fec_inicio | date:"dd/MM/yyyy"}} - Término: {{agente.fec_termino | date:"dd/MM/yyyy"}}</h3>
+                    <ion-label>{{agente.txt_eri}}</ion-label>
+                    <ion-text color="danger">
+                        <h3>
+                            {{agente.cambioEvaluacion ? ('Evaluación' + (agente.evaluacionIcompleto ? ' -Incompleto' : '') + ' (Sin enviar)') : ''}}
+                        </h3>
+                    </ion-text>
+                </ion-label>
+            </ion-item>
+            <ion-item-options *ngIf="agente.cambioEvaluacion" side="end" mode="ios">
+                <ion-item-option color="danger" (click)="eliminarEvaluacion(agente, i)" class="ion-text-center">
+                    Eliminar <br> Evaluación
+                </ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

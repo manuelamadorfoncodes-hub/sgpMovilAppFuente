@@ -1,0 +1,119 @@
+<app-header-modal [titulo]="titulo" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <h4>
+        <ion-text color="primarytext">{{tecnologia.txt_tecnologia}}</ion-text>
+    </h4>
+    <p>
+        <ion-text color="primarytext">{{tecnologia.txt_partida}}</ion-text>
+    </p>
+    <p>
+        <ion-text color="primarytext">{{tecnologia.txt_tipo_cocina}}</ion-text>
+    </p>
+    <p>
+        <ion-text color="primarytext">Tipo de Beneficio: {{tecnologia.tip_beneficio === 'C' ? 'Colectivo' : 'Individual'}}</ion-text>
+    </p>
+
+    <form [formGroup]="tecnologiaForm">
+        <ion-item *ngIf="consulta">
+            <ion-label color="tertiary" class="ion-text-wrap"><ion-text color="danger">* </ion-text> Fecha: </ion-label>
+            <ion-label>{{tecnologia.fec_actualizacion | date:'dd/MM/yyyy'}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="!consulta">
+            <ion-label color="tertiary" class="ion-text-wrap"><ion-text color="danger">* </ion-text> Fecha: </ion-label>
+            <ion-button id="open-modal" fill="clear" color="dark">{{fechaCambio ? (fechaCambio | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" trigger="open-modal" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime formControlName="fec_cambio" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios" [min]="fechaInicio" [max]="fechaActual"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary">
+                Ofertada
+                <!-- <h6 class="advertencia">⚠️ Va a desasignar una tecnología que ya registra avance.</h6> -->
+                <h6 *ngIf="flgConAvance" class="advertencia">📌 Va a desasignar una tecnología que ya registra avance.</h6>
+                <!-- <h6 class="advertencia">🔺 Va a desasignar una tecnología que ya registra avance.</h6> -->
+                <!-- <h6 class="advertencia">❗ Va a desasignar una tecnología que ya registra avance.</h6> -->
+            </ion-label>
+            <ion-toggle *ngIf="!consulta" formControlName="flg_ofertada" color="primary" slot="end"></ion-toggle>
+            <ion-label *ngIf="consulta">{{tecnologia.flg_ofertada ? 'Sí' : 'No'}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="!consulta">
+            <ion-label color="tertiary" position="floating">Observación: </ion-label>
+            <ion-textarea formControlName="txt_observacion" class="ion-text-wrap"></ion-textarea>
+        </ion-item>
+        <ion-item *ngIf="consulta">
+            <ion-label color="tertiary">Observación: </ion-label>
+            <ion-label class="ion-text-wrap">{{tecnologia.txt_observacion}}</ion-label>
+        </ion-item>
+        <div *ngIf="flgOfertada">
+            <div *ngIf="tecnologia.tip_beneficio != 'C'">
+                <h4>Fotografías y georreferencia</h4>
+                <app-fotos [fotos]="fotos" [consulta]="consulta"></app-fotos>
+            </div>
+            <div *ngIf="consulta">
+                <h4 *ngIf="variables.length > 0">Situación Inicial</h4>
+                <ion-label *ngIf="variables[0]" color="tertiary">{{variables[0].txt_variable}}</ion-label>
+                <ion-item *ngIf="variables[0]">
+                    <ion-label>Unidad</ion-label>
+                    <ion-select formControlName="nid_unidad_area_riego" placeholder="Unidad" md="ios" interface="popover">
+                        <ion-select-option *ngFor="let unidad of variables[0].unidades" [value]="unidad.nid_unidad">{{unidad.txt_unidad}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item *ngIf="variables[0]">
+                    <ion-label>Cantidad</ion-label>
+                    <ion-input formControlName="num_area_riego" type="number" placeholder="Cantidad" slot="end" class="ion-text-right"></ion-input>
+                </ion-item>
+    
+                <ion-label *ngIf="variables[1]" color="tertiary">{{variables[1].txt_variable}}</ion-label>
+                <ion-item *ngIf="variables[1]">
+                    <ion-label>Unidad</ion-label>
+                    <ion-select formControlName="nid_unidad_area_instalada" placeholder="Unidad" md="ios" interface="popover">
+                        <ion-select-option *ngFor="let unidad of variables[1].unidades" [value]="unidad.nid_unidad">{{unidad.txt_unidad}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item *ngIf="variables[1]">
+                    <ion-label>Cantidad</ion-label>
+                    <ion-input formControlName="num_area_instalada" type="number" placeholder="Cantidad" slot="end" class="ion-text-right"></ion-input>
+                </ion-item>
+    
+                <ion-label *ngIf="variables[4]" color="tertiary">{{variables[4].txt_variable}}</ion-label>
+                <ion-item *ngIf="variables[4]">
+                    <ion-label>Kilogramos (kg)</ion-label>
+                    <ion-input formControlName="num_consumo_lenha" type="number" placeholder="Cantidad" slot="end" class="ion-text-right"></ion-input>
+                </ion-item>
+    
+                <ion-label *ngIf="variables[5]" color="tertiary">{{variables[5].txt_variable}}</ion-label>
+                <ion-item *ngIf="variables[5]">
+                    <ion-label>Metros Cúbicos (m3)</ion-label>
+                    <ion-input formControlName="num_volumen_almacenamiento" type="number" placeholder="Cantidad" slot="end" class="ion-text-right"></ion-input>
+                </ion-item>
+    
+                <div *ngIf="variables[2] || variables[3]">
+                    <app-tecnologia-avance-prod *ngFor="let avanceProd of avanceProdList; let i=index" [productos]="productos" [variables]="variables" [multiple]="multiple" [avanceProd]="avanceProdList[i]" [index]="i"></app-tecnologia-avance-prod>
+                    <!-- <app-tecnologia-avance-prod *ngFor="let avanceProd of avanceProdList" [variables]="variables" formControlName="avanceProd"></app-tecnologia-avance-prod> -->
+                </div>
+    
+                <div *ngIf="variables[3] && !consulta && (!usuario.solicitud || (usuario.solicitud && usuario.solicitud.est_solicitud !== 'E'))">
+                    <p>¿Desea registrar otro producto?</p>
+                    <ion-button shape="round" color="primary" size="small" fill="outline" mode="ios" (click)="agregarUnidadProduccion()">Agregar producto</ion-button>
+                </div>
+            </div>
+        </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+    </form>
+</ion-content>
+
+<ion-footer mode="ios" translucent="true" *ngIf="!consulta && (!usuario.solicitud || (usuario.solicitud && usuario.solicitud.est_solicitud !== 'E'))">
+    <ion-toolbar mode="ios">
+        <ion-row class="ion-align-items-center">
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <ion-button shape="round" expand="block" color="primary" (click)="guardar()" class="centrado" [disabled]="tecnologiaForm.invalid">
+                    Guardar
+                </ion-button>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

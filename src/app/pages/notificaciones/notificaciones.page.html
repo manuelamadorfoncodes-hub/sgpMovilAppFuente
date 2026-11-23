@@ -1,0 +1,48 @@
+<app-header titulo="SGP Móvil" [defaultHref]="defaultHref" [verMenu]="true"></app-header>
+
+<ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="refrescar($event)" mode="ios">
+        <ion-refresher-content
+        pullingIcon="chevron-down-circle-outline"
+        pullingText="Desliza para sincronizar"
+        refreshingSpinner="circles"
+        refreshingText="Sincronizando...">
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-list>
+        <ion-item-sliding *ngFor="let notificacion of notificaciones; let i=index">
+            <ion-item mode="ios" (click)="abrirDetalle(notificacion, i)">
+                <ion-avatar>
+                    <img [src]="'../../../assets/icon/notificacion/' + notificacion.txt_icono" alt="🔔"/>
+                </ion-avatar>
+
+                <ion-label>
+                    <ion-grid class="ion-no-padding">
+                        <ion-row>
+                            <ion-col size="10">
+                                <h5 class="negrita" >{{notificacion.txt_nombre}}</h5>
+                            </ion-col>
+                            <ion-col size="2" class="alineacion-derecha">
+                                <ion-text class="ion-text-right">{{notificacion.fec_notificacion | date:'d/M/yy'}}</ion-text>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="11">
+                                <h6 class="ion-text-wrap">{{notificacion.txt_asunto}}</h6>
+                            </ion-col>
+                            <ion-col size="1" class="alineacion-derecha">
+                                <ion-label *ngIf="notificacion.flg_leido" class="ion-text-right" color="success">✓</ion-label>
+                                <ion-text *ngIf="!notificacion.flg_leido" class="ion-text-right" color="primarytext">●</ion-text>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-label>
+            </ion-item>
+
+            <ion-item-options side="end" color="primary" mode="ios">
+                <ion-item-option (click)="eliminar(notificacion,i)">Eliminar</ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

@@ -1,0 +1,194 @@
+<app-header-modal [titulo]="titulo" (cerrar)="salir()"></app-header-modal>
+
+<ion-content>
+    <form [formGroup]="solicitudForm">
+        <h4>Datos del Usuario</h4>
+        <!-- <ion-button *ngIf="edit1 && solicitud.tip_cambio === 'CT'" shape="round" color="primary" size="small" fill="outline" mode="ios" (click)="descargarIntegrantes()">Descargar Integrantes</ion-button> -->
+        <ion-item *ngIf="edit1 && solicitud.tip_cambio === 'CT'" >
+            <ion-label color="tertiary" position="floating">Integrantes del hogar: </ion-label>
+            <ion-select formControlName="nid_integrante" placeholder="Seleccione" md="ios" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                <ion-select-option *ngFor="let integrante of integrantes" [value]="integrante.nid_identificador">{{integrante.txt_apellido_paterno}} {{integrante.txt_apellido_materno}}, {{integrante.txt_nombres}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="edit1 && solicitud.tip_cambio === 'IT'" >
+            <ion-label color="tertiary">
+                <ion-text *ngIf="edit1" color="danger">*</ion-text> Proyecto de procedencia: </ion-label>
+            <ion-select formControlName="txt_traslado" placeholder="Seleccione" md="ios" interface="popover">
+                <ion-select-option *ngFor="let proyecto of proyectosNec" [value]="proyecto">{{proyecto}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item mode="ios" *ngIf="admiteExtranjeros">
+            <ion-label color="tertiary">
+                <ion-text *ngIf="edit1" color="danger">*</ion-text> Tipo de Documento de Identidad: </ion-label>
+            <ion-select *ngIf="edit1" formControlName="tip_documento_identidad" placeholder="Seleccione" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover-s'}">
+                <ion-select-option value="D">DNI</ion-select-option>
+                <ion-select-option value="2">Carné de extranjería</ion-select-option>
+            </ion-select>
+            <ion-label *ngIf="!edit1">{{solUsuario.tip_documento_identidad === 'D' ? 'DNI' : (solUsuario.tip_documento_identidad === '2' ? 'Carné de extranjería' : '')}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary">
+                <ion-text *ngIf="edit1" color="danger">*</ion-text>{{admiteExtranjeros ? 'Número de documento:' : 'Número de DNI:' }} </ion-label>
+            <ion-input *ngIf="edit1" formControlName="txt_documento_identidad" placeholder="00000000" maxlength="11"></ion-input>
+            <ion-label *ngIf="!edit1">{{solUsuario.txt_documento_identidad}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary">Apellido Paterno: </ion-label>
+            <ion-input *ngIf="edit1" formControlName="txt_apellido_paterno" autocapitalize="characters" placeholder="NINGUNO"></ion-input>
+            <ion-label *ngIf="!edit1">{{solUsuario.txt_apellido_paterno}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary">Apellido Materno: </ion-label>
+            <ion-input *ngIf="edit1" formControlName="txt_apellido_materno" autocapitalize="characters" placeholder="NINGUNO"></ion-input>
+            <ion-label *ngIf="!edit1">{{solUsuario.txt_apellido_materno}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label color="tertiary">
+                <ion-text *ngIf="edit1" color="danger">*</ion-text> Nombres: </ion-label>
+            <ion-input *ngIf="edit1" formControlName="txt_nombres" autocapitalize="characters" placeholder="NINGUNO"></ion-input>
+            <ion-label *ngIf="!edit1">{{solUsuario.txt_nombres}}</ion-label>
+        </ion-item>
+        <!-- <ion-item  *ngIf="!edit3">
+            <ion-label color="tertiary">
+                <ion-text *ngIf="edit1" color="danger">* </ion-text>
+                Fecha Nacimiento:
+            </ion-label>
+            <ion-button *ngIf="edit1" id="open-modal" fill="clear" color="dark">{{fechaNacimiento ? (fechaNacimiento | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" trigger="open-modal" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime formControlName="fec_nacimiento" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" prefer-wheel="true" mode="ios"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+            <ion-label *ngIf="!edit1">{{solUsuario.fec_nacimiento | date:'dd/MM/yyyy'}}</ion-label>
+        </ion-item> -->
+        <ion-item *ngIf="!edit1 && !edit3">
+            <ion-label color="tertiary">Fecha Nacimiento:</ion-label>
+            <ion-label *ngIf="!edit1">{{solUsuario.fec_nacimiento | date:'dd/MM/yyyy'}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="edit1">
+            <ion-label color="tertiary"><ion-text color="danger">* </ion-text> Fecha Nacimiento: </ion-label>
+            <ion-button id="open-modal-fec-nac" fill="clear" color="dark">{{fechaNacimiento ? (fechaNacimiento | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" trigger="open-modal-fec-nac" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime formControlName="fec_nacimiento" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" prefer-wheel="true" mode="ios"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+        </ion-item>
+
+        <ion-item *ngIf="!edit3">
+            <ion-label color="tertiary">
+                <ion-text *ngIf="edit1" color="danger">*</ion-text> Sexo: </ion-label>
+            <ion-select *ngIf="edit1" formControlName="tip_sexo" placeholder="Seleccione" md="ios" interface="popover">
+                <ion-select-option value="F">Femenino</ion-select-option>
+                <ion-select-option value="M">Masculino</ion-select-option>
+            </ion-select>
+            <ion-label *ngIf="!edit1">{{solUsuario.tip_sexo === 'M'? 'Masculino' : 'Femenino'}}</ion-label>
+        </ion-item>
+        <h4 *ngIf="edit2 && tipoCambio==='CD'">Datos a cambiar</h4>
+        <ion-item *ngIf="edit2  && solicitud.tip_cambio !== 'CT'">
+            <ion-label color="tertiary" position="floating">Dirección: </ion-label>
+            <ion-textarea formControlName="txt_domicilio" aria-label="x" class="ion-text-wrap" maxlength="240"></ion-textarea>
+        </ion-item>
+        <ion-item *ngIf="edit2 && solicitud.tip_cambio !== 'CT'">
+            <ion-label color="tertiary" position="floating">
+                <ion-text *ngIf="edit2" color="danger">*</ion-text>
+                Ubicación
+            </ion-label>
+            <ion-select formControlName="cod_ubigeo" aria-label="x" placeholder="Seleccione" md="ios" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                <ion-select-option *ngFor="let cp of ambito" [value]="cp.codigo_ubigeo">{{cp.nombre_ubigeo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="edit2 && solicitud.tip_cambio !== 'CT'">
+            <ion-label color="tertiary" position="floating">Comunidad Nativa</ion-label>
+            <ion-select formControlName="nid_comunidad_nativa" aria-label="x" placeholder="Seleccione" md="ios" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                <ion-select-option *ngFor="let cn of comunidadNativa" [value]="cn.nid_comunidad_nativa">{{cn.txt_comunidad_nativa}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="edit2">
+            <ion-label color="tertiary">Celular: </ion-label>
+            <ion-input formControlName="txt_telefono" placeholder="000000000"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="edit2 && solicitud.tip_cambio !== 'CT' && usuario.flg_ejecucion">
+            <ion-label color="tertiary">Fecha de inicio: </ion-label>
+            <ion-button id="open-modal-inicio" fill="clear" color="dark">{{fechaInicio ? (fechaInicio | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" trigger="open-modal-inicio" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime formControlName="fec_inicio" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+        </ion-item>
+
+
+        <div *ngIf="edit1 && menorEdad && (solicitud.tip_cambio ==='NU' || tipoCambio==='NU')">
+            <ion-item>
+                <ion-label color="tertiary" class="ion-text-wrap">El usuario es menor de edad, debe cargar el archivo siguiente:</ion-label>
+            </ion-item>
+            <app-fotos [fotos]="archivoHogarEmancipado"></app-fotos>
+        </div>
+
+        <div *ngIf="edit2 && solicitud.tip_cambio !== 'IT'">
+            <h4 >Fotografías y georreferencia</h4>
+            <app-fotos [fotos]="fotos"></app-fotos>
+        </div>
+
+        <h4 *ngIf="edit3">Datos del {{titulo}}</h4>
+        <ion-item *ngIf="edit3">
+            <ion-label color="tertiary">
+                <ion-text color="danger">*</ion-text>
+                Fecha de retiro/cambio:
+            </ion-label>
+            <ion-button id="open-modal-cambio" fill="clear" color="dark">{{fechaCambio ? (fechaCambio | date:'dd/MM/yyyy') : '00/00/0000'}}</ion-button>
+            <ion-modal id="date-modal" trigger="open-modal-cambio" [keepContentsMounted]="true">
+                <ng-template>
+                    <ion-datetime formControlName="fec_cambio" presentation="date" [showDefaultButtons]="true" doneText="Aceptar" cancelText="Cancelar" color="primarytext" mode="ios"></ion-datetime>
+                </ng-template>
+            </ion-modal>
+        </ion-item>
+        <ion-item *ngIf="edit3 && tipoCambio!='CT'">
+            <ion-label color="tertiary" position="floating">
+                <ion-text color="danger">*</ion-text> Causal</ion-label>
+            <ion-select formControlName="cod_causal" placeholder="Seleccione" md="ios" interface="popover" [interfaceOptions]="{cssClass:'custom-radio-popover'}">
+                <ion-select-option *ngFor="let causal of causales" [value]="causal.cod_tipo" class="ion-text-wrap">{{causal.txt_tipo}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <!-- <ion-item *ngIf="edit3 && tipoCambio!='CT'">
+            <ion-label color="tertiary" position="floating">
+                <ion-text color="danger">*</ion-text> Causal</ion-label>
+            <ion-label>{{causaSeleccionada}}</ion-label>
+        </ion-item> -->
+        <ion-item *ngIf="edit3">
+            <ion-label color="tertiary" position="floating">Comentario causal: </ion-label>
+            <ion-textarea formControlName="txt_comentario_causal" aria-label="x" autocapitalize="characters" class="ion-text-wrap"></ion-textarea>
+        </ion-item>
+        <h4 *ngIf="tipoCambio==='CT'">Registre el Nuevo Titular</h4>
+        <ion-button *ngIf="tipoCambio==='CT'" shape="round" color="primarytext" size="small" fill="outline" mode="ios" (click)="nuevoUsuario()" [disabled]="solicitudForm.invalid">Nuevo Titular</ion-button>
+        
+        <div *ngIf="tipoCambio==='IR' || tipoCambio==='IT' ||tipoCambio==='RE'">
+            <h4>Registre el Nuevo Usuario</h4>
+            <ion-button shape="round" color="primarytext" size="small" fill="outline" mode="ios" [disabled]="solicitudForm.invalid" (click)="nuevoUsuario()">Datos del Usuario</ion-button>
+            <ion-button shape="round" color="primarytext" size="small" fill="outline" mode="ios" [disabled]="solicitudForm.invalid" (click)="abrirTecnologias()">Tecnologías</ion-button>
+            <ion-button shape="round" color="primarytext" size="small" fill="outline" mode="ios" [disabled]="solicitudForm.invalid" (click)="fichaVivienda()" *ngIf="tieneFichaVivienda">{{nombreFichaVivienda}}</ion-button>
+            <ion-button shape="round" color="primarytext" size="small" fill="outline" mode="ios" [disabled]="solicitudForm.invalid" (click)="actividadesProd()" *ngIf="tieneActividadProd">Actividades Productivas</ion-button>
+            <ion-button shape="round" color="primarytext" size="small" fill="outline" mode="ios" [disabled]="solicitudForm.invalid" (click)="fichaMujer()" *ngIf="tieneFichaMujer">Ficha de Caracterización MEM</ion-button>
+            <ion-button shape="round" color="primarytext" size="small" fill="outline" mode="ios" [disabled]="solicitudForm.invalid" (click)="abrirIntegrantes()">Integrantes del Hogar</ion-button>
+        </div>
+
+        <h4 *ngIf="solicitud && solicitud.txt_observacion">Observación a la solicitud enviada: </h4>
+        <ion-item *ngIf="solicitud && solicitud.txt_observacion">
+            <ion-label class="ion-text-wrap">{{solicitud.txt_observacion}}</ion-label>
+        </ion-item>
+    </form>
+</ion-content>
+<ion-footer mode="ios" translucent="true" *ngIf="solicitud && solicitud.est_solicitud !== 'E'">
+    <ion-toolbar mode="ios">
+        <ion-row class="ion-align-items-center">
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <ion-button shape="round" expand="block" color="primary" (click)="guardar()">
+                    Guardar
+                </ion-button>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

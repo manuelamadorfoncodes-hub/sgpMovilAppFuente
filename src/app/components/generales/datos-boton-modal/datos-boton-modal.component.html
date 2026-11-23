@@ -1,0 +1,32 @@
+<ion-button (click)="abrirModal()" class="ion-text-wrap boton" expand="block" fill="outline" shape="round" size="small" mode="ios">{{etiquetaBoton}}</ion-button>
+
+
+<ion-popover class="data-registro" [isOpen]="isBotonModalOpen" (willDismiss)="cancelarModal()" show-backdrop="true" mode="ios"> 
+    <ng-template>
+        <ion-header>
+            <!-- <ion-label color="primarytext" class="ion-text-center">Agregar nueva foto al reporte</ion-label> -->
+            <ion-toolbar class="ion-text-center">
+                <ion-label color="primarytext">{{titulo}}</ion-label>
+            </ion-toolbar>
+        </ion-header>
+        <div class="modal-agregar">
+            <br>
+            <ion-textarea [(ngModel)]="valor" [label]="etiquetaData" labelPlacement="floating" fill="outline" color="primary" [autoGrow]="true" mode="md"></ion-textarea>
+            <br>
+        </div>
+        <ion-footer mode="ios">
+            <ion-toolbar>
+                <ion-grid class="ion-no-padding">
+                    <ion-row>
+                        <ion-col size="6" class="ion-text-center">
+                            <ion-button (click)="cancelarModal()" [strong]="true" expand="block" fill="clear" size="small">Cancelar</ion-button>
+                        </ion-col>
+                        <ion-col size="6" class="ion-text-center">
+                            <ion-button (click)="aceptarModal()" [strong]="true" expand="block" fill="clear" size="small">Aceptar</ion-button>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-toolbar>
+        </ion-footer>
+    </ng-template>
+</ion-popover>

@@ -1,0 +1,67 @@
+<ion-header>
+    <ion-item>
+        <ion-label color="primarytext" class="ion-text-center">{{parametros.pregunta}}</ion-label>
+    </ion-item>
+</ion-header>
+
+<ion-content >
+    <ion-list *ngIf="parametros.columnas === 1">
+        <ion-item>
+            <ion-grid>
+                <ion-row *ngFor="let opcion of parametros.opciones">
+                    <ion-col size="1" class="ion-text-right">
+                        <div>
+                            <ion-checkbox slot="start" [(ngModel)]="opcion.seleccionado" mode="md" (ionChange)="validarCheck(opcion)"></ion-checkbox>
+                        </div>
+                    </ion-col>
+                    <ion-col size="11">
+                        <ion-text class="ion-text-wrap letra14">{{opcion.txt_tipo}}</ion-text>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf="parametros.columnas === 2">
+        <ion-grid class="ion-no-padding">
+            <ion-row>
+                <ion-col size="9"></ion-col>
+                <ion-col size="3" class="ion-text-center letra14">Importe</ion-col>
+            </ion-row>
+            <ion-row *ngFor="let opcion of parametros.opciones">
+                <ion-col size="9">
+                    <ion-item mode="ios">
+                        <ion-label>{{opcion.txt_tipo}}</ion-label>
+                        <ion-checkbox slot="start" [(ngModel)]="opcion.seleccionado" mode="md" (ionChange)="validarCheck(opcion)"></ion-checkbox>
+                    </ion-item>
+                </ion-col>
+                <ion-col size="3">
+                    <ion-item mode="ios">
+                        <ion-input class="ion-text-right" [(ngModel)]="opcion.numero" [disabled]="!opcion.seleccionado || opcion.cod_tipo === '00'" type="number" placeholder="0"></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-list>
+    <ion-item *ngIf="parametros.flagOtro" mode="ios">
+        <ion-textarea [(ngModel)]="parametros.otro" placeholder="Especifique" [autoGrow]="true" maxlength="50"></ion-textarea>
+    </ion-item>
+    <ion-grid class="ion-no-padding">
+        <ion-row>
+            <ion-col size="6">
+                <ion-item button (click)="cancelar()">
+                    <ion-label color="primarytext" class="ion-text-center">Cancelar</ion-label>
+                </ion-item>
+            </ion-col>
+            <ion-col size="6">
+                <ion-item button (click)="aceptar()">
+                    <ion-label color="primarytext" class="ion-text-center">Aceptar</ion-label>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>
+
+<!-- 
+<ion-footer>
+
+</ion-footer> -->
