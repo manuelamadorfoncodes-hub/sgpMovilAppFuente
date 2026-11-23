@@ -14,6 +14,12 @@ export class ErrorInterceptor implements HttpInterceptor {
         return next.handle(request).pipe(
             catchError(err => {
                 console.log(err);
+                if (err.status === 401 && err.error && err.error.status === -4) {
+                    // El API exige doble factor y el token no lo tiene: volver a iniciar sesión
+                    this.uiService.dismissLoading()
+                    this.seguridadService.sesionNoVerificada(err.error.message)
+                    return throwError(err.error.message)
+                }
                 if (err.status === 401) {
                     console.log('no autorizado renovar el token');
                     console.log(err.error.status);

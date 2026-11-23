@@ -6,6 +6,7 @@ import { Device } from '@capacitor/device';
 import { environment } from '../../environments/environment'
 import { UiServiceService } from './ui-service.service'
 import { StorageService } from './storage.service';
+import { DobleFactorService } from './doble-factor.service';
 import { User, Modulo, ZonalModulo, Funcion } from '../model/generales'
 
 const helper = new JwtHelperService()
@@ -20,7 +21,8 @@ export class SeguridadService {
         private storage: StorageService,
         private navController: NavController,
         private alertController: AlertController,
-        private uiService: UiServiceService
+        private uiService: UiServiceService,
+        private dobleFactorService: DobleFactorService
         ) { }
 
     async obtenerReferencia() {
@@ -30,15 +32,19 @@ export class SeguridadService {
     
     async login(idusuario: string, clave: string) {
         const referencia = await this.obtenerReferencia()
-        const data = { idusuario, clave, nidmodulo: environment.nidModulo, referencia}
-        console.log('data :>> ', data);
+        // Doble factor: servicio nuevo /dobleFactor/autenticar (la clave ya no se escribe en la consola)
+        const data = { idusuario, clave, nidmodulo: environment.nidModulo, referencia, equipo: this.dobleFactorService.obtenerIdentificadorEquipo() }
+        this.dobleFactorService.limpiarReto()
         return new Promise<string>(resolve => {
 
-            this.http.post(`${environment.urlSeguridad}/usuario/autenticarAutorizar`, data)
+            this.http.post(`${environment.urlSeguridad}/dobleFactor/autenticar`, data)
                 .subscribe({
                     next: async (resp) => {
-                        console.log('resp :>> ', resp);
-                        if (resp['status'] !== 0) {
+                        if (resp['status'] === 1) {
+                            // Usuario y contraseña correctos: falta el segundo factor
+                            this.dobleFactorService.iniciarReto(resp)
+                            resolve('df');
+                        } else if (resp['status'] !== 0) {
                             this.token = null;
                             this.storage.clear();
                             resolve(resp['message']);
@@ -281,6 +287,17 @@ export class SeguridadService {
         }
     }
 
+    /**
+     * La sesión debe volver a verificarse (doble factor). Solo se quita el token: se conservan los datos
+     * guardados en el celular (incluidos los no sincronizados) y los permisos elegidos.
+     */
+    async sesionNoVerificada(mensaje?: string) {
+        this.token = null
+        await this.storage.remove('token')
+        this.navController.navigateRoot('/login')
+        await this.uiService.alertaInformativa(mensaje || 'Debe iniciar sesión nuevamente para verificar su identidad.')
+    }
+
     async limpiarToken() {
         this.token = null
         this.storage.clear()
@@ -322,8 +339,14 @@ export class SeguridadService {
 
     async renuevaToken() {
         return new Promise<boolean>(async resolve => {
-            this.http.post(`${environment.urlSeguridad}/usuario/renuevaToken`, { nidmodulo: environment.nidModulo, referencia: await this.obtenerReferencia() })
+            this.http.post(`${environment.urlSeguridad}/dobleFactor/token/renovar`, { nidmodulo: environment.nidModulo, referencia: await this.obtenerReferencia() })
                 .subscribe(async resp => {
+                    if (resp['status'] === -3) {
+                        // Sesión sin doble factor o de más de DF_DIAS_MAXIMO_SESION días
+                        await this.sesionNoVerificada(resp['message'])
+                        resolve(false)
+                        return
+                    }
                     if (resp['status'] !== 0) {
                         console.log('renuevaToken resp del servicio :>> ', resp);
                         if (resp['status'] === -2) {
@@ -398,8 +421,13 @@ export class SeguridadService {
     llamarConfirmarClave (clave: string) {
         return new Promise<boolean>(async resolve => {
             const parametros = {clave, nidmodulo: environment.nidModulo, referencia: await this.obtenerReferencia()};
-            this.http.post(`${environment.urlSeguridad}/usuario/confirmarClave`, parametros)
+            this.http.post(`${environment.urlSeguridad}/dobleFactor/clave/confirmar`, parametros)
             .subscribe(async resp => {
+                if (resp['status'] === -3) {
+                    await this.sesionNoVerificada(resp['message'])
+                    resolve(false)
+                    return
+                }
                 if (resp['status'] !== 0) {
                     this.uiService.presentToast(resp['message'] ? resp['message'] : 'Error')
                     resolve(false);

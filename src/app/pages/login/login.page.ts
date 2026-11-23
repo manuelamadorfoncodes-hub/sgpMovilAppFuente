@@ -74,6 +74,10 @@ export class LoginPage implements OnInit, AfterContentChecked {
             if (resp === 'ok') {
                 // navegar al tabs
                 this.navCtrl.navigateRoot('/inicio', { animated: true });
+            } else if (resp === 'df') {
+                // usuario y contraseña correctos: falta el segundo factor
+                this.usuarioLogin.clave = ''
+                this.navCtrl.navigateForward('/verificacion-doble-factor', { animated: true });
             } else {
                 // mostrar alerta de usuario y contraseña no correctos
                 this.uiService.alertaInformativa(resp);

@@ -1,0 +1,72 @@
+<ion-content class="fondo">
+    <ion-card>
+        <ion-card-header>
+            <ion-img src="/assets/imagenes/foncodes.png"></ion-img>
+            <ion-card-title class="textoNegro">Verifique su identidad</ion-card-title>
+            <ion-card-subtitle class="textoNegro">Segundo paso para ingresar a SGP Móvil · {{ restante }}</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+            <!-- Elegir método -->
+            <div *ngIf="paso === 'elegir'">
+                <ion-button *ngIf="reto?.factores?.perupass" expand="block" shape="round" color="primary"
+                            [disabled]="procesando" (click)="verificarPerupass()">
+                    <ion-icon name="shield-checkmark" slot="start"></ion-icon>
+                    Verificar con Perú Pass
+                </ion-button>
+                <p *ngIf="reto?.factores?.perupass" class="ayuda">Se abrirá Perú Pass para que comparta su DNI digital. Luego vuelva a esta pantalla.</p>
+
+                <div *ngIf="reto?.factores?.correo" class="separador"><span>o, si no tiene Perú Pass</span></div>
+                <ion-button *ngIf="reto?.factores?.correo" expand="block" shape="round" fill="outline" color="dark" class="sinMayusculas"
+                            [disabled]="procesando" (click)="enviarCodigoCorreo()">
+                    <ion-icon name="mail" slot="start"></ion-icon>
+                    Enviar código por correo
+                </ion-button>
+                <p *ngIf="reto?.factores?.correo" class="ayuda">Llegará a {{ reto?.correoEnmascarado }}</p>
+            </div>
+
+            <!-- Esperando Perú Pass -->
+            <div *ngIf="paso === 'perupass'" class="ion-text-center">
+                <ng-container *ngIf="esperandoPerupass">
+                    <ion-spinner name="crescent" color="primary"></ion-spinner>
+                    <p><b>Esperando la confirmación en Perú Pass…</b></p>
+                    <p class="ayuda">Comparta su DNI digital en Perú Pass y regrese a SGP Móvil. Esta pantalla continuará sola.</p>
+                </ng-container>
+                <p *ngIf="mensajePerupass" class="error">{{ mensajePerupass }}</p>
+                <ion-button *ngIf="!esperandoPerupass" expand="block" shape="round" (click)="reintentarPerupass()" [disabled]="procesando">
+                    Intentar nuevamente
+                </ion-button>
+                <ion-button *ngIf="reto?.factores?.correo" expand="block" fill="clear" color="dark" (click)="enviarCodigoCorreo()" [disabled]="procesando">
+                    Usar código por correo
+                </ion-button>
+                <ion-button expand="block" fill="clear" color="medium" (click)="volverSeleccionMetodo()">Volver</ion-button>
+            </div>
+
+            <!-- Código por correo -->
+            <form *ngIf="paso === 'correo'" (ngSubmit)="validarCodigoCorreo()">
+                <p>Enviamos un código de 6 dígitos a <b>{{ correoDestino }}</b>. Vence en {{ minutosCodigo }} minutos.</p>
+                <ion-item lines="none" class="codigo">
+                    <ion-input name="codigo" type="tel" inputmode="numeric" maxlength="6" autocomplete="one-time-code"
+                               placeholder="000000" [(ngModel)]="codigo" [disabled]="procesando"></ion-input>
+                </ion-item>
+                <p *ngIf="mensajeCorreo" class="error">{{ mensajeCorreo }}</p>
+                <ion-button type="submit" expand="block" shape="round" [disabled]="procesando">Validar código</ion-button>
+                <ion-button expand="block" fill="clear" color="dark" (click)="enviarCodigoCorreo()" [disabled]="procesando || reenviarEn > 0">
+                    {{ reenviarEn > 0 ? 'Reenviar código en ' + reenviarEn + ' s' : 'Reenviar código' }}
+                </ion-button>
+                <ion-button *ngIf="reto?.factores?.perupass" expand="block" fill="clear" color="medium" (click)="volverSeleccionMetodo()">
+                    Usar Perú Pass
+                </ion-button>
+            </form>
+
+            <ion-item *ngIf="diasEquipo > 0" lines="none" class="recordar">
+                <ion-checkbox [(ngModel)]="recordarEquipo" labelPlacement="end" justify="start">
+                    Recordar este celular por {{ diasEquipo }} días
+                </ion-checkbox>
+            </ion-item>
+
+            <ion-button expand="block" fill="clear" color="medium" (click)="cancelarVerificacion()">Cancelar e iniciar sesión de nuevo</ion-button>
+            <p class="creditos">SGP Móvil Versión {{ version }} - © FONCODES</p>
+        </ion-card-content>
+    </ion-card>
+</ion-content>

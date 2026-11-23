@@ -1,0 +1,78 @@
+.fondo {
+    --background: url("../../../assets/imagenes/arch-pattern.png");
+}
+
+ion-card {
+    background-color: rgba(255, 255, 255, 0.94);
+    margin: 48px 12px 12px;
+}
+
+ion-img {
+    display: block;
+    margin: 0 auto 8px;
+    width: 40%;
+}
+
+.textoNegro {
+    color: #000000 !important;
+    text-align: center;
+}
+
+.ayuda {
+    font-size: 13px;
+    color: #555555;
+    margin: 6px 4px 12px;
+}
+
+.error {
+    color: var(--ion-color-danger);
+    font-size: 14px;
+    margin: 8px 0;
+}
+
+.separador {
+    display: flex;
+    align-items: center;
+    margin: 16px 0 8px;
+    color: #777777;
+    font-size: 13px;
+
+    &::before,
+    &::after {
+        content: "";
+        flex: 1;
+        border-top: 1px solid #cccccc;
+    }
+
+    span {
+        padding: 0 8px;
+    }
+}
+
+.codigo {
+    --background: #f2f2f2;
+    border-radius: 8px;
+    margin: 8px 0 12px;
+
+    ion-input {
+        font-size: 28px;
+        letter-spacing: 10px;
+        text-align: center;
+        font-family: "Courier New", monospace;
+    }
+}
+
+.recordar {
+    --background: transparent;
+    font-size: 14px;
+}
+
+.creditos {
+    padding-top: 10px;
+    font-size: 11px;
+    text-align: center;
+}
+
+.sinMayusculas {
+    text-transform: none;
+}

@@ -13,7 +13,8 @@ export class JwtInterceptor implements HttpInterceptor {
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.token = this.seguridadService.token
-        if (this.token) {
+        // No reemplaza una cabecera puesta a propósito (token temporal del doble factor)
+        if (this.token && !request.headers.has('Authorization')) {
             request = request.clone({
                 setHeaders: {
                     Authorization: `${environment.tokenWord} ${this.token}`
