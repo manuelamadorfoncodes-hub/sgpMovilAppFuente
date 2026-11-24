@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment'
 import { UiServiceService } from './ui-service.service'
 import { StorageService } from './storage.service';
 import { DobleFactorService } from './doble-factor.service';
+import { PoliticaClaveService } from './politica-clave.service';
 import { User, Modulo, ZonalModulo, Funcion } from '../model/generales'
 
 const helper = new JwtHelperService()
@@ -22,7 +23,8 @@ export class SeguridadService {
         private navController: NavController,
         private alertController: AlertController,
         private uiService: UiServiceService,
-        private dobleFactorService: DobleFactorService
+        private dobleFactorService: DobleFactorService,
+        private politicaClaveService: PoliticaClaveService
         ) { }
 
     async obtenerReferencia() {
@@ -35,6 +37,7 @@ export class SeguridadService {
         // Doble factor: servicio nuevo /dobleFactor/autenticar (la clave ya no se escribe en la consola)
         const data = { idusuario, clave, nidmodulo: environment.nidModulo, referencia, equipo: this.dobleFactorService.obtenerIdentificadorEquipo() }
         this.dobleFactorService.limpiarReto()
+        this.politicaClaveService.limpiarCambioObligatorio()
         return new Promise<string>(resolve => {
 
             this.http.post(`${environment.urlSeguridad}/dobleFactor/autenticar`, data)
@@ -44,12 +47,17 @@ export class SeguridadService {
                             // Usuario y contraseña correctos: falta el segundo factor
                             this.dobleFactorService.iniciarReto(resp)
                             resolve('df');
+                        } else if (resp['status'] === 3) {
+                            // Contraseña vencida o cambio obligatorio: no hay token de acceso, solo tokenCambio
+                            this.politicaClaveService.iniciarCambioObligatorio(resp)
+                            resolve('cambio');
                         } else if (resp['status'] !== 0) {
                             this.token = null;
                             this.storage.clear();
                             resolve(resp['message']);
                         } else {
                             await this.guardarToken(resp)
+                            this.politicaClaveService.registrarAviso(resp)
                             let modulo = resp['modulo']
                             let acuerdo = modulo.confidencialidad
                             if (acuerdo) {
@@ -425,6 +433,13 @@ export class SeguridadService {
             .subscribe(async resp => {
                 if (resp['status'] === -3) {
                     await this.sesionNoVerificada(resp['message'])
+                    resolve(false)
+                    return
+                }
+                if (resp['status'] === 3) {
+                    // La contraseña venció mientras la sesión estaba abierta
+                    this.politicaClaveService.iniciarCambioObligatorio(resp)
+                    this.navController.navigateRoot('/cambio-clave')
                     resolve(false)
                     return
                 }

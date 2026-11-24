@@ -1,0 +1,65 @@
+.fondo {
+    --background: url("../../../assets/imagenes/arch-pattern.png");
+}
+
+ion-card {
+    background-color: rgba(255, 255, 255, 0.94);
+    margin: 40px 12px 12px;
+}
+
+ion-img {
+    display: block;
+    margin: 0 auto 8px;
+    width: 40%;
+}
+
+.textoNegro {
+    color: #000000 !important;
+    text-align: center;
+}
+
+.campo {
+    --background: transparent;
+    margin-bottom: 4px;
+}
+
+.mostrar {
+    --background: transparent;
+    font-size: 14px;
+}
+
+.condiciones {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+    font-size: 13px;
+    color: #666666;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 4px 0;
+    }
+
+    .cumple {
+        color: #1b7f3b;
+    }
+}
+
+.ayuda {
+    font-size: 12px;
+    color: #555555;
+}
+
+.error {
+    color: var(--ion-color-danger);
+    font-size: 14px;
+    margin: 6px 0;
+}
+
+.creditos {
+    padding-top: 10px;
+    font-size: 11px;
+    text-align: center;
+}

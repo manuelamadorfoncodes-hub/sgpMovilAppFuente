@@ -39,6 +39,10 @@ export class MenuComponent implements OnInit {
         // await this.seguridadService.confirmarContrasenha()
     }
 
+    cambiarContrasenha() {
+        this.navCtrl.navigateForward('/cambio-clave', { animated: true })
+    }
+
     async cerrarSesion() {
         await this.uiService.alertaConfirmacion('Si cierra la sesión perderá toda la información registrada que no haya sincronizado. ¿Está seguro de cerrar la sesión?.').then(async (resp) => {
             if (resp) {

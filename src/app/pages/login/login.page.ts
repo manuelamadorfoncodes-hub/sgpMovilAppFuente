@@ -5,6 +5,7 @@ import { MenuController, Platform, NavController } from '@ionic/angular'
 import { Network } from '@capacitor/network';
 
 import { SeguridadService } from '../../services/seguridad.service'
+import { PoliticaClaveService } from '../../services/politica-clave.service'
 import { UiServiceService } from '../../services/ui-service.service'
 import { environment } from '../../../environments/environment'
 
@@ -49,6 +50,7 @@ export class LoginPage implements OnInit, AfterContentChecked {
                 private navCtrl: NavController,
                 private menu: MenuController,
                 private seguridadService: SeguridadService,
+                private politicaClave: PoliticaClaveService,
                 private uiService: UiServiceService) { }
 
     ngOnInit() {
@@ -73,7 +75,12 @@ export class LoginPage implements OnInit, AfterContentChecked {
         if (resp) {
             if (resp === 'ok') {
                 // navegar al tabs
-                this.navCtrl.navigateRoot('/inicio', { animated: true });
+                await this.navCtrl.navigateRoot('/inicio', { animated: true });
+                this.politicaClave.mostrarAvisoPendiente()
+            } else if (resp === 'cambio') {
+                // contraseña vencida o cambio obligatorio
+                this.usuarioLogin.clave = ''
+                this.navCtrl.navigateForward('/cambio-clave', { animated: true });
             } else if (resp === 'df') {
                 // usuario y contraseña correctos: falta el segundo factor
                 this.usuarioLogin.clave = ''

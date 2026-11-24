@@ -4,6 +4,7 @@ import { UsuarioGuard } from './guards/usuario.guard'
 
 const routes: Routes = [
     { path: 'login', loadChildren: () => import('./pages/login/login.module').then(m => m.LoginPageModule) },
+    { path: 'cambio-clave', loadChildren: () => import('./pages/cambio-clave/cambio-clave.module').then(m => m.CambioClavePageModule) },
     { path: 'verificacion-doble-factor', loadChildren: () => import('./pages/verificacion-doble-factor/verificacion-doble-factor.module').then(m => m.VerificacionDobleFactorPageModule) },
     { path: 'zonales', loadChildren: () => import('./pages/zonales/zonales.module').then(m => m.ZonalesPageModule), canLoad: [UsuarioGuard] },
     { path: 'proyectos', loadChildren: () => import('./pages/proyectos/proyectos.module').then(m => m.ProyectosPageModule), canLoad: [UsuarioGuard] },

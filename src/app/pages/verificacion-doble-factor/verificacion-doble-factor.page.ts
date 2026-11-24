@@ -7,6 +7,7 @@ import { PluginListenerHandle } from '@capacitor/core'
 import { DobleFactorService } from '../../services/doble-factor.service'
 import { RETO_DOBLE_FACTOR } from '../../model/doble-factor.model'
 import { SeguridadService } from '../../services/seguridad.service'
+import { PoliticaClaveService } from '../../services/politica-clave.service'
 import { UiServiceService } from '../../services/ui-service.service'
 import { environment } from '../../../environments/environment'
 
@@ -49,6 +50,7 @@ export class VerificacionDobleFactorPage implements OnDestroy {
 
     constructor(public dobleFactor: DobleFactorService,
                 private seguridadService: SeguridadService,
+                private politicaClave: PoliticaClaveService,
                 private uiService: UiServiceService,
                 private navCtrl: NavController) { }
 
@@ -151,6 +153,8 @@ export class VerificacionDobleFactorPage implements OnDestroy {
             this.esperandoPerupass = false
             if (r.status === 0) {
                 await this.ingresarSistema(r)
+            } else if (r.status === 3) {
+                this.irCambioObligatorio(r)
             } else if (r.status === -2) {
                 this.mensajePerupass = r.message || 'La verificación venció.'
                 this.nidPerupass = null
@@ -207,6 +211,10 @@ export class VerificacionDobleFactorPage implements OnDestroy {
             await this.ingresarSistema(r)
             return
         }
+        if (r.status === 3) {
+            this.irCambioObligatorio(r)
+            return
+        }
         this.codigo = ''
         this.mensajeCorreo = r.message || 'Código no válido.'
         if (r.status === -2) { this.reenviarEn = 0 }
@@ -222,7 +230,17 @@ export class VerificacionDobleFactorPage implements OnDestroy {
             await this.uiService.dismissLoading()
         }
         this.dobleFactor.limpiarReto()
-        this.navCtrl.navigateRoot('/inicio', { animated: true })
+        this.politicaClave.registrarAviso(respuesta)
+        await this.navCtrl.navigateRoot('/inicio', { animated: true })
+        this.politicaClave.mostrarAvisoPendiente()
+    }
+
+    /** Segundo factor correcto, pero la contraseña venció o debe cambiarse (status 3). */
+    private irCambioObligatorio(respuesta: any) {
+        this.detenerVerificacion()
+        this.dobleFactor.limpiarReto()
+        this.politicaClave.iniciarCambioObligatorio(respuesta)
+        this.navCtrl.navigateRoot('/cambio-clave', { animated: true })
     }
 
     volverSeleccionMetodo() {
