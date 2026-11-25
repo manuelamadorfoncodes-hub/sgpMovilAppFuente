@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 
+// Firma del release: lee android/keystore.properties (fuera del repositorio).
+// Copiar keystore.properties.example a keystore.properties y completar los valores reales.
+def archivoKeystore = rootProject.file("keystore.properties")
+def propsKeystore = new Properties()
+def hayKeystoreRelease = archivoKeystore.exists()
+if (hayKeystoreRelease) {
+    propsKeystore.load(new FileInputStream(archivoKeystore))
+}
+
 android {
     namespace "pe.gob.foncodes.sgp"
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -17,8 +26,22 @@ android {
         }
 
     }
+    signingConfigs {
+        release {
+            if (hayKeystoreRelease) {
+                storeFile rootProject.file(propsKeystore['storeFile'])
+                storePassword propsKeystore['storePassword']
+                keyAlias propsKeystore['keyAlias']
+                keyPassword propsKeystore['keyPassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (hayKeystoreRelease) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
