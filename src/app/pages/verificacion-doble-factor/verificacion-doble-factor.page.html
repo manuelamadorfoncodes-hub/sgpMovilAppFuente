@@ -1,72 +1,94 @@
-<ion-content class="fondo">
-    <ion-card>
-        <ion-card-header>
-            <ion-img src="/assets/imagenes/foncodes.png"></ion-img>
-            <ion-card-title class="textoNegro">Verifique su identidad</ion-card-title>
-            <ion-card-subtitle class="textoNegro">Segundo paso para ingresar a SGP Móvil · {{ restante }}</ion-card-subtitle>
-        </ion-card-header>
+<ion-content class="df-fondo">
+  <div class="df-tarjeta">
 
-        <ion-card-content>
-            <!-- Elegir método -->
-            <div *ngIf="paso === 'elegir'">
-                <ion-button *ngIf="reto?.factores?.perupass" expand="block" shape="round" color="primary"
-                            [disabled]="procesando" (click)="verificarPerupass()">
-                    <ion-icon name="shield-checkmark" slot="start"></ion-icon>
-                    Verificar con Perú Pass
-                </ion-button>
-                <p *ngIf="reto?.factores?.perupass" class="ayuda">Se abrirá Perú Pass para que comparta su DNI digital. Luego vuelva a esta pantalla.</p>
+    <img class="df-logo" src="/assets/imagenes/foncodes.png" alt="FONCODES"/>
 
-                <div *ngIf="reto?.factores?.correo" class="separador"><span>o, si no tiene Perú Pass</span></div>
-                <ion-button *ngIf="reto?.factores?.correo" expand="block" shape="round" fill="outline" color="dark" class="sinMayusculas"
-                            [disabled]="procesando" (click)="enviarCodigoCorreo()">
-                    <ion-icon name="mail" slot="start"></ion-icon>
-                    Enviar código por correo
-                </ion-button>
-                <p *ngIf="reto?.factores?.correo" class="ayuda">Llegará a {{ reto?.correoEnmascarado }}</p>
-            </div>
+    <div class="df-icono">
+      <svg viewBox="0 0 120 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="60" cy="52" rx="56" ry="42" fill="#fbe3e5"/>
+        <rect x="24" y="30" width="62" height="42" rx="7" fill="#ffffff" stroke="#c81a1b" stroke-width="3"/>
+        <circle cx="41" cy="46" r="8" fill="#c81a1b"/>
+        <path d="M31 63c0-6 5-9 10-9s10 3 10 9z" fill="#c81a1b"/>
+        <rect x="56" y="40" width="24" height="4.5" rx="2.25" fill="#f0a9ab"/>
+        <rect x="56" y="50" width="20" height="4.5" rx="2.25" fill="#f0a9ab"/>
+        <path d="M86 44l16 6v10c0 10-7 16-16 19-9-3-16-9-16-19V50z" fill="#c81a1b"/>
+        <path d="M79 61l5 5 10-10" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
 
-            <!-- Esperando Perú Pass -->
-            <div *ngIf="paso === 'perupass'" class="ion-text-center">
-                <ng-container *ngIf="esperandoPerupass">
-                    <ion-spinner name="crescent" color="primary"></ion-spinner>
-                    <p><b>Esperando la confirmación en Perú Pass…</b></p>
-                    <p class="ayuda">Comparta su DNI digital en Perú Pass y regrese a SGP Móvil. Esta pantalla continuará sola.</p>
-                </ng-container>
-                <p *ngIf="mensajePerupass" class="error">{{ mensajePerupass }}</p>
-                <ion-button *ngIf="!esperandoPerupass" expand="block" shape="round" (click)="reintentarPerupass()" [disabled]="procesando">
-                    Intentar nuevamente
-                </ion-button>
-                <ion-button *ngIf="reto?.factores?.correo" expand="block" fill="clear" color="dark" (click)="enviarCodigoCorreo()" [disabled]="procesando">
-                    Usar código por correo
-                </ion-button>
-                <ion-button expand="block" fill="clear" color="medium" (click)="volverSeleccionMetodo()">Volver</ion-button>
-            </div>
+    <h1 class="df-titulo">Verificación de identidad</h1>
+    <p class="df-subtitulo">Este es el segundo paso para ingresar a SGP Móvil.</p>
 
-            <!-- Código por correo -->
-            <form *ngIf="paso === 'correo'" (ngSubmit)="validarCodigoCorreo()">
-                <p>Enviamos un código de 6 dígitos a <b>{{ correoDestino }}</b>. Vence en {{ minutosCodigo }} minutos.</p>
-                <ion-item lines="none" class="codigo">
-                    <ion-input name="codigo" type="tel" inputmode="numeric" maxlength="6" autocomplete="one-time-code"
-                               placeholder="000000" [(ngModel)]="codigo" [disabled]="procesando"></ion-input>
-                </ion-item>
-                <p *ngIf="mensajeCorreo" class="error">{{ mensajeCorreo }}</p>
-                <ion-button type="submit" expand="block" shape="round" [disabled]="procesando">Validar código</ion-button>
-                <ion-button expand="block" fill="clear" color="dark" (click)="enviarCodigoCorreo()" [disabled]="procesando || reenviarEn > 0">
-                    {{ reenviarEn > 0 ? 'Reenviar código en ' + reenviarEn + ' s' : 'Reenviar código' }}
-                </ion-button>
-                <ion-button *ngIf="reto?.factores?.perupass" expand="block" fill="clear" color="medium" (click)="volverSeleccionMetodo()">
-                    Usar Perú Pass
-                </ion-button>
-            </form>
+    <div class="df-reloj">
+      <ion-icon name="timer-outline"></ion-icon>
+      <span class="df-reloj-texto">Tiempo restante</span>
+      <span class="df-reloj-linea"></span>
+      <span class="df-reloj-valor">{{ restante }}</span>
+    </div>
 
-            <ion-item *ngIf="diasEquipo > 0" lines="none" class="recordar">
-                <ion-checkbox [(ngModel)]="recordarEquipo" labelPlacement="end" justify="start">
-                    Recordar este celular por {{ diasEquipo }} días
-                </ion-checkbox>
-            </ion-item>
+    <!-- PASO: elegir método -->
+    <div *ngIf="paso === 'elegir'" class="df-bloque">
+      <ion-button *ngIf="reto?.factores?.perupass" class="df-btn-perupass" expand="block" [disabled]="procesando" (click)="verificarPerupass()">
+        <ion-icon name="shield-checkmark" slot="start"></ion-icon>
+        Verificar con Perú Pass
+      </ion-button>
+      <p *ngIf="reto?.factores?.perupass" class="df-ayuda">
+        Se abrirá Perú Pass para validar su identidad con su DNI digital. Al finalizar, regrese a esta pantalla.
+      </p>
 
-            <ion-button expand="block" fill="clear" color="medium" (click)="cancelarVerificacion()">Cancelar e iniciar sesión de nuevo</ion-button>
-            <p class="creditos">SGP Móvil Versión {{ version }} - © FONCODES</p>
-        </ion-card-content>
-    </ion-card>
+      <div *ngIf="reto?.factores?.correo" class="df-separador"><span>¿No puede usar Perú Pass?</span></div>
+
+      <ion-button *ngIf="reto?.factores?.correo" class="df-btn-correo" expand="block" fill="outline" [disabled]="procesando" (click)="enviarCodigoCorreo()">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        Recibir código por correo
+      </ion-button>
+      <p *ngIf="reto?.factores?.correo" class="df-ayuda">
+        Se enviará un código al correo registrado:<br><b>{{ reto?.correoEnmascarado }}</b>
+      </p>
+    </div>
+
+    <!-- PASO: esperando Perú Pass -->
+    <div *ngIf="paso === 'perupass'" class="df-bloque df-centro">
+      <ng-container *ngIf="esperandoPerupass">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p class="df-espera"><b>Esperando la confirmación en Perú Pass…</b></p>
+        <p class="df-ayuda">Comparta su DNI digital en Perú Pass y regrese a SGP Móvil. Esta pantalla continuará sola.</p>
+      </ng-container>
+      <p *ngIf="mensajePerupass" class="df-error">{{ mensajePerupass }}</p>
+      <ion-button *ngIf="!esperandoPerupass" class="df-btn-perupass" expand="block" (click)="reintentarPerupass()" [disabled]="procesando">
+        Intentar nuevamente
+      </ion-button>
+      <ion-button *ngIf="reto?.factores?.correo" class="df-btn-texto" expand="block" fill="clear" (click)="enviarCodigoCorreo()" [disabled]="procesando">
+        Usar código por correo
+      </ion-button>
+      <ion-button class="df-btn-texto df-gris" expand="block" fill="clear" (click)="volverSeleccionMetodo()">Volver</ion-button>
+    </div>
+
+    <!-- PASO: código por correo -->
+    <form *ngIf="paso === 'correo'" class="df-bloque" (ngSubmit)="validarCodigoCorreo()">
+      <p class="df-ayuda">Enviamos un código de 6 dígitos a <b>{{ correoDestino }}</b>. Vence en {{ minutosCodigo }} minutos.</p>
+      <div class="df-codigo">
+        <ion-input name="codigo" type="tel" inputmode="numeric" maxlength="6" autocomplete="one-time-code"
+                   placeholder="000000" [(ngModel)]="codigo" [disabled]="procesando"></ion-input>
+      </div>
+      <p *ngIf="mensajeCorreo" class="df-error">{{ mensajeCorreo }}</p>
+      <ion-button class="df-btn-perupass" type="submit" expand="block" [disabled]="procesando">Validar código</ion-button>
+      <ion-button class="df-btn-texto" expand="block" fill="clear" (click)="enviarCodigoCorreo()" [disabled]="procesando || reenviarEn > 0">
+        {{ reenviarEn > 0 ? 'Reenviar código en ' + reenviarEn + ' s' : 'Reenviar código' }}
+      </ion-button>
+      <ion-button *ngIf="reto?.factores?.perupass" class="df-btn-texto df-gris" expand="block" fill="clear" (click)="volverSeleccionMetodo()">
+        Usar Perú Pass
+      </ion-button>
+    </form>
+
+    <ion-item *ngIf="diasEquipo > 0" lines="none" class="df-recordar">
+      <ion-checkbox [(ngModel)]="recordarEquipo" labelPlacement="end" justify="start">
+        Recordar este celular por {{ diasEquipo }} días
+      </ion-checkbox>
+    </ion-item>
+
+    <a class="df-volver" (click)="cancelarVerificacion()">Volver al inicio de sesión</a>
+    <p class="df-creditos">SGP Móvil versión {{ version }} · © FONCODES</p>
+
+  </div>
 </ion-content>
