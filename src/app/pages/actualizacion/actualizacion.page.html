@@ -1,0 +1,39 @@
+<ion-content class="act-fondo">
+  <div class="act-tarjeta">
+
+    <img class="act-logo" src="/assets/imagenes/foncodes.png" alt="FONCODES"/>
+
+    <div class="act-icono">
+      <svg viewBox="0 0 120 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="60" cy="58" rx="54" ry="46" fill="#fbe3e5"/>
+        <rect x="40" y="18" width="40" height="66" rx="8" fill="#ffffff" stroke="#c81a1b" stroke-width="3"/>
+        <rect x="52" y="74" width="16" height="4" rx="2" fill="#c81a1b"/>
+        <path d="M60 34v22" stroke="#c81a1b" stroke-width="5" stroke-linecap="round"/>
+        <path d="M49 47l11 11 11-11" fill="none" stroke="#c81a1b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <h1 class="act-titulo">Actualización obligatoria</h1>
+    <p class="act-subtitulo">
+      Hay una nueva versión de SGP Móvil{{ info?.version ? ' (' + info?.version + ')' : '' }} que debe instalar para continuar.
+    </p>
+
+    <div *ngIf="info?.notas" class="act-notas">
+      <p class="act-notas-titulo">Novedades</p>
+      <p class="act-notas-texto">{{ info?.notas }}</p>
+    </div>
+
+    <ion-button class="act-btn" expand="block" [disabled]="descargando" (click)="descargar()">
+      <ion-icon name="cloud-download" slot="start"></ion-icon>
+      {{ descargando ? 'Abriendo descarga…' : 'Actualizar ahora' }}
+    </ion-button>
+
+    <p class="act-ayuda">
+      Se descargará el instalador. Toque el archivo descargado y confirme la instalación; si Android lo pide,
+      permita instalar desde esta aplicación.
+    </p>
+
+    <p class="act-creditos">SGP Móvil versión {{ version }} · © FONCODES</p>
+
+  </div>
+</ion-content>

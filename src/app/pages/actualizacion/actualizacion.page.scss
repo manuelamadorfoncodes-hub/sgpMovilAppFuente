@@ -1,0 +1,80 @@
+:host { --rojo: var(--ion-color-primary, #c81a1b); }
+
+.act-fondo { --background: #eef1f4; }
+
+.act-tarjeta {
+    background: #ffffff;
+    border-radius: 24px;
+    margin: 14px;
+    min-height: calc(100% - 28px);
+    padding: 30px 22px 18px;
+    box-shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.act-logo { width: 58%; max-width: 240px; margin: 8px auto 12px; }
+
+.act-icono { width: 140px; margin: 8px auto 6px; svg { width: 100%; height: auto; display: block; } }
+
+.act-titulo {
+    margin: 6px 0 8px;
+    font-size: 26px;
+    font-weight: 800;
+    color: #1f2430;
+    text-align: center;
+    line-height: 1.15;
+}
+
+.act-subtitulo {
+    margin: 0 0 18px;
+    font-size: 15px;
+    color: #6b7280;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.act-notas {
+    width: 100%;
+    background: #f6f7f9;
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+}
+.act-notas-titulo { margin: 0 0 4px; font-size: 13px; font-weight: 700; color: #3f4451; }
+.act-notas-texto { margin: 0; font-size: 14px; color: #6b7280; white-space: pre-line; }
+
+.act-btn {
+    width: 100%;
+    --background: var(--rojo);
+    --background-activated: var(--rojo);
+    --color: #ffffff;
+    --border-radius: 30px;
+    --box-shadow: 0 10px 20px rgba(200, 26, 27, 0.32);
+    --padding-top: 22px;
+    --padding-bottom: 22px;
+    height: 58px;
+    font-size: 17px;
+    font-weight: 700;
+    text-transform: none;
+
+    ion-icon { font-size: 20px; margin-right: 6px; }
+}
+
+.act-ayuda {
+    margin: 14px 0 0;
+    font-size: 13px;
+    color: #8a909b;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.act-creditos {
+    margin-top: auto;
+    padding-top: 16px;
+    font-size: 12px;
+    color: #a6abb4;
+    text-align: center;
+}

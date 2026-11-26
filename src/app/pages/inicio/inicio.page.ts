@@ -7,6 +7,7 @@ import { SgpService } from '../../services/sgp.service';
 import { ReportesService } from './../../services/reportes.service';
 import { User, Modulo, Zonal, Funcion, Opcion } from '../../model/generales';
 import { Proyecto } from '../../model/proyectos';
+import { ActualizacionService } from '../../services/actualizacion.service';
 
 @Component({
     selector: 'app-inicio',
@@ -38,10 +39,13 @@ export class InicioPage implements OnInit {
         private sgpService: SgpService,
         private dataLocalService: DataLocalService,
         private utilService: UtilService,
-        private reportesService: ReportesService) { }
+        private reportesService: ReportesService,
+        private actualizacionService: ActualizacionService) { }
 
     async ngOnInit() {
         console.log('INICIO...');
+        // si hay una versión obligatoria, bloquea con la pantalla de actualización.
+        if (await this.actualizacionService.revisar()) { return }
         let permisoZonal = await this.dataLocalService.leerPermisoZonal()
         let flagDataInicial
         if (!permisoZonal) {
